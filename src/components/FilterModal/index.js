@@ -1,66 +1,28 @@
 import { 
   View, 
   Text, 
-  StyleSheet, 
   TouchableOpacity, 
   Modal, 
   ScrollView,
   Switch
 } from 'react-native';
 import { useState } from 'react';
+import { categories, distanceOptions, priceRanges, ratingOptions } from '../../static-data';
+import { styles } from './styles';
 
 export default function FilterModal({ visible, onClose, onApplyFilters }) {
   const [filters, setFilters] = useState({
     distance: '5',
     priceRange: 'all',
     rating: 'all',
-    cuisine: 'all',
+    category: 'all',
     features: {
-      delivery: false,
-      pickup: false,
+      selfService: false,
       reservation: false,
-      outdoor: false,
-      parking: false,
-      wifi: false,
       card: false,
       cash: false
     }
   });
-
-  const distanceOptions = [
-    { value: '1', label: '1 km' },
-    { value: '3', label: '3 km' },
-    { value: '5', label: '5 km' },
-    { value: '10', label: '10 km' },
-    { value: '20', label: '20 km' }
-  ];
-
-  const priceRanges = [
-    { value: 'all', label: 'Hepsi' },
-    { value: '1', label: '₺' },
-    { value: '2', label: '₺₺' },
-    { value: '3', label: '₺₺₺' },
-    { value: '4', label: '₺₺₺₺' }
-  ];
-
-  const ratingOptions = [
-    { value: 'all', label: 'Hepsi' },
-    { value: '4.5', label: '4.5+ ⭐' },
-    { value: '4.0', label: '4.0+ ⭐' },
-    { value: '3.5', label: '3.5+ ⭐' },
-    { value: '3.0', label: '3.0+ ⭐' }
-  ];
-
-  const cuisineTypes = [
-    { value: 'all', label: 'Hepsi' },
-    { value: 'turkish', label: 'Türk' },
-    { value: 'italian', label: 'İtalyan' },
-    { value: 'chinese', label: 'Çin' },
-    { value: 'japanese', label: 'Japon' },
-    { value: 'mexican', label: 'Meksika' },
-    { value: 'indian', label: 'Hint' },
-    { value: 'fastfood', label: 'Fast Food' }
-  ];
 
   const handleDistanceChange = (value) => {
     setFilters(prev => ({ ...prev, distance: value }));
@@ -74,8 +36,8 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
     setFilters(prev => ({ ...prev, rating: value }));
   };
 
-  const handleCuisineChange = (value) => {
-    setFilters(prev => ({ ...prev, cuisine: value }));
+  const handleCategoryChange = (value) => {
+    setFilters(prev => ({ ...prev, category: value }));
   };
 
   const handleFeatureToggle = (feature) => {
@@ -98,14 +60,10 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
       distance: '5',
       priceRange: 'all',
       rating: 'all',
-      cuisine: 'all',
+      category: 'all',
       features: {
-        delivery: false,
-        pickup: false,
+        selfService: false,
         reservation: false,
-        outdoor: false,
-        parking: false,
-        wifi: false,
         card: false,
         cash: false
       }
@@ -203,24 +161,25 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
             </View>
           </View>
 
-          {/* Mutfak Türü */}
+          {/* Kategori */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Mutfak Türü</Text>
-            <View style={styles.optionsContainer}>
-              {cuisineTypes.map((option) => (
+            <Text style={styles.sectionTitle}>Kategori</Text>
+            <View style={styles.categoriesContainer}>
+              {categories.map((category) => (
                 <TouchableOpacity
-                  key={option.value}
+                  key={category.id}
                   style={[
-                    styles.optionButton,
-                    filters.cuisine === option.value && styles.activeOptionButton
+                    styles.categoryButton,
+                    filters.category === category.value && styles.activeCategoryButton
                   ]}
-                  onPress={() => handleCuisineChange(option.value)}
+                  onPress={() => handleCategoryChange(category.value)}
                 >
+                  <Text style={styles.categoryIcon}>{category.icon}</Text>
                   <Text style={[
-                    styles.optionText,
-                    filters.cuisine === option.value && styles.activeOptionText
+                    styles.categoryText,
+                    filters.category === category.value && styles.activeCategoryText
                   ]}>
-                    {option.label}
+                    {category.name}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -234,12 +193,8 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
               {Object.entries(filters.features).map(([feature, value]) => (
                 <View key={feature} style={styles.featureRow}>
                   <Text style={styles.featureLabel}>
-                    {feature === 'delivery' && '🚚 Teslimat'}
-                    {feature === 'pickup' && '📦 Paket Servis'}
+                    {feature === 'selfService' && '🍽️ Self Servis'}
                     {feature === 'reservation' && '📅 Rezervasyon'}
-                    {feature === 'outdoor' && '🌳 Açık Alan'}
-                    {feature === 'parking' && '🅿️ Otopark'}
-                    {feature === 'wifi' && '📶 WiFi'}
                     {feature === 'card' && '💳 Kart Ödemesi'}
                     {feature === 'cash' && '💰 Nakit Ödeme'}
                   </Text>
@@ -265,107 +220,3 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E1E8ED',
-  },
-  closeButton: {
-    padding: 8,
-  },
-  closeText: {
-    fontSize: 16,
-    color: '#7F8C8D',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-  },
-  resetButton: {
-    padding: 8,
-  },
-  resetText: {
-    fontSize: 16,
-    color: '#FF6B35',
-    fontWeight: '500',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  section: {
-    marginVertical: 20,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    marginBottom: 15,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  optionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E1E8ED',
-  },
-  activeOptionButton: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
-  },
-  optionText: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    fontWeight: '500',
-  },
-  activeOptionText: {
-    color: '#FFFFFF',
-  },
-  featuresContainer: {
-    gap: 15,
-  },
-  featureRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  featureLabel: {
-    fontSize: 16,
-    color: '#2C3E50',
-  },
-  footer: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#E1E8ED',
-  },
-  applyButton: {
-    backgroundColor: '#FF6B35',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  applyButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-});

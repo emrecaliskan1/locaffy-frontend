@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { useState, useEffect } from 'react';
+import { dayNames, monthNames, availableTimes, maxPeople } from '../static-data';
 
 export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;
@@ -37,13 +38,8 @@ export default function ReservationScreen({ route, navigation }) {
 
   const mockReservationData = {
     availableDates: generateNextDates(14),
-    availableTimes: [
-      '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', 
-      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-      '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-      '20:00', '20:30', '21:00', '21:30'
-    ],
-    maxPeople: 8
+    availableTimes: availableTimes,
+    maxPeople: maxPeople
   };
 
   useEffect(() => {
@@ -62,14 +58,12 @@ export default function ReservationScreen({ route, navigation }) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
-    const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
     
     return {
       day: date.getDate(),
-      dayName: days[date.getDay()],
-      month: months[date.getMonth()],
-      full: `${date.getDate()} ${months[date.getMonth()]}`
+      dayName: dayNames[date.getDay()],
+      month: monthNames[date.getMonth()],
+      full: `${date.getDate()} ${monthNames[date.getMonth()]}`
     };
   };
 

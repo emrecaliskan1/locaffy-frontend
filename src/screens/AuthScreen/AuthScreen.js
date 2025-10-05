@@ -10,6 +10,7 @@ import {
   ScrollView
 } from 'react-native';
 import { useState } from 'react';
+import { styles } from './styles';
 
 export default function AuthScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('login');
@@ -29,13 +30,11 @@ export default function AuthScreen({ navigation }) {
   };
 
   const handleLogin = () => {
-    // Login logic here
-    navigation.replace('Home');
+    navigation.replace('Main');
   };
 
   const handleRegister = () => {
-    // Register logic here
-    navigation.replace('Home');
+    navigation.replace('Main');
   };
 
   return (
@@ -45,7 +44,7 @@ export default function AuthScreen({ navigation }) {
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
+
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <Text style={styles.iconText}>🍽️</Text>
@@ -59,9 +58,8 @@ export default function AuthScreen({ navigation }) {
             </Text>
           </View>
 
-          {/* Main Card */}
           <View style={styles.card}>
-            {/* Tabs */}
+ 
             <View style={styles.tabContainer}>
               <TouchableOpacity 
                 style={[styles.tab, activeTab === 'login' && styles.activeTab]}
@@ -81,12 +79,12 @@ export default function AuthScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            {/* Form Content */}
+
             <View style={styles.formContainer}>
               {activeTab === 'login' ? (
-                // Login Form
+  
                 <View>
-                  {/* Email Input */}
+  
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>📧</Text>
                     <TextInput
@@ -99,7 +97,7 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  {/* Password Input */}
+  
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>🔒</Text>
                     <TextInput
@@ -114,17 +112,14 @@ export default function AuthScreen({ navigation }) {
                     </TouchableOpacity>
                   </View>
 
-                  {/* Forgot Password */}
                   <TouchableOpacity style={styles.forgotPassword}>
                     <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
                   </TouchableOpacity>
 
-                  {/* Login Button */}
                   <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
                     <Text style={styles.primaryButtonText}>Giriş Yap</Text>
                   </TouchableOpacity>
 
-                  {/* Register Link */}
                   <View style={styles.linkContainer}>
                     <Text style={styles.linkText}>Hesabın yok mu? </Text>
                     <TouchableOpacity onPress={() => setActiveTab('register')}>
@@ -133,9 +128,10 @@ export default function AuthScreen({ navigation }) {
                   </View>
                 </View>
               ) : (
+
                 // Register Form
                 <View>
-                  {/* Name Input */}
+
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>👤</Text>
                     <TextInput
@@ -146,7 +142,6 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  {/* Phone Input */}
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>📱</Text>
                     <TextInput
@@ -158,7 +153,6 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  {/* Email Input */}
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>📧</Text>
                     <TextInput
@@ -171,7 +165,6 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  {/* Password Input */}
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>🔒</Text>
                     <TextInput
@@ -186,12 +179,10 @@ export default function AuthScreen({ navigation }) {
                     </TouchableOpacity>
                   </View>
 
-                  {/* Register Button */}
                   <TouchableOpacity style={styles.primaryButton} onPress={handleRegister}>
                     <Text style={styles.primaryButtonText}>Hesap Oluştur</Text>
                   </TouchableOpacity>
 
-                  {/* Login Link */}
                   <View style={styles.linkContainer}>
                     <Text style={styles.linkText}>Zaten hesabın var mı? </Text>
                     <TouchableOpacity onPress={() => setActiveTab('login')}>
@@ -208,161 +199,3 @@ export default function AuthScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5DC',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#FF6B35',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-  },
-  iconText: {
-    fontSize: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#7F8C8D',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    lineHeight: 24,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 20,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  activeTab: {
-    backgroundColor: '#FF6B35',
-  },
-  tabText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#7F8C8D',
-  },
-  activeTabText: {
-    color: '#FFFFFF',
-  },
-  formContainer: {
-    paddingTop: 10,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
-  },
-  inputIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#2C3E50',
-  },
-  eyeIcon: {
-    fontSize: 20,
-    color: '#7F8C8D',
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: '#FF6B35',
-    fontWeight: '500',
-  },
-  primaryButton: {
-    backgroundColor: '#FF6B35',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-  linkContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#7F8C8D',
-  },
-  linkButton: {
-    fontSize: 14,
-    color: '#FF6B35',
-    fontWeight: '500',
-  },
-});
