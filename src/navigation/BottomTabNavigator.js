@@ -8,7 +8,6 @@ import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-// Web uyumlu shadow helper
 const createShadowStyle = (elevation) => {
   if (Platform.OS === 'web') {
     return {
@@ -88,7 +87,7 @@ export default function BottomTabNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarLabel: ({ focused }) => <TabLabel label="Restoranlar" focused={focused} />,
+          tabBarLabel: ({ focused }) => <TabLabel label="Mekanlar" focused={focused} />,
           tabBarIcon: ({ focused }) => <TabIcon name="Home" focused={focused} />,
         }}
       />
@@ -107,10 +106,10 @@ export default function BottomTabNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: 0,
+    bottom: -5,
     left: 0,
     right: 0,
-    elevation: 200,
+    elevation: 50,
     backgroundColor: 'rgba(255, 255, 255, 0.85)',
     height: Platform.OS === 'ios' ? 90 : 70,
     paddingBottom: Platform.OS === 'ios' ? 25 : 10,
@@ -129,8 +128,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: 0,
   },
 });

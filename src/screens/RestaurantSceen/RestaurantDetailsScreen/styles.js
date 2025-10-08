@@ -651,11 +651,19 @@ export const styles = StyleSheet.create({
   },
   reservationButton: {
     backgroundColor: '#FF6B35',
-    marginHorizontal: 10,
-    marginVertical: 20,
-    paddingVertical: 15,
-    borderRadius: 12,
+    marginHorizontal: 60,
+    marginVertical: 15,
+    paddingVertical: 12,
+    borderRadius: 20,
     alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   reservationButtonText: {
     color: '#FFFFFF',

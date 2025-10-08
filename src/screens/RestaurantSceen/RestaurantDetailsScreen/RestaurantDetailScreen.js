@@ -133,15 +133,6 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           </View>
         </View>
 
-        {!mockRestaurantData.isSelfService && (
-          <TouchableOpacity 
-            style={styles.reservationButton}
-            onPress={() => navigation.navigate('Reservation', { restaurant: mockRestaurantData })}
-          >
-            <Text style={styles.reservationButtonText}>📅 Rezervasyon Yap</Text>
-          </TouchableOpacity>
-        )}
-
         <View style={styles.webMapPlaceholder}>
           <Text style={styles.webMapTitle}>📍 Konum</Text>
           <Text style={styles.webMapText}>{mockRestaurantData.name}</Text>
@@ -195,6 +186,15 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             <Text style={styles.metaText}>📦 ₺{mockRestaurantData.minOrder}+ min</Text>
           </View>
         </View>
+
+        {!mockRestaurantData.isSelfService && (
+          <TouchableOpacity 
+            style={styles.reservationButton}
+            onPress={() => navigation.navigate('Reservation', { restaurant: mockRestaurantData })}
+          >
+            <Text style={styles.reservationButtonText}>📅 Rezervasyon Yap</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.tabContainer}>
           <TouchableOpacity

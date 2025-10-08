@@ -76,32 +76,33 @@ export default function HomeScreen({ navigation }) {
       </View>
     </TouchableOpacity>
   );
+
+  const renderSearchHeader = () => (
+    <View style={styles.searchContainer}>
+      <View style={styles.searchBar}>
+        <Text style={styles.searchIcon}>🔍</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Mekan veya dilediğin yemeği ara..."
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholderTextColor="#95A5A6"
+        />
+        <TouchableOpacity 
+          style={styles.filterButton}
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Text style={styles.filterIcon}>☰</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        
         <View style={styles.locationContainer}>
           <Text style={styles.locationLabel}>Konum</Text>
           <Text style={styles.locationText}>📍 Merkez, Edirne</Text>
-        </View>
-        
-      </View>
-
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Restoran veya yemek ara..."
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-          <TouchableOpacity 
-            style={styles.filterButton}
-            onPress={() => setShowFilterModal(true)}
-          >
-            <Text style={styles.filterIcon}>🔽</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -109,6 +110,8 @@ export default function HomeScreen({ navigation }) {
         data={filteredRestaurants}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRestaurantCard}
+        ListHeaderComponent={renderSearchHeader}
+        stickyHeaderIndices={[]}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
