@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e5dcf5ff',
+    backgroundColor: '#ececedbb',
   },
   header: {
     flexDirection: 'row',
@@ -44,16 +45,16 @@ export const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 15,
     alignItems: 'center',
-    borderRadius: 8,
-    marginHorizontal: 5,
+    borderRadius: 16,
+    marginHorizontal: 10,
   },
   activeTabButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
   },
   tabText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
     color: '#7F8C8D',
   },

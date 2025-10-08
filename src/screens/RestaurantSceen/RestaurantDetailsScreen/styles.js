@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import COLORS from '../../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,10 +17,10 @@ export const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
   actionButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingHorizontal: 20 },
-  primaryButton: { flex: 1, backgroundColor: '#FF6B35', paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginRight: 10 },
+  primaryButton: { flex: 1, backgroundColor: COLORS.BUTTON_PRIMARY, paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginRight: 10 },
   primaryButtonText: { color: '#FFF', fontWeight: '700' },
-  secondaryButton: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#FF6B35', paddingVertical: 12, borderRadius: 12, alignItems: 'center', paddingHorizontal: 16 },
-  secondaryButtonText: { color: '#FF6B35', fontWeight: '700' },
+  secondaryButton: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: COLORS.PRIMARY, paddingVertical: 12, borderRadius: 12, alignItems: 'center', paddingHorizontal: 16 },
+  secondaryButtonText: { color: COLORS.PRIMARY, fontWeight: '700' },
   menuHiddenNotice: { padding: 20, alignItems: 'center' },
   menuHiddenText: { color: '#7F8C8D', textAlign: 'center' },
       width: 0,
@@ -279,7 +280,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeTab: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
   },
   tabIcon: {
     fontSize: 16,
@@ -434,7 +435,6 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '500',
   },
-  // Eksik stiller ekleniyor
   shareButton: {
     padding: 8,
   },
@@ -639,7 +639,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   featureTag: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.BUTTON_PRIMARY,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -650,7 +650,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   reservationButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
     marginHorizontal: 60,
     marginVertical: 15,
     paddingVertical: 12,
@@ -701,7 +701,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   webMapButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,

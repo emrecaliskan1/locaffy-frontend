@@ -86,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 60,
   },
   restaurantCard: {
     backgroundColor: '#FFFFFF',
@@ -110,20 +110,6 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    backgroundColor: '#FF6B35',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  discountText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   favoriteButton: {
     position: 'absolute',

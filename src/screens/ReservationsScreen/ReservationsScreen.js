@@ -17,7 +17,7 @@ export default function ReservationsScreen({ navigation }) {
       case 'onaylandı':
         return '#27AE60';
       case 'beklemede':
-        return '#FF6B35';
+        return '#667eea';
       case 'tamamlandı':
         return '#7F8C8D';
       case 'reddedildi':

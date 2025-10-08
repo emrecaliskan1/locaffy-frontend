@@ -38,11 +38,6 @@ export default function HomeScreen({ navigation }) {
     >
       <View style={styles.cardImageContainer}>
         <Image source={item.image} style={styles.cardImage} />
-        {item.discount && (
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{item.discount}</Text>
-          </View>
-        )}
         <TouchableOpacity style={styles.favoriteButton}>
           <Text style={styles.favoriteIcon}>{item.isFavorite ? '❤️' : '🤍'}</Text>
         </TouchableOpacity>

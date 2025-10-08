@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { categories, distanceOptions, priceRanges, ratingOptions } from '../../static-data';
 import { styles } from './styles';
+import COLORS from '../../constants/colors';
 
 export default function FilterModal({ visible, onClose, onApplyFilters }) {
   const [filters, setFilters] = useState({
@@ -186,7 +187,6 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
             </View>
           </View>
 
-          {/* Özellikler */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Özellikler</Text>
             <View style={styles.featuresContainer}>
@@ -201,8 +201,9 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
                   <Switch
                     value={value}
                     onValueChange={() => handleFeatureToggle(feature)}
-                    trackColor={{ false: '#E1E8ED', true: '#FF6B35' }}
-                    thumbColor={value ? '#FFFFFF' : '#FFFFFF'}
+                    trackColor={{ false: '#E1E8ED', true: COLORS.PRIMARY }}
+                    thumbColor={value ? COLORS.PRIMARY : '#FFFFFF'}
+                    style={{ borderWidth: 1, borderColor: value ? COLORS.PRIMARY : '#E1E8ED' }}
                   />
                 </View>
               ))}

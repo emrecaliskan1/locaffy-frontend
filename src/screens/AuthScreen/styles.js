@@ -1,9 +1,29 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#667eea',
+    position: 'relative',
+  },
+  floatingElement1: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    top: '10%',
+    left: '10%',
+  },
+  floatingElement2: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    bottom: '15%',
+    right: '15%',
   },
   keyboardView: {
     flex: 1,
@@ -18,35 +38,37 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30,
   },
-  iconContainer: {
+  logoContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#ff6b35',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    elevation: 5,
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 4,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  iconText: {
+  logoText: {
     fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2C3E50',
+    color: '#FFFFFF',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#7F8C8D',
+    color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
     paddingHorizontal: 20,
     lineHeight: 24,
@@ -54,15 +76,16 @@ export const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 20,
-    elevation: 5,
+    padding: 30,
+    marginHorizontal: 20,
+    elevation: 10,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 8,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -79,7 +102,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeTab: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.BUTTON_PRIMARY,
   },
   tabText: {
     fontSize: 16,
@@ -98,8 +121,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
+    paddingVertical: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E1E8ED',
   },
   inputIcon: {
     fontSize: 20,
@@ -111,8 +136,9 @@ export const styles = StyleSheet.create({
     color: '#2C3E50',
   },
   eyeIcon: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#7F8C8D',
+    marginLeft: 15
   },
   forgotPassword: {
     alignSelf: 'flex-end',
@@ -120,11 +146,11 @@ export const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: '#FF6B35',
+    color: COLORS.PRIMARY,
     fontWeight: '500',
   },
   primaryButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.BUTTON_PRIMARY,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -154,7 +180,7 @@ export const styles = StyleSheet.create({
   },
   linkButton: {
     fontSize: 14,
-    color: '#FF6B35',
+    color: COLORS.PRIMARY,
     fontWeight: '500',
   },
 });

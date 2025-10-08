@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { styles } from './styles';
+import {FontAwesome} from '@expo/vector-icons';
 
 export default function ProfileScreen({ navigation }) {
   const userInfo = {
@@ -111,7 +112,7 @@ export default function ProfileScreen({ navigation }) {
               </View>
             )}
             <TouchableOpacity style={styles.editButton}>
-              <Text style={styles.editIcon}>✏️</Text>
+              <FontAwesome name="pencil" size={16} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
           

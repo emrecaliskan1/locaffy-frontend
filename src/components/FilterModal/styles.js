@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -31,7 +32,7 @@ export const styles = StyleSheet.create({
   },
   resetText: {
     fontSize: 16,
-    color: '#FF6B35',
+    color: COLORS.PRIMARY,
     fontWeight: '500',
   },
   content: {
@@ -68,8 +69,9 @@ export const styles = StyleSheet.create({
     minWidth: 80,
   },
   activeCategoryButton: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
+    backgroundColor: '#FFFFFF',
+    borderColor: COLORS.PRIMARY,
+    borderWidth: 2,
   },
   categoryIcon: {
     fontSize: 20,
@@ -82,7 +84,8 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   activeCategoryText: {
-    color: '#FFFFFF',
+    color: COLORS.PRIMARY,
+    fontWeight: 'bold',
   },
   optionButton: {
     paddingHorizontal: 16,
@@ -93,8 +96,9 @@ export const styles = StyleSheet.create({
     borderColor: '#E1E8ED',
   },
   activeOptionButton: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
+    backgroundColor: '#FFFFFF',
+    borderColor: COLORS.PRIMARY,
+    borderWidth: 2,
   },
   optionText: {
     fontSize: 14,
@@ -102,7 +106,8 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeOptionText: {
-    color: '#FFFFFF',
+    color: COLORS.PRIMARY,
+    fontWeight: 'bold',
   },
   featuresContainer: {
     gap: 15,
@@ -124,7 +129,7 @@ export const styles = StyleSheet.create({
     borderTopColor: '#E1E8ED',
   },
   applyButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',

@@ -7,9 +7,10 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Animated
 } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { styles } from './styles';
 
 export default function AuthScreen({ navigation }) {
@@ -21,6 +22,69 @@ export default function AuthScreen({ navigation }) {
     name: '',
     phone: ''
   });
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const floatAnim1 = useRef(new Animated.Value(0)).current;
+  const floatAnim2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+  
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 500,
+        delay: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    const startFloatAnimation = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(floatAnim1, {
+            toValue: -20,
+            duration: 6000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(floatAnim1, {
+            toValue: 0,
+            duration: 6000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(floatAnim2, {
+            toValue: -15,
+            duration: 8000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(floatAnim2, {
+            toValue: 0,
+            duration: 8000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    startFloatAnimation();
+  }, []);
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -39,26 +103,49 @@ export default function AuthScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Animated.View 
+        style={[
+          styles.floatingElement1,
+          { transform: [{ translateY: floatAnim1 }] }
+        ]} 
+      />
+      <Animated.View 
+        style={[
+          styles.floatingElement2,
+          { transform: [{ translateY: floatAnim2 }] }
+        ]} 
+      />
+
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-
-          <View style={styles.header}>
-            <View style={styles.iconContainer}>
-              <Text style={styles.iconText}>🍽️</Text>
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }}
+          >
+            <View style={styles.header}>
+              <Animated.View 
+                style={[
+                  styles.logoContainer,
+                  { transform: [{ scale: scaleAnim }] }
+                ]}
+              >
+                <Text style={styles.logoText}>L</Text>
+              </Animated.View>
+              <Text style={styles.title}>Locaffy'e Hoş Geldin</Text>
+              <Text style={styles.subtitle}>
+                {activeTab === 'login' 
+                  ? 'Hesabınıza giriş yapın ve sosyal deneyiminizi keşfedin'
+                  : 'Yeni hesap oluşturun ve sosyal dünyamıza katılın'
+                }
+              </Text>
             </View>
-            <Text style={styles.title}>Hoş Geldin</Text>
-            <Text style={styles.subtitle}>
-              {activeTab === 'login' 
-                ? 'Hesabına giriş yap ve lezzetli yolculuğuna devam et'
-                : 'Yeni hesap oluştur ve lezzetli dünyamıza katıl'
-              }
-            </Text>
-          </View>
 
-          <View style={styles.card}>
+            <View style={styles.card}>
  
             <View style={styles.tabContainer}>
               <TouchableOpacity 
@@ -129,9 +216,8 @@ export default function AuthScreen({ navigation }) {
                 </View>
               ) : (
 
-                // Register Form
-                <View>
 
+                <View>
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputIcon}>👤</Text>
                     <TextInput
@@ -193,6 +279,7 @@ export default function AuthScreen({ navigation }) {
               )}
             </View>
           </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

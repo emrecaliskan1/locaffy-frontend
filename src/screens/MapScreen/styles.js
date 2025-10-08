@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
+import COLORS from '../../constants/colors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -109,6 +110,9 @@ export const styles = StyleSheet.create({
     backgroundColor: '#4285F4',
   },
   webRestaurantPin: {
+    alignItems: 'center',
+  },
+  webRestaurantContainer: {
     position: 'absolute',
     alignItems: 'center',
     transform: [{ translateX: -15 }, { translateY: -25 }],
@@ -138,6 +142,20 @@ export const styles = StyleSheet.create({
     borderRightColor: 'transparent',
     borderTopColor: '#EA4335',
     marginTop: -3,
+  },
+  webMarkerLabel: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginTop: 10,
+    maxWidth: 100,
+  },
+  webMarkerLabelText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   webMapControls: {
     position: 'absolute',
@@ -195,6 +213,9 @@ export const styles = StyleSheet.create({
   customMarker: {
     alignItems: 'center',
   },
+  customMarkerContainer: {
+    alignItems: 'center',
+  },
   markerContainer: {
     backgroundColor: '#EA4335',
     padding: 6,
@@ -226,9 +247,23 @@ export const styles = StyleSheet.create({
     borderTopColor: '#EA4335',
     marginTop: -3,
   },
+  markerLabel: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 5,
+    maxWidth: 120,
+  },
+  markerLabelText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   bottomSheet: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 65,
     left: 0,
     right: 0,
     backgroundColor: '#fff',
@@ -313,5 +348,117 @@ export const styles = StyleSheet.create({
   },
   tabSpacer: {
     height: 70, // Bottom tab navigator için uygun mesafe
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 350,
+    ...createShadowStyle(10),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    paddingBottom: 10,
+  },
+  modalRestaurantIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#EA4335',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalIconEmoji: {
+    fontSize: 24,
+    color: '#fff',
+  },
+  modalCloseButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: 'bold',
+  },
+  modalBody: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  modalRestaurantName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 5,
+  },
+  modalRestaurantType: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 15,
+  },
+  modalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalRating: {
+    fontSize: 16,
+    color: '#F39C12',
+    fontWeight: '600',
+  },
+  modalDistance: {
+    fontSize: 14,
+    color: '#4285F4',
+    fontWeight: '500',
+  },
+  modalAddress: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  modalPrice: {
+    fontSize: 14,
+    color: '#27AE60',
+    fontWeight: '600',
+  },
+  modalActions: {
+    padding: 20,
+    paddingTop: 10,
+  },
+  modalDetailButton: {
+    backgroundColor: COLORS.PRIMARY,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    ...createShadowStyle(3),
+  },
+  modalDetailButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

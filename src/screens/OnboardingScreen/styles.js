@@ -1,11 +1,12 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import COLORS from '../../constants/colors';
 
 const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#f8f9fa',
   },
   skipButton: {
     position: 'absolute',
@@ -25,24 +26,27 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 100,
   },
-  imageCard: {
-    width: width * 0.9,
-    height: 200,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 30,
-    elevation: 5,
+  logoContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#ff6b35',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 40,
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 4,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  image: {
-    width: '100%',
-    height: '100%',
+  logoText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   iconContainer: {
     alignItems: 'center',
@@ -52,7 +56,7 @@ export const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
@@ -96,13 +100,13 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
   },
   inactiveDot: {
     backgroundColor: '#DDD',
   },
   continueButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.BUTTON_PRIMARY,
     paddingHorizontal: 40,
     paddingVertical: 15,
     borderRadius: 25,

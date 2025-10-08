@@ -9,7 +9,9 @@ import {
   ScrollView,
   ActivityIndicator,
   Animated,
-  Dimensions
+  Dimensions,
+  Modal,
+  Image
 } from 'react-native';
 import * as Location from 'expo-location';
 import { styles } from './styles';
@@ -18,6 +20,65 @@ import { restaurants } from '../../static-data/restaurants';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
 const BOTTOM_SHEET_MIN_HEIGHT = 50;
+
+const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails }) => {
+  if (!restaurant) return null;
+
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <TouchableOpacity 
+          style={styles.modalBackdrop} 
+          activeOpacity={1} 
+          onPress={onClose}
+        />
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <View style={styles.modalRestaurantIcon}>
+              <Text style={styles.modalIconEmoji}>🍽️</Text>
+            </View>
+            <TouchableOpacity style={styles.modalCloseButton} onPress={onClose}>
+              <Text style={styles.modalCloseText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.modalBody}>
+            <Text style={styles.modalRestaurantName}>{restaurant.name}</Text>
+            <Text style={styles.modalRestaurantType}>{restaurant.type}</Text>
+            
+            <View style={styles.modalInfoRow}>
+              <Text style={styles.modalRating}>⭐ {restaurant.rating}</Text>
+              <Text style={styles.modalDistance}>{restaurant.distance}</Text>
+            </View>
+            
+            <Text style={styles.modalAddress}>📍 {restaurant.address}</Text>
+            
+            {restaurant.priceRange && (
+              <Text style={styles.modalPrice}>💰 {restaurant.priceRange}</Text>
+            )}
+          </View>
+          
+          <View style={styles.modalActions}>
+            <TouchableOpacity 
+              style={styles.modalDetailButton}
+              onPress={() => {
+                onClose();
+                onViewDetails(restaurant);
+              }}
+            >
+              <Text style={styles.modalDetailButtonText}>Detay Gör</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 // Expo Maps import'u
 let ExpoMap, ExpoMarker;
@@ -31,7 +92,6 @@ try {
   ExpoMarker = null;
 }
 
-// Gerçek Google Maps benzeri harita komponenti
 const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) => {
   if (!ExpoMap) {
     return (
@@ -55,7 +115,6 @@ const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) 
         loadingEnabled={true}
         mapType="standard"
       >
-        {/* Kullanıcı konumu */}
         {userLocation && (
           <ExpoMarker
             coordinate={userLocation}
@@ -65,20 +124,22 @@ const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) 
           />
         )}
         
-        {/* Restaurant marker'ları */}
         {restaurants.map((restaurant) => (
           <ExpoMarker
             key={restaurant.id}
             coordinate={restaurant.coordinate}
-            title={restaurant.name}
-            description={`${restaurant.type} - ⭐ ${restaurant.rating}`}
             onPress={() => onMarkerPress(restaurant)}
           >
-            <View style={styles.customMarker}>
-              <View style={styles.markerContainer}>
-                <Text style={styles.markerEmoji}>🍽️</Text>
+            <View style={styles.customMarkerContainer}>
+              <View style={styles.customMarker}>
+                <View style={styles.markerContainer}>
+                  <Text style={styles.markerEmoji}>🍽️</Text>
+                </View>
+                <View style={styles.markerTriangle} />
               </View>
-              <View style={styles.markerTriangle} />
+              <View style={styles.markerLabel}>
+                <Text style={styles.markerLabelText}>{restaurant.name}</Text>
+              </View>
             </View>
           </ExpoMarker>
         ))}
@@ -87,7 +148,6 @@ const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) 
   );
 };
 
-// Basit Kaydırılabilir Bottom Sheet komponenti
 const DraggableBottomSheet = ({ restaurants, onMarkerPress }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
@@ -153,13 +213,12 @@ const DraggableBottomSheet = ({ restaurants, onMarkerPress }) => {
   );
 };
 
-// Web için fallback harita komponenti
 const WebMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) => {
   return (
     <View style={styles.webMapContainer}>
       <View style={styles.webMapView}>
         <View style={styles.mapBackground}>
-          {/* Grid çizgileri */}
+
           {[...Array(10)].map((_, i) => (
             <View key={`h${i}`} style={[styles.gridLine, { 
               top: `${i * 10}%`, 
@@ -177,14 +236,12 @@ const WebMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) =
             }]} />
           ))}
           
-          {/* Kullanıcı konumu */}
           <View style={[styles.webUserLocation, { top: '50%', left: '50%' }]}>
             <View style={styles.webUserDot}>
               <View style={styles.webUserInner} />
             </View>
           </View>
           
-          {/* Restaurant marker'ları */}
           {restaurants.slice(0, 5).map((restaurant, index) => {
             const positions = [
               { top: '30%', left: '35%' },
@@ -195,21 +252,24 @@ const WebMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) =
             ];
             
             return (
-              <TouchableOpacity 
-                key={restaurant.id}
-                style={[styles.webRestaurantPin, positions[index]]}
-                onPress={() => onMarkerPress(restaurant)}
-              >
-                <View style={styles.webPinHead}>
-                  <Text style={styles.webPinIcon}>🍽️</Text>
+              <View key={restaurant.id} style={[styles.webRestaurantContainer, positions[index]]}>
+                <TouchableOpacity 
+                  style={styles.webRestaurantPin}
+                  onPress={() => onMarkerPress(restaurant)}
+                >
+                  <View style={styles.webPinHead}>
+                    <Text style={styles.webPinIcon}>🍽️</Text>
+                  </View>
+                  <View style={styles.webPinPoint} />
+                </TouchableOpacity>
+                <View style={styles.webMarkerLabel}>
+                  <Text style={styles.webMarkerLabelText}>{restaurant.name}</Text>
                 </View>
-                <View style={styles.webPinPoint} />
-              </TouchableOpacity>
+              </View>
             );
           })}
         </View>
         
-        {/* Harita kontrolleri */}
         <View style={styles.webMapControls}>
           <TouchableOpacity style={styles.webZoomButton}>
             <Text style={styles.webZoomText}>+</Text>
@@ -228,7 +288,7 @@ const WebMapComponent = ({ restaurants, onMarkerPress, userLocation, region }) =
 };
 
 const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region }) => {
-  // Platform'a göre uygun komponenti seç
+
   if (Platform.OS === 'web') {
     // Web'de fallback harita kullan
     return (
@@ -240,7 +300,6 @@ const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region }) => 
           region={region}
         />
         
-        {/* Kaydırılabilir bottom sheet */}
         <DraggableBottomSheet 
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
@@ -258,7 +317,6 @@ const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region }) => 
           region={region}
         />
         
-        {/* Kaydırılabilir bottom sheet */}
         <DraggableBottomSheet 
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
@@ -278,6 +336,8 @@ export default function MapScreen({ navigation }) {
 
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   useEffect(() => {
     getLocation();
@@ -317,17 +377,17 @@ export default function MapScreen({ navigation }) {
   };
 
   const handleMarkerPress = (restaurant) => {
-    Alert.alert(
-      restaurant.name,
-      `${restaurant.type} - ⭐ ${restaurant.rating}\n📍 ${restaurant.address}`,
-      [
-        { text: 'Kapat', style: 'cancel' },
-        { 
-          text: 'Detay Gör', 
-          onPress: () => navigation.navigate('RestaurantDetail', { restaurant }) 
-        },
-      ]
-    );
+    setSelectedRestaurant(restaurant);
+    setModalVisible(true);
+  };
+
+  const handleViewDetails = (restaurant) => {
+    navigation.navigate('RestaurantDetail', { restaurant });
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedRestaurant(null);
   };
 
   return (
@@ -361,6 +421,13 @@ export default function MapScreen({ navigation }) {
           region={region}
         />
       )}
+
+      <RestaurantModal
+        visible={modalVisible}
+        restaurant={selectedRestaurant}
+        onClose={closeModal}
+        onViewDetails={handleViewDetails}
+      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -44,7 +45,7 @@ export const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.PRIMARY,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -57,7 +58,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.PRIMARY,
     borderRadius: 15,
     width: 30,
     height: 30,
@@ -71,9 +72,6 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-  },
-  editIcon: {
-    fontSize: 14,
   },
   userInfo: {
     alignItems: 'center',
@@ -121,7 +119,7 @@ export const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: COLORS.PRIMARY,
     marginBottom: 4,
   },
   statLabel: {

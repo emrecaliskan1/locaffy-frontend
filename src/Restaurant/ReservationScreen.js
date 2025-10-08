@@ -264,7 +264,7 @@ export default function ReservationScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#f8f9fa',
   },
   header: {
     flexDirection: 'row',

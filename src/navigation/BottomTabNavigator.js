@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet, Platform } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
@@ -11,12 +12,12 @@ const Tab = createBottomTabNavigator();
 const createShadowStyle = (elevation) => {
   if (Platform.OS === 'web') {
     return {
-      boxShadow: `0 ${elevation * 0.5}px ${elevation * 1}px rgba(0, 0, 0, 0.15)`,
+      boxShadow: `0 ${elevation * 0.5}px ${elevation * 1}px '#41006fff'`,
     };
   }
   return {
     elevation,
-    shadowColor: '#000',
+    shadowColor: '#41006fff',
     shadowOffset: {
       width: 0,
       height: elevation * 0.5,
@@ -28,25 +29,30 @@ const createShadowStyle = (elevation) => {
 
 const TabIcon = ({ name, focused }) => {
   let iconName;
-  let iconColor = focused ? '#FF6B35' : '#95A5A6';
+  let iconColor = focused ? '#667eea' : '#95A5A6';
 
   switch (name) {
     case 'Map':
-      iconName = '🗺️';
+      iconName = 'map';
       break;
     case 'Home':
-      iconName = '🍽️';
+      iconName = 'map-marker';
       break;
     case 'Profile':
-      iconName = '👤';
+      iconName = 'user';
       break;
     default:
-      iconName = '❓';
+      iconName = 'question';
   }
 
   return (
-    <View style={styles.tabIconContainer}>
-      <Text style={[styles.tabIcon, { color: iconColor }]}>{iconName}</Text>
+    <View style={[styles.tabIconContainer, focused && styles.focusedTabContainer]}>
+      <FontAwesome 
+        name={iconName} 
+        size={24} 
+        color={iconColor}
+        style={{ opacity: focused ? 1 : 0.6 }}
+      />
     </View>
   );
 };
@@ -55,7 +61,11 @@ const TabLabel = ({ label, focused }) => {
   return (
     <Text style={[
       styles.tabLabel,
-      { color: focused ? '#FF6B35' : '#95A5A6' }
+      { 
+        color: focused ? '#667eea' : '#95A5A6',
+        opacity: focused ? 1 : 0.7,
+        fontWeight: focused ? '600' : '400'
+      }
     ]}>
       {label}
     </Text>
@@ -68,7 +78,7 @@ export default function BottomTabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#FF6B35',
+        tabBarActiveTintColor: '#667eea',
         tabBarInactiveTintColor: '#95A5A6',
         tabBarShowLabel: true,
         tabBarHideOnKeyboard: true,
@@ -106,30 +116,38 @@ export default function BottomTabNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: -5,
+    bottom: -6,
     left: 0,
     right: 0,
     elevation: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     height: Platform.OS === 'ios' ? 90 : 70,
     paddingBottom: Platform.OS === 'ios' ? 25 : 10,
-    paddingTop: 10,
-    paddingHorizontal: 20,
-    borderTopWidth: 0,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    ...createShadowStyle(8),
+    paddingTop: 8,
+    paddingHorizontal: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(102, 126, 234, 0.1)',
+    ...createShadowStyle(10),
   },
   tabIconContainer: {
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: 45,
+    height: 25,
+    borderRadius: 20,
+    position: 'relative',
+    marginBottom: 2,
+  },
+  focusedTabContainer: {
+    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+    transform: [{ scale: 1.05 }],
   },
   tabIcon: {
-    fontSize: 24,
+    fontSize: 20,
   },
   tabLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: 0,
+    fontSize: 10,
+    fontWeight: '1000',
+    marginTop: 3,
   },
 });

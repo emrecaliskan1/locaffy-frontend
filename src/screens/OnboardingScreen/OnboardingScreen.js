@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
 
 export default function OnboardingScreen({ navigation }) {
@@ -7,19 +7,16 @@ export default function OnboardingScreen({ navigation }) {
 
   const pages = [
     {
-      image: require('../../../assets/korean.jpeg'),
       title: 'Yakındaki Lezzetleri Keşfet',
       subtitle: 'Bulunduğun konuma en yakın restoranları ve kafeleri bul',
       icon: '📍'
     },
     {
-      image: require('../../../assets/korean.jpeg'),
       title: 'Kolayca Rezervasyon Yap',
       subtitle: 'Sadece birkaç dokunuşla masanı rezerve et',
       icon: '📅'
     },
     {
-      image: require('../../../assets/korean.jpeg'),
       title: 'Siparişini Ver',
       subtitle: 'Menüye bak, siparişini ver, masanda bekle',
       icon: '🛒'
@@ -47,12 +44,8 @@ export default function OnboardingScreen({ navigation }) {
 
       <View style={styles.contentContainer}>
 
-        <View style={styles.imageCard}>
-          <Image 
-            source={pages[currentPage].image} 
-            style={styles.image}
-            resizeMode="cover"
-          />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>L</Text>
         </View>
 
         <View style={styles.iconContainer}>
