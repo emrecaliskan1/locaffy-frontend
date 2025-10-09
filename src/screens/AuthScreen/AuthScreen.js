@@ -102,7 +102,7 @@ export default function AuthScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Animated.View 
         style={[
           styles.floatingElement1,
@@ -282,7 +282,7 @@ export default function AuthScreen({ navigation }) {
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 

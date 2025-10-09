@@ -92,7 +92,7 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
@@ -164,6 +164,6 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

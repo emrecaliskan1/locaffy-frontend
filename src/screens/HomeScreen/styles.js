@@ -53,6 +53,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     backgroundColor: '#FFFFFF',
+    alignItems: 'center',
   },
   searchBar: {
     flexDirection: 'row',
@@ -63,7 +64,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 1,
     borderColor: '#E9ECEF',
-    width: '320px'
+    width: '100%',
+    maxWidth: 400,
   },
   searchIcon: {
     fontSize: 16,

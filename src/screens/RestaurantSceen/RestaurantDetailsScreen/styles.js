@@ -293,6 +293,9 @@ export const styles = StyleSheet.create({
   },
   activeTabText: {
     color: '#FFFFFF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabContent: {
     paddingHorizontal: 20,
@@ -656,6 +659,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: {
@@ -664,6 +669,9 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+  },
+  reservationIcon: {
+    marginRight: 8,
   },
   reservationButtonText: {
     color: '#FFFFFF',

@@ -9,7 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { useState, useEffect } from 'react';
-import { dayNames, monthNames, availableTimes, maxPeople } from '../static-data';
+import { dayNames, monthNames, availableTimes, maxPeople } from '../../../static-data';
 
 export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;

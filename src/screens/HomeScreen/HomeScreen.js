@@ -3,20 +3,20 @@ import {
   Text, 
   FlatList, 
   TouchableOpacity, 
-  TextInput, 
-  Image, 
   SafeAreaView,
   ScrollView,
   Dimensions
 } from 'react-native';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import FilterModal from '../../components/FilterModal';
+import { RestaurantCard, SearchHeader } from '../../components/Home';
 import { restaurants } from '../../static-data';
 import { styles } from './styles';
 
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState({
     category: 'all',
     distance: '5',
@@ -31,69 +31,25 @@ export default function HomeScreen({ navigation }) {
     return matchesSearch && matchesCategory;
   });
 
-  const renderRestaurantCard = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.restaurantCard}
-      onPress={() => navigation.navigate('RestaurantDetail', { restaurant: item })}
-    >
-      <View style={styles.cardImageContainer}>
-        <Image source={item.image} style={styles.cardImage} />
-        <TouchableOpacity style={styles.favoriteButton}>
-          <Text style={styles.favoriteIcon}>{item.isFavorite ? '❤️' : '🤍'}</Text>
-        </TouchableOpacity>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{item.isOpen ? 'Açık' : 'Kapalı'}</Text>
-        </View>
-      </View>
-      
-      <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.restaurantName}>{item.name}</Text>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingIcon}>⭐</Text>
-            <Text style={styles.rating}>{item.rating}</Text>
-            <Text style={styles.reviews}>({item.reviews})</Text>
-          </View>
-        </View>
-        
-        <Text style={styles.restaurantType}>{item.type}</Text>
-        
-        <View style={styles.cardFooter}>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoIcon}>📍</Text>
-            <Text style={styles.infoText}>{item.distance}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoIcon}>⏰</Text>
-            <Text style={styles.infoText}>{item.deliveryTime}</Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+  const handleSearchChange = useCallback((text) => {
+    setSearchText(text);
+  }, []);
 
-  const renderSearchHeader = () => (
-    <View style={styles.searchContainer}>
-      <View style={styles.searchBar}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Mekan veya dilediğin yemeği ara..."
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholderTextColor="#95A5A6"
-        />
-        <TouchableOpacity 
-          style={styles.filterButton}
-          onPress={() => setShowFilterModal(true)}
-        >
-          <Text style={styles.filterIcon}>☰</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  const handleSearchFocus = useCallback(() => {
+    setIsSearchFocused(true);
+  }, []);
+
+  const handleSearchBlur = useCallback(() => {
+    setIsSearchFocused(false);
+  }, []);
+
+  const handleRestaurantPress = (restaurant) => {
+    navigation.navigate('RestaurantDetail', { restaurant });
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.locationContainer}>
           <Text style={styles.locationLabel}>Konum</Text>
@@ -104,12 +60,31 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={filteredRestaurants}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderRestaurantCard}
-        ListHeaderComponent={renderSearchHeader}
-        stickyHeaderIndices={[]}
+        renderItem={({ item }) => (
+          <RestaurantCard 
+            item={item} 
+            onPress={handleRestaurantPress}
+            styles={styles} />
+        )}
+
+        ListHeaderComponent={
+          <SearchHeader
+            searchText={searchText}
+            onSearchChange={handleSearchChange}
+            onFilterPress={() => setShowFilterModal(true)}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+            styles={styles} />
+        }
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
-      />
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        removeClippedSubviews={true}
+        windowSize={10}
+        maxToRenderPerBatch={5}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={8} />
 
       <FilterModal
         visible={showFilterModal}
@@ -119,6 +94,6 @@ export default function HomeScreen({ navigation }) {
           setShowFilterModal(false);
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }

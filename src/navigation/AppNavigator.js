@@ -4,7 +4,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import AuthScreen from '../screens/AuthScreen/AuthScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RestaurantDetailScreen from '../screens/RestaurantSceen/RestaurantDetailsScreen/RestaurantDetailScreen';
-import ReservationScreen from '../Restaurant/ReservationScreen';
+import ReservationScreen from '../screens/ReservationsScreen/ReservationScreen';
 import ReservationDetailsScreen from '../screens/ReservationsScreen/ReservationDetailsScreen/ReservationDetailsScreen';
 import MenuScreen from '../screens/MenuScreen/MenuScreen';
 import CartScreen from '../screens/CartScreen/CartScreen';
