@@ -71,6 +71,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6C757D',
     marginRight: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchInput: {
     flex: 1,

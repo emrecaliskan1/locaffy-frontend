@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import {FontAwesome } from '@expo/vector-icons';
 
 export const SearchHeader = ({ 
   searchText, 
@@ -16,7 +17,7 @@ export const SearchHeader = ({
 }) => (
   <View style={styles.searchContainer}>
     <View style={styles.searchBar}>
-      <Text style={styles.searchIcon}>🔍</Text>
+      <Text style={styles.searchIcon}><FontAwesome name="search"/></Text>
       <TextInput
         style={styles.searchInput}
         placeholder="Mekan veya dilediğin yemeği ara..."
