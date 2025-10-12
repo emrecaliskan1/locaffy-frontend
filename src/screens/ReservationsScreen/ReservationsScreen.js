@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { styles } from './styles';
 import { mockReservations } from '../../static-data';
-import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations';
+import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
 
 export default function ReservationsScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('active');
