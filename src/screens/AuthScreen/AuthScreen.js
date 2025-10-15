@@ -4,12 +4,13 @@ import {
   StyleSheet, 
   TouchableOpacity, 
   TextInput, 
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Animated
+  Animated,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
 import { styles } from './styles';
 
@@ -103,6 +104,7 @@ export default function AuthScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <Animated.View 
         style={[
           styles.floatingElement1,

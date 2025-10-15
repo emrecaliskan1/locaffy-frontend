@@ -3,10 +3,11 @@ import {
   Text, 
   FlatList, 
   TouchableOpacity, 
-  SafeAreaView,
   ScrollView,
-  Dimensions
+  Dimensions,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useCallback } from 'react';
 import FilterModal from '../../components/FilterModal';
 import { RestaurantCard, SearchHeader } from '../../components/Home';
@@ -48,14 +49,16 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.locationContainer}>
-          <Text style={styles.locationLabel}>Konum</Text>
-          <Text style={styles.locationText}>📍 Merkez, Edirne</Text>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <View style={styles.locationContainer}>
+            <Text style={styles.locationLabel}>Konum</Text>
+            <Text style={styles.locationText}>📍 Merkez, Edirne</Text>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
 
       <FlatList
         data={filteredRestaurants}

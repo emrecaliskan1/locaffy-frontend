@@ -116,13 +116,13 @@ export default function BottomTabNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: -6,
+    bottom: 0,
     left: 0,
     right: 0,
     elevation: 50,
     backgroundColor: 'rgba(255, 255, 255, 1)',
-    height: Platform.OS === 'ios' ? 90 : 70,
-    paddingBottom: Platform.OS === 'ios' ? 25 : 10,
+    height: Platform.OS === 'ios' ? 90 : 80,
+    paddingBottom: Platform.OS === 'ios' ? 25 : 12.5,
     paddingTop: 8,
     paddingHorizontal: 15,
     borderTopWidth: 1,
@@ -143,10 +143,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.05 }],
   },
   tabIcon: {
-    fontSize: 20,
+    fontSize: 25,
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 12.5,
     fontWeight: '1000',
     marginTop: 3,
   },

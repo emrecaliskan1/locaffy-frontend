@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  SafeAreaView,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import { mockRestaurantDetailData, restaurants } from '../../../static-data';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -42,20 +43,22 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
- 
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{mockRestaurantData.name}</Text>
-        <TouchableOpacity style={styles.shareButton}>
-          <Text style={styles.shareIcon}>♡</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{mockRestaurantData.name}</Text>
+          <TouchableOpacity style={styles.shareButton}>
+            <Text style={styles.shareIcon}>♡</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
 
@@ -122,6 +125,6 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           {renderTabContent()}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

@@ -32,8 +32,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 15, // Biraz daha fazla padding
     backgroundColor: '#fff',
+    minHeight: 60, // Minimum yükseklik garantisi
     ...createShadowStyle(2),
     zIndex: 1,
   },
@@ -263,7 +264,7 @@ export const styles = StyleSheet.create({
   },
   bottomSheet: {
     position: 'absolute',
-    bottom: 65,
+    bottom: 80,
     left: 0,
     right: 0,
     backgroundColor: '#fff',
@@ -282,7 +283,7 @@ export const styles = StyleSheet.create({
   },
   bottomSheetHandle: {
     width: 40,
-    height: 4,
+    height: 5,
     backgroundColor: '#E0E0E0',
     borderRadius: 2,
     alignSelf: 'center',
@@ -297,12 +298,13 @@ export const styles = StyleSheet.create({
   restaurantScrollList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    maxHeight: 200,
+    maxHeight: 250,
   },
   restaurantListItem: {
     flexDirection: 'row',
     backgroundColor: '#F8F9FA',
     padding: 12,
+    marginTop: 5,
     marginBottom: 6,
     borderRadius: 6,
     alignItems: 'center',
@@ -775,10 +777,11 @@ export const styles = StyleSheet.create({
   },
   nearbyRestaurants: {
     backgroundColor: '#fff',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
+    paddingVertical: 20, // 15'den 20'ye artırıldı
+    paddingHorizontal: 15, // 10'dan 15'e artırıldı
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
+    minHeight: 120, // Minimum yükseklik eklendi
   },
   nearbyTitle: {
     fontSize: 16,
