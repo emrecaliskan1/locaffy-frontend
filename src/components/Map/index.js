@@ -1,5 +1,5 @@
 export { RestaurantModal } from './RestaurantModal';
-export { RealMapComponent } from './RealMapComponent';
-export { WebMapComponent } from './WebMapComponent';
+export { MobileMapView } from './MobileMapView';
+export { WebMapView } from './WebMapView';
 export { DraggableBottomSheet } from './DraggableBottomSheet';
-export { ModernMapView } from './ModernMapView';
+export { ModernMapView } from './MapView';

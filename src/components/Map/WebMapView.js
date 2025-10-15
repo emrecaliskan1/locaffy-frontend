@@ -1,137 +1,158 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
 } from 'react-native';
 
-export const WebMapComponent = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
-  const [zoom, setZoom] = useState(1);
-  const [center, setCenter] = useState({ x: 50, y: 50 });
+export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
+  const mapRef = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Google Maps benzeri görsel harita için background image veya embed kullanabiliriz
-  const renderGoogleMapsEmbed = () => {
-    const centerLat = region?.latitude || 41.6771;
-    const centerLng = region?.longitude || 26.5557;
-    
-    return (
-      <iframe
-        style={{
-          width: '100%',
-          height: '100%',
-          border: 'none',
-          borderRadius: 12,
-        }}
-        src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d12000!2d${centerLng}!3d${centerLat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1str!2str!4v1635000000000!5m2!1str!2str`}
-        allowFullScreen=""
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    );
+  // OpenStreetMap kullanarak web haritası
+  useEffect(() => {
+    if (!mapLoaded && mapRef.current) {
+      initializeMap();
+    }
+  }, [mapLoaded, userLocation, restaurants]);
+
+  const initializeMap = () => {
+    const mapElement = mapRef.current;
+    if (!mapElement) return;
+
+    // Leaflet CSS ve JS yükleme
+    const leafletCSS = document.createElement('link');
+    leafletCSS.rel = 'stylesheet';
+    leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(leafletCSS);
+
+    const leafletJS = document.createElement('script');
+    leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    leafletJS.onload = () => {
+      createMap();
+    };
+    document.head.appendChild(leafletJS);
+  };
+
+  const createMap = () => {
+    const centerLat = userLocation?.latitude;
+    const centerLng = userLocation?.longitude;
+
+    // Harita oluştur
+    const map = window.L.map(mapRef.current).setView([centerLat, centerLng], 16);
+
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+      minZoom: 10
+    }).addTo(map);
+
+    // Konum Markerı
+    if (userLocation) {
+      const userIcon = window.L.divIcon({
+        className: 'user-location-marker',
+        html: '<div style="background: #4285F4; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(66,133,244,0.6);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+      
+      window.L.marker([userLocation.latitude, userLocation.longitude], { icon: userIcon })
+        .addTo(map);
+    }
+
+
+    const restaurantMarkers = [];
+
+    // Restoran marker'larını oluştur
+    const createRestaurantMarkers = (showLabels = true) => {
+      restaurantMarkers.forEach(marker => map.removeLayer(marker));
+      restaurantMarkers.length = 0;
+
+      restaurants.forEach((restaurant) => {
+        const restaurantIcon = window.L.divIcon({
+          className: 'restaurant-marker',
+          html: `
+            <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+              <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                <span style="color: white; font-size: 14px;">🍽️</span>
+              </div>
+              <div style="
+                background: rgba(0,0,0,0.8); 
+                color: white; 
+                padding: 4px 8px; 
+                border-radius: 6px; 
+                font-size: 11px; 
+                white-space: nowrap; 
+                max-width: 120px; 
+                text-align: center; 
+                font-weight: 500; 
+                margin-top: 2px;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: ${showLabels ? 'block' : 'none'};
+              ">
+                ${restaurant.name}
+              </div>
+            </div>
+          `,
+          iconSize: [140, 60],
+          iconAnchor: [70, 32]
+        });
+
+        const marker = window.L.marker([restaurant.coordinate.latitude, restaurant.coordinate.longitude], { icon: restaurantIcon })
+          .addTo(map)
+          .on('click', () => {
+            if (onMarkerPress) {
+              onMarkerPress(restaurant);
+            }
+          });
+
+        restaurantMarkers.push(marker);
+      });
+    };
+
+    // İlk marker'ları oluştur
+    createRestaurantMarkers(map.getZoom() >= 15);
+
+    // Zoom değiştiğinde marker'ları güncelle
+    map.on('zoomend', () => {
+      const currentZoom = map.getZoom();
+      const showLabels = currentZoom >= 15;
+      createRestaurantMarkers(showLabels);
+    });
+
+    setMapLoaded(true);
   };
 
   return (
     <View style={styles.webMapContainer}>
       <View style={styles.webMapView}>
-        {/* Google Maps Embed */}
-        <View style={styles.mapBackground}>
-          {renderGoogleMapsEmbed()}
-          
-          {/* Overlay ile restoran marker'ları */}
+    
+        <div
+          ref={mapRef}
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: '12px',
+            overflow: 'hidden'
+          }}
+        />
+        
+        {!mapLoaded && (
           <View style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            pointerEvents: 'box-none',
+            backgroundColor: '#f5f5f5',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 12
           }}>
-            {/* Kullanıcı konumu */}
-            {userLocation && (
-              <View style={[styles.webUserLocation, { 
-                top: '50%', 
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }]}>
-                <View style={styles.webUserDot}>
-                  <View style={styles.webUserInner} />
-                </View>
-                <Text style={styles.webUserLabel}>Konumunuz</Text>
-              </View>
-            )}
-            
-            {/* Restoran marker'ları */}
-            {restaurants.slice(0, 5).map((restaurant, index) => {
-              const positions = [
-                { top: '30%', left: '35%' },
-                { top: '40%', left: '65%' },
-                { top: '65%', left: '45%' },
-                { top: '25%', left: '70%' },
-                { top: '70%', left: '25%' }
-              ];
-              
-              return (
-                <View key={restaurant.id} style={[styles.webRestaurantContainer, positions[index]]}>
-                  <TouchableOpacity 
-                    style={styles.webRestaurantPin}
-                    onPress={() => onMarkerPress(restaurant)}
-                  >
-                    <View style={styles.webPinHead}>
-                      <Text style={styles.webPinIcon}>🍽️</Text>
-                    </View>
-                    <View style={styles.webPinPoint} />
-                  </TouchableOpacity>
-                  <View style={styles.webMarkerLabel}>
-                    <Text style={styles.webMarkerLabelText}>{restaurant.name}</Text>
-                  </View>
-                </View>
-              );
-            })}
+            <Text style={{ color: '#666', fontSize: 16 }}>Harita yükleniyor...</Text>
           </View>
-        </View>
-        
-        {/* Harita kontrolleri */}
-        <View style={styles.webMapControls}>
-          <TouchableOpacity 
-            style={styles.webControlButton}
-            onPress={() => {
-              if (userLocation) {
-                setCenter({ x: 50, y: 50 });
-              }
-            }}
-          >
-            <Text style={styles.webControlIcon}>📍</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.webZoomButton}
-            onPress={() => setZoom(Math.min(zoom + 0.2, 3))}
-          >
-            <Text style={styles.webZoomText}>+</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.webZoomButton}
-            onPress={() => setZoom(Math.max(zoom - 0.2, 0.5))}
-          >
-            <Text style={styles.webZoomText}>-</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Pusula */}
-        <View style={styles.webCompass}>
-          <Text style={styles.webCompassText}>N</Text>
-        </View>
-        
-        {/* Harita türü değiştirici */}
-        <View style={styles.webMapTypeSelector}>
-          <TouchableOpacity style={styles.webMapTypeButton}>
-            <Text style={styles.webMapTypeText}>Harita</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.webMapTypeButton}>
-            <Text style={styles.webMapTypeText}>Uydu</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
     </View>
   );

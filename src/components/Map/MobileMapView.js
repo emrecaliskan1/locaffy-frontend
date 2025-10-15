@@ -5,7 +5,7 @@ import * as Location from 'expo-location';
 
 // WebView gerçek haritayı göstermek için(openstreetmap) kullanılıyor. Mini int tarayıcısı gibi.
 
-export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
+export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
 
   const edirneCenter = { 
     latitude: 41.6783, 
@@ -32,7 +32,7 @@ export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, reg
         }
       }
 
-      // GPS'in açık olup olmadığını kontrol et
+      // GPS'in açık olup olmadığını kontrol eder
       let gpsEnabled = await Location.hasServicesEnabledAsync();
       if (!gpsEnabled) {
         setCurrentLocation(edirneCenter);
@@ -91,7 +91,7 @@ export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, reg
     }
   };  
   
-  // Sayfa yüklendiğinde konumu al
+  // Sayfa yüklendiğinde konumu alır
   useEffect(() => {
     if (!currentLocation) {
       setCurrentLocation(edirneCenter);
@@ -105,24 +105,6 @@ export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, reg
     const centerLat = currentLocation?.latitude || edirneCenter.latitude;
     const centerLng = currentLocation?.longitude || edirneCenter.longitude;
     
-    const restaurantMarkers = restaurants.map((restaurant, index) => `
-      L.marker([${restaurant.coordinate.latitude}, ${restaurant.coordinate.longitude}], {
-        icon: L.divIcon({
-          className: 'custom-restaurant-marker',
-          html: '<div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); cursor: pointer;"><span style="color: white; font-size: 14px;">🍽️</span></div>',
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
-        })
-      })
-        .addTo(map)
-        .on('click', function() {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'restaurantClick',
-            restaurant: ${JSON.stringify(restaurant)}
-          }));
-        });
-    `).join('\n');
-
     return `
     <!DOCTYPE html>
     <html>
@@ -152,6 +134,59 @@ export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, reg
         
         var userMarker = null;
         var accuracyCircle = null;
+        var restaurantMarkers = [];
+        
+        // Restoran marker'larını oluşturan fonksiyon
+        function createRestaurantMarkers(showLabels = true) {
+          // Eski marker'ları temizle
+          restaurantMarkers.forEach(marker => map.removeLayer(marker));
+          restaurantMarkers.length = 0;
+
+          const restaurants = ${JSON.stringify(restaurants)};
+          
+          restaurants.forEach((restaurant) => {
+            const restaurantIcon = L.divIcon({
+              className: 'custom-restaurant-marker',
+              html: \`
+                <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+                  <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                    <span style="color: white; font-size: 14px;">🍽️</span>
+                  </div>
+                  <div style="
+                    background: rgba(0,0,0,0.8); 
+                    color: white; 
+                    padding: 4px 8px; 
+                    border-radius: 6px; 
+                    font-size: 11px; 
+                    white-space: nowrap; 
+                    max-width: 120px; 
+                    text-align: center; 
+                    font-weight: 500; 
+                    margin-top: 2px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    display: \${showLabels ? 'block' : 'none'};
+                  ">
+                    \${restaurant.name}
+                  </div>
+                </div>
+              \`,
+              iconSize: [140, 60],
+              iconAnchor: [70, 32]
+            });
+
+            const marker = L.marker([restaurant.coordinate.latitude, restaurant.coordinate.longitude], { icon: restaurantIcon })
+              .addTo(map)
+              .on('click', function() {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'restaurantClick',
+                  restaurant: restaurant
+                }));
+              });
+
+            restaurantMarkers.push(marker);
+          });
+        }
         
         function updateUserLocation(lat, lng, accuracy) {
           if (userMarker) map.removeLayer(userMarker);
@@ -179,9 +214,17 @@ export const RealMapComponent = ({ restaurants, onMarkerPress, userLocation, reg
           map.flyTo([lat, lng], 16, { duration: 1.5 });
         }
         
-        ${currentLocation ? `updateUserLocation(${currentLocation.latitude}, ${currentLocation.longitude}, ${currentLocation.accuracy || 'null'});` : ''}
+        // İlk marker'ları oluştur
+        createRestaurantMarkers(map.getZoom() >= 15);
         
-        ${restaurantMarkers}
+        // Zoom değiştiğinde marker'ları güncelle
+        map.on('zoomend', function() {
+          const currentZoom = map.getZoom();
+          const showLabels = currentZoom >= 15; // Zoom 15 ve üstünde etiketleri göster
+          createRestaurantMarkers(showLabels);
+        });
+        
+        ${currentLocation ? `updateUserLocation(${currentLocation.latitude}, ${currentLocation.longitude}, ${currentLocation.accuracy || 'null'});` : ''}
         
         window.addEventListener('message', function(event) {
           try {

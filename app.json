@@ -20,13 +20,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.zenvero.locaffymobileapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-maps"
-    ]
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "f82150af-06a5-4e55-9f68-681fda9c569c"
+      }
+    }
   }
 }

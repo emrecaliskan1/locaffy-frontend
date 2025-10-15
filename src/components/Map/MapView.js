@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Platform } from 'react-native';
-import { WebMapComponent } from './WebMapView';
-import { RealMapComponent } from './MobileMapView';
+import { WebMapView } from './WebMapView';
+import { MobileMapView } from './MobileMapView';
 import { DraggableBottomSheet } from './DraggableBottomSheet';
 
 export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
@@ -9,7 +9,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
   if (Platform.OS === 'web') {
     return (
       <View style={styles.mapContainer}>
-        <WebMapComponent
+        <WebMapView
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           userLocation={userLocation}
@@ -27,7 +27,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
   } else {
     return (
       <View style={styles.mapContainer}>
-        <RealMapComponent
+        <MobileMapView
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           userLocation={userLocation}
