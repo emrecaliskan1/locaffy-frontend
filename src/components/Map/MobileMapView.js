@@ -100,6 +100,20 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
   }, []);
 
 
+  // Restoran type'ına göre emoji döndüren fonksiyon
+  const getRestaurantIcon = (type) => {
+    const iconMap = {
+      'fast-food': '🍔',
+      'asian-food': '🍣',
+      'kebab': '🥙',
+      'dessert': '🍰',
+      'pub': '🍺',
+      'cafe': '☕',
+      'default': '🍽️'
+    };
+    return iconMap[type] || iconMap.default;
+  };
+
   // Harita HTML içeriğini oluşturan fonksiyon
   const createMapHTML = () => {
     const centerLat = currentLocation?.latitude || edirneCenter.latitude;
@@ -145,12 +159,26 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
           const restaurants = ${JSON.stringify(restaurants)};
           
           restaurants.forEach((restaurant) => {
+            // Restoran type'ına göre emoji belirle
+            const restaurantEmoji = (() => {
+              const iconMap = {
+                'fast-food': '🍔',
+                'asian-food': '🍣', 
+                'kebab': '🥙',
+                'dessert': '🍰',
+                'pub': '🍺',
+                'cafe': '☕',
+                'default': '🍽️'
+              };
+              return iconMap[restaurant.type] || iconMap.default;
+            })();
+
             const restaurantIcon = L.divIcon({
               className: 'custom-restaurant-marker',
               html: \`
                 <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
                   <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                    <span style="color: white; font-size: 14px;">🍽️</span>
+                    <span style="color: white; font-size: 14px;">\${restaurantEmoji}</span>
                   </div>
                   <div style="
                     background: rgba(0,0,0,0.8); 

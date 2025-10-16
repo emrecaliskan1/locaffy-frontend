@@ -9,6 +9,19 @@ import {
 export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, styles }) => {
   if (!restaurant) return null;
 
+  const getRestaurantEmoji = (type) => {
+    const iconMap = {
+      'fast-food': '🍔',
+      'asian-food': '🍣',
+      'kebab': '🥙',
+      'dessert': '🍰',
+      'pub': '🍺',
+      'cafe': '☕',
+      'default': '🍽️'
+    };
+    return iconMap[type] || iconMap.default;
+  };
+
   return (
     <Modal
       animationType="fade"
@@ -25,7 +38,7 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <View style={styles.modalRestaurantIcon}>
-              <Text style={styles.modalIconEmoji}>🍽️</Text>
+              <Text style={styles.modalIconEmoji}>{getRestaurantEmoji(restaurant.type)}</Text>
             </View>
             <TouchableOpacity style={styles.modalCloseButton} onPress={onClose}>
               <Text style={styles.modalCloseText}>✕</Text>

@@ -69,12 +69,26 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
       restaurantMarkers.length = 0;
 
       restaurants.forEach((restaurant) => {
+        
+        const restaurantEmoji = (() => {
+          const iconMap = {
+            'fast-food': '🍔',
+            'asian-food': '🍣', 
+            'kebab': '🥙',
+            'dessert': '🍰',
+            'pub': '🍺',
+            'cafe': '☕',
+            'default': '🍽️'
+          };
+          return iconMap[restaurant.type] || iconMap.default;
+        })();
+
         const restaurantIcon = window.L.divIcon({
           className: 'restaurant-marker',
           html: `
             <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
               <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                <span style="color: white; font-size: 14px;">🍽️</span>
+                <span style="color: white; font-size: 14px;">${restaurantEmoji}</span>
               </div>
               <div style="
                 background: rgba(0,0,0,0.8); 

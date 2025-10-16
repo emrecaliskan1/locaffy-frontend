@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useCallback } from 'react';
 import FilterModal from '../../components/FilterModal';
 import { RestaurantCard, SearchHeader } from '../../components/Home';
-import { restaurants } from '../../static-data';
+import { restaurants } from '../../static-data/restaurants';
 import { styles } from './styles';
 
 export default function HomeScreen({ navigation }) {
