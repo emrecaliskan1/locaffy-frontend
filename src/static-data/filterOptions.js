@@ -4,7 +4,8 @@ export const categories = [
   { id: 'asian-food', name: 'Asian-food', icon: '🍣', value: 'asian-food' },
   { id: 'kebab', name: 'Kebap', icon: '🥙', value: 'kebab' },
   { id: 'dessert', name: 'Dessert', icon: '🍰', value: 'dessert' },
-  { id: 'pub', name: 'Pub', icon: '🍺', value: 'pub' }
+  { id: 'pub', name: 'Pub', icon: '🍺', value: 'pub' },
+  { id: 'cafe', name: 'Cafe', icon: '☕', value: 'cafe' }
 ];
 
 export const distanceOptions = [

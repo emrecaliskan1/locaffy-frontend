@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, Platform } from 'react-native';
-import { WebMapComponent } from './WebMapComponent';
-import { RealMapComponent } from './RealMapComponent';
+import { WebMapView } from './WebMapView';
+import { MobileMapView } from './MobileMapView';
 import { DraggableBottomSheet } from './DraggableBottomSheet';
 
 export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
+  
   if (Platform.OS === 'web') {
-    // Web'de fallback harita kullan
     return (
       <View style={styles.mapContainer}>
-        <WebMapComponent
+        <WebMapView
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           userLocation={userLocation}
@@ -25,10 +25,9 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
       </View>
     );
   } else {
-    // Native'de gerçek harita kullan
     return (
       <View style={styles.mapContainer}>
-        <RealMapComponent
+        <MobileMapView
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           userLocation={userLocation}

@@ -3,9 +3,10 @@ import {
   Text, 
   TouchableOpacity, 
   ScrollView, 
-  SafeAreaView,
-  FlatList
+  FlatList,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { styles } from './styles';
 import { mockOrders } from '../../static-data';
@@ -87,15 +88,17 @@ export default function OrdersScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-        
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Siparişlerim</Text>
-        <View style={styles.placeholder} />
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Siparişlerim</Text>
+          <View style={styles.placeholder} />
+        </View>
+      </SafeAreaView>
 
       <View style={styles.tabContainer}>
         {renderTabButton('active', 'Aktif Siparişler')}
@@ -123,6 +126,6 @@ export default function OrdersScreen({ navigation }) {
           </View>
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 }

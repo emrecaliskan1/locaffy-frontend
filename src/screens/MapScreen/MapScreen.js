@@ -3,10 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { styles } from './styles';
 import { restaurants } from '../../static-data/restaurants';
@@ -77,16 +78,18 @@ export default function MapScreen({ navigation }) {
   };
 
   return (
-
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Edirne Haritası</Text>
-        <TouchableOpacity 
-          style={styles.searchButton} 
-          onPress={getLocation}>
-          <Text style={styles.searchIcon}>📍</Text>
-        </TouchableOpacity>
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Edirne Haritası</Text>
+          <TouchableOpacity 
+            style={styles.searchButton} 
+            onPress={getLocation}>
+            <Text style={styles.searchIcon}>📍</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
 
       {loading ? (
         <View style={styles.loadingContainer}>

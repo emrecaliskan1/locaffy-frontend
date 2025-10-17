@@ -3,9 +3,10 @@ import {
   View, 
   Text, 
   TouchableOpacity, 
-  SafeAreaView,
-  FlatList
+  FlatList,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import { mockReservations } from '../../static-data';
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
@@ -19,13 +20,16 @@ export default function ReservationsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Rezervasyonlarım</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Rezervasyonlarım</Text>
+          <View style={styles.placeholder} />
+        </View>
+      </SafeAreaView>
 
       <TabButtons 
         activeTab={activeTab} 

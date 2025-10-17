@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
 import { styles } from './styles';
 
@@ -6,14 +7,17 @@ export default function ReservationDetailsScreen({ route, navigation }) {
   const { restaurant, reservation } = route.params || {};
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Rezervasyon Detayı</Text>
-        <View style={{ width: 40 }} />
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Rezervasyon Detayı</Text>
+          <View style={{ width: 40 }} />
+        </View>
+      </SafeAreaView>
 
       <View style={styles.content}>
         <Text style={styles.restaurantName}>{restaurant?.name || 'Restoran'}</Text>
@@ -37,6 +41,6 @@ export default function ReservationDetailsScreen({ route, navigation }) {
           <Text style={styles.confirmText}>Onayla ve Rezervasyonlarım'a Git</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

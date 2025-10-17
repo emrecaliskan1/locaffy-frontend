@@ -5,9 +5,10 @@ import {
   TouchableOpacity, 
   ScrollView, 
   Image, 
-  SafeAreaView,
-  FlatList
+  FlatList,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { styles } from './styles';
 
@@ -291,16 +292,17 @@ export default function MenuScreen({ route, navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{restaurant.name}</Text>
-        <TouchableOpacity 
-          style={styles.cartButton}
-          onPress={() => navigation.navigate('Cart', { cart, restaurant })}
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{restaurant.name}</Text>
+          <TouchableOpacity 
+            style={styles.cartButton}
+            onPress={() => navigation.navigate('Cart', { cart, restaurant })}
         >
           <Text style={styles.cartIcon}>🛒</Text>
           {getTotalItems() > 0 && (
@@ -310,6 +312,7 @@ export default function MenuScreen({ route, navigation }) {
           )}
         </TouchableOpacity>
       </View>
+      </SafeAreaView>
 
       {restaurant.isSelfService && (
         <View style={styles.selfServiceBanner}>
@@ -351,6 +354,6 @@ export default function MenuScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

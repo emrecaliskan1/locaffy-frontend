@@ -2,12 +2,13 @@ import React from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert
+  Alert,
+  StatusBar
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 
@@ -93,11 +94,13 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profil</Text>
         </View>
+      </SafeAreaView>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
 
         <View style={styles.userCard}>
