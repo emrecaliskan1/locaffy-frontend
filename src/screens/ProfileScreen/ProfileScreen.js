@@ -51,14 +51,16 @@ export default function ProfileScreen({ navigation }) {
       id: 1,
       title: 'Rezervasyonlarım',
       subtitle: 'Aktif ve geçmiş rezervasyonlar',
-      icon: '📅',
+      icon: 'calendar',
+      iconColor: '#667eea',
       onPress: () => navigation.navigate('Reservations'),
     },
     {
       id: 2,
       title: 'Favori Restoranlar',
       subtitle: 'Beğendiğiniz restoranlar',
-      icon: '❤️',
+      icon: 'heart',
+      iconColor: '#E74C3C', // Light red
       onPress: () => {
         Alert.alert('Bilgi', 'Favori restoranlar özelliği yakında eklenecek!');
       },
@@ -67,7 +69,8 @@ export default function ProfileScreen({ navigation }) {
       id: 3,
       title: 'Bildirimler',
       subtitle: 'Bildirim ayarlarını yönetin',
-      icon: '🔔',
+      icon: 'bell',
+      iconColor: '#F39C12', // Light yellow/orange
       onPress: () => {
         Alert.alert('Bilgi', 'Bildirim ayarları yakında eklenecek!');
       },
@@ -76,7 +79,8 @@ export default function ProfileScreen({ navigation }) {
       id: 4,
       title: 'Yardım ve Destek',
       subtitle: 'SSS ve iletişim',
-      icon: '❓',
+      icon: 'question-circle',
+      iconColor: '#667eea',
       onPress: () => {
         Alert.alert('Bilgi', 'Yardım merkezi yakında eklenecek!');
       },
@@ -85,7 +89,8 @@ export default function ProfileScreen({ navigation }) {
       id: 5,
       title: 'Hakkında',
       subtitle: 'Uygulama bilgileri',
-      icon: 'ℹ️',
+      icon: 'info-circle',
+      iconColor: '#667eea',
       onPress: () => {
         Alert.alert('Locaffy', 'Versiyon 1.0.0\n\nYerel restoranları keşfedin ve sipariş verin.');
       },
@@ -150,7 +155,7 @@ export default function ProfileScreen({ navigation }) {
               onPress={item.onPress}
             >
               <View style={styles.menuItemLeft}>
-                <Text style={styles.menuIcon}>{item.icon}</Text>
+                <FontAwesome name={item.icon} size={18} color={item.iconColor || "#667eea"} style={styles.menuIcon} />
                 <View style={styles.menuTextContainer}>
                   <Text style={styles.menuTitle}>{item.title}</Text>
                   <Text style={styles.menuSubtitle}>{item.subtitle}</Text>

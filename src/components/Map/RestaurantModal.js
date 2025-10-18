@@ -5,22 +5,11 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
 
 export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, styles }) => {
   if (!restaurant) return null;
-
-  const getRestaurantEmoji = (type) => {
-    const iconMap = {
-      'fast-food': '🍔',
-      'asian-food': '🍣',
-      'kebab': '🥙',
-      'dessert': '🍰',
-      'pub': '🍺',
-      'cafe': '☕',
-      'default': '🍽️'
-    };
-    return iconMap[type] || iconMap.default;
-  };
 
   return (
     <Modal
@@ -38,10 +27,12 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <View style={styles.modalRestaurantIcon}>
-              <Text style={styles.modalIconEmoji}>{getRestaurantEmoji(restaurant.type)}</Text>
+              <View style={styles.modalIconEmoji}>
+                {getRestaurantIconComponent(restaurant.type, 24, '#FFFFFF')}
+              </View>
             </View>
             <TouchableOpacity style={styles.modalCloseButton} onPress={onClose}>
-              <Text style={styles.modalCloseText}>✕</Text>
+              <FontAwesome name="times" size={18} color="#95A5A6" style={styles.modalCloseText} />
             </TouchableOpacity>
           </View>
           
@@ -50,14 +41,23 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
             <Text style={styles.modalRestaurantType}>{restaurant.type}</Text>
             
             <View style={styles.modalInfoRow}>
-              <Text style={styles.modalRating}>⭐ {restaurant.rating}</Text>
+              <View style={styles.modalRatingContainer}>
+                <FontAwesome name="star" size={14} color="#FFD700" />
+                <Text style={styles.modalRating}> {restaurant.rating}</Text>
+              </View>
               <Text style={styles.modalDistance}>{restaurant.distance}</Text>
             </View>
             
-            <Text style={styles.modalAddress}>📍 {restaurant.address}</Text>
+            <View style={styles.modalLocationRow}>
+              <FontAwesome name="map-marker" size={14} color="#E74C3C" />
+              <Text style={styles.modalAddress}> {restaurant.address}</Text>
+            </View>
             
             {restaurant.priceRange && (
-              <Text style={styles.modalPrice}>💰 {restaurant.priceRange}</Text>
+              <View style={styles.modalPriceRow}>
+                <FontAwesome name="dollar" size={14} color="#27AE60" />
+                <Text style={styles.modalPrice}> {restaurant.priceRange}</Text>
+              </View>
             )}
           </View>
           

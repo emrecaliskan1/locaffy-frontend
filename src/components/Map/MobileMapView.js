@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
+import { getRestaurantIconForHTML } from '../../utils/restaurantIcons';
 
 // WebView gerçek haritayı göstermek için(openstreetmap) kullanılıyor. Mini int tarayıcısı gibi.
 
@@ -100,25 +101,29 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
   }, []);
 
 
-  // Restoran type'ına göre emoji döndüren fonksiyon
-  const getRestaurantIcon = (type) => {
-    const iconMap = {
-      'fast-food': '🍔',
-      'asian-food': '🍣',
-      'kebab': '🥙',
-      'dessert': '🍰',
-      'pub': '🍺',
-      'cafe': '☕',
-      'default': '🍽️'
-    };
-    return iconMap[type] || iconMap.default;
-  };
+
 
   // Harita HTML içeriğini oluşturan fonksiyon
   const createMapHTML = () => {
     const centerLat = currentLocation?.latitude || edirneCenter.latitude;
     const centerLng = currentLocation?.longitude || edirneCenter.longitude;
     
+    // Icon mapping fonksiyonu HTML içinde tanımla (3 kategori gruplandırma)
+    const getRestaurantIconClass = (type) => {
+      const foodCategories = ['kebab', 'asian-food', 'fast-food'];
+      
+      if (foodCategories.includes(type)) {
+        return 'fas fa-utensils'; 
+      } else if (type === 'cafe') {
+        return 'fas fa-coffee';   
+      } else if (type === 'dessert') {
+        return 'fas fa-birthday-cake';  
+      } else if (type === 'pub') {
+        return 'fas fa-wine-glass';  
+      }
+      return 'fas fa-utensils';  
+    };
+
     return `
     <!DOCTYPE html>
     <html>
@@ -126,6 +131,7 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
       <style>
         body { margin: 0; padding: 0; }
         #mapid { height: 100vh; width: 100vw; }
@@ -150,6 +156,24 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
         var accuracyCircle = null;
         var restaurantMarkers = [];
         
+        // Icon mapping fonksiyonu (3 kategori gruplandırma)
+        function getRestaurantIconClass(type) {
+          // Yemek kategorileri: kebab, asian-food, fast-food -> utensils
+          const foodCategories = ['kebab', 'asian-food', 'fast-food'];
+          
+          if (foodCategories.includes(type)) {
+            return 'fas fa-utensils';  // Yemek ikonu
+          } else if (type === 'cafe') {
+            return 'fas fa-coffee';    // Kafe ikonu
+          } else if (type === 'dessert') {
+            return 'fas fa-birthday-cake';  // Tatlı ikonu
+          } else if (type === 'pub') {
+            return 'fas fa-wine-glass';     // İçki ikonu
+          }
+          
+          return 'fas fa-utensils';  // Default yemek ikonu
+        }
+        
         // Restoran marker'larını oluşturan fonksiyon
         function createRestaurantMarkers(showLabels = true) {
           // Eski marker'ları temizle
@@ -159,26 +183,27 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
           const restaurants = ${JSON.stringify(restaurants)};
           
           restaurants.forEach((restaurant) => {
-            // Restoran type'ına göre emoji belirle
-            const restaurantEmoji = (() => {
-              const iconMap = {
-                'fast-food': '🍔',
-                'asian-food': '🍣', 
-                'kebab': '🥙',
-                'dessert': '🍰',
-                'pub': '🍺',
-                'cafe': '☕',
-                'default': '🍽️'
+
+            // Restoran type'ına göre marker rengi belirle
+            const getRestaurantMarkerColor = (type) => {
+              const colorMap = {
+                'fast-food': '#DC143C', // Red
+                'asian-food': '#DC143C', // Red
+                'kebab': '#DC143C', // Red
+                'dessert': '#DC143C', // Red
+                'pub': '#DC143C', // Red
+                'cafe': '#DC143C', // Red
+                'default': '#DC143C' // Red
               };
-              return iconMap[restaurant.type] || iconMap.default;
-            })();
+              return colorMap[type] || colorMap.default;
+            };
 
             const restaurantIcon = L.divIcon({
               className: 'custom-restaurant-marker',
               html: \`
                 <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-                  <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                    <span style="color: white; font-size: 14px;">\${restaurantEmoji}</span>
+                  <div style="background: \${getRestaurantMarkerColor(restaurant.type)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                    <i class="\${getRestaurantIconClass(restaurant.type)}" style="color: white; font-size: 14px;"></i>
                   </div>
                   <div style="
                     background: rgba(0,0,0,0.8); 

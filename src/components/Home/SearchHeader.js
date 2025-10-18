@@ -17,7 +17,7 @@ export const SearchHeader = ({
 }) => (
   <View style={styles.searchContainer}>
     <View style={styles.searchBar}>
-      <Text style={styles.searchIcon}><FontAwesome name="search"/></Text>
+  <Text style={styles.searchIcon}><FontAwesome name="search"/></Text>
       <TextInput
         style={styles.searchInput}
         placeholder="Mekan veya dilediğin yemeği ara..."
@@ -33,7 +33,7 @@ export const SearchHeader = ({
         style={styles.filterButton}
         onPress={onFilterPress}
       >
-        <Text style={styles.filterIcon}>☰</Text>
+        <FontAwesome name="sliders" size={16} color="#95A5A6" style={styles.filterIcon} />
       </TouchableOpacity>
     </View>
   </View>

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
+import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { restaurants } from '../../static-data/restaurants';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
@@ -86,7 +87,7 @@ export default function MapScreen({ navigation }) {
           <TouchableOpacity 
             style={styles.searchButton} 
             onPress={getLocation}>
-            <Text style={styles.searchIcon}>📍</Text>
+            <FontAwesome name="map-marker" size={18} color="#4285F4" style={styles.searchIcon} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>

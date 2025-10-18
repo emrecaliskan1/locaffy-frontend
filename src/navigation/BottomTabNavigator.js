@@ -47,7 +47,7 @@ const TabIcon = ({ name, focused }) => {
 
   return (
     <View style={[styles.tabIconContainer, focused && styles.focusedTabContainer]}>
-      <FontAwesome 
+  <FontAwesome 
         name={iconName} 
         size={24} 
         color={iconColor}

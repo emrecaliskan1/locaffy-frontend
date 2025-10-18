@@ -442,10 +442,20 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     lineHeight: 20,
   },
+  modalLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   modalPrice: {
     fontSize: 14,
     color: '#27AE60',
     fontWeight: '600',
+  },
+  modalPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   modalActions: {
     padding: 20,

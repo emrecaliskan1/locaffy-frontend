@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 
 export default function AuthScreen({ navigation }) {
@@ -175,7 +176,7 @@ export default function AuthScreen({ navigation }) {
                 <View>
   
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>📧</Text>
+                    <FontAwesome name="envelope" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="E-posta"
@@ -188,7 +189,7 @@ export default function AuthScreen({ navigation }) {
 
   
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>🔒</Text>
+                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="Şifre"
@@ -197,7 +198,7 @@ export default function AuthScreen({ navigation }) {
                       secureTextEntry={!showPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
                     </TouchableOpacity>
                   </View>
 
@@ -221,7 +222,7 @@ export default function AuthScreen({ navigation }) {
 
                 <View>
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>👤</Text>
+                    <FontAwesome name="user" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="Ad Soyad"
@@ -231,7 +232,7 @@ export default function AuthScreen({ navigation }) {
                   </View>
 
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>📱</Text>
+                    <FontAwesome name="phone" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="Telefon Numarası"
@@ -242,7 +243,7 @@ export default function AuthScreen({ navigation }) {
                   </View>
 
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>📧</Text>
+                    <FontAwesome name="envelope" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="E-posta"
@@ -254,7 +255,7 @@ export default function AuthScreen({ navigation }) {
                   </View>
 
                   <View style={styles.inputContainer}>
-                    <Text style={styles.inputIcon}>🔒</Text>
+                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="Şifre"
@@ -263,7 +264,7 @@ export default function AuthScreen({ navigation }) {
                       secureTextEntry={!showPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
                     </TouchableOpacity>
                   </View>
 

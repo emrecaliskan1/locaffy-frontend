@@ -51,11 +51,11 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.backIcon}>←</Text>
+            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{mockRestaurantData.name}</Text>
           <TouchableOpacity style={styles.shareButton}>
-            <Text style={styles.shareIcon}>♡</Text>
+            <FontAwesome name="heart-o" size={18} color="#E74C3C" style={styles.shareIcon} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -70,7 +70,10 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           />
           <View style={styles.imageOverlay}>
             <View style={styles.ratingContainer}>
-              <Text style={styles.rating}>⭐ {mockRestaurantData.rating}</Text>
+              <View style={styles.ratingWrapper}>
+                <FontAwesome name="star" size={16} color="#F39C12" />
+                <Text style={styles.rating}> {mockRestaurantData.rating}</Text>
+              </View>
               <Text style={styles.reviewCount}>({mockRestaurantData.reviewCount})</Text>
             </View>
           </View>
@@ -80,9 +83,18 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <Text style={styles.restaurantName}>{mockRestaurantData.name}</Text>
           <Text style={styles.restaurantType}>{mockRestaurantData.type}</Text>
           <View style={styles.restaurantMeta}>
-            <Text style={styles.metaText}>💰 {mockRestaurantData.priceRange}</Text>
-            <Text style={styles.metaText}>🚚 {mockRestaurantData.deliveryTime}</Text>
-            <Text style={styles.metaText}>📦 ₺{mockRestaurantData.minOrder}+ min</Text>
+            <View style={styles.metaItem}>
+              <FontAwesome name="dollar" size={14} color="#27AE60" />
+              <Text style={styles.metaText}> {mockRestaurantData.priceRange}</Text>
+            </View>
+            <View style={styles.metaItem}>
+              <FontAwesome name="truck" size={14} color="#3498DB" />
+              <Text style={styles.metaText}> {mockRestaurantData.deliveryTime}</Text>
+            </View>
+            <View style={styles.metaItem}>
+              <FontAwesome name="shopping-bag" size={14} color="#E67E22" />
+              <Text style={styles.metaText}> ₺{mockRestaurantData.minOrder}+ min</Text>
+            </View>
           </View>
         </View>
 

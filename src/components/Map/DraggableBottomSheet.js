@@ -7,6 +7,8 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
@@ -16,18 +18,7 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles }) => 
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
 
-  const getRestaurantEmoji = (type) => {
-    const iconMap = {
-      'fast-food': '🍔',
-      'asian-food': '🍣',
-      'kebab': '🥙',
-      'dessert': '🍰',
-      'pub': '🍺',
-      'cafe': '☕',
-      'default': '🍽️'
-    };
-    return iconMap[type] || iconMap.default;
-  };
+
 
   const toggleSheet = () => {
     const toValue = isExpanded ? BOTTOM_SHEET_MIN_HEIGHT : BOTTOM_SHEET_MAX_HEIGHT;
@@ -79,7 +70,9 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles }) => 
                 <Text style={styles.restaurantItemAddress}>{restaurant.address}</Text>
               </View>
               <View style={styles.restaurantItemRight}>
-                <Text style={styles.restaurantItemIcon}>{getRestaurantEmoji(restaurant.type)}</Text>
+                <View style={styles.restaurantItemIcon}>
+                  {getRestaurantIconComponent(restaurant.type, 18, '#DC143C')}
+                </View>
                 <Text style={styles.restaurantItemDistance}>{restaurant.distance}</Text>
               </View>
             </TouchableOpacity>

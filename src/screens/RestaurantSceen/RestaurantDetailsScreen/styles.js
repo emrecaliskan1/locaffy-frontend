@@ -204,6 +204,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  ratingWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   ratingIcon: {
     fontSize: 18,
     marginRight: 5,
@@ -496,6 +500,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 20,
   },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   metaText: {
     fontSize: 14,
     color: '#7F8C8D',
@@ -604,6 +612,13 @@ export const styles = StyleSheet.create({
   helpfulText: {
     fontSize: 12,
     color: '#7F8C8D',
+  },
+  starIcon: {
+    marginRight: 2,
+  },
+  helpfulContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   infoRow: {
     flexDirection: 'row',

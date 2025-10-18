@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 
 export default function MenuScreen({ route, navigation }) {
@@ -297,14 +298,14 @@ export default function MenuScreen({ route, navigation }) {
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
+            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{restaurant.name}</Text>
           <TouchableOpacity 
             style={styles.cartButton}
             onPress={() => navigation.navigate('Cart', { cart, restaurant })}
         >
-          <Text style={styles.cartIcon}>🛒</Text>
+          <FontAwesome name="shopping-cart" size={18} color="#667eea" style={styles.cartIcon} />
           {getTotalItems() > 0 && (
             <View style={styles.cartBadge}>
               <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>

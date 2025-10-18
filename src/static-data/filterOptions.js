@@ -1,11 +1,11 @@
 export const categories = [
-  { id: 'all', name: 'Hepsi', icon: '🍽️', value: 'all' },
-  { id: 'fast-food', name: 'Fast-food', icon: '🍔', value: 'fast-food' },
-  { id: 'asian-food', name: 'Asian-food', icon: '🍣', value: 'asian-food' },
-  { id: 'kebab', name: 'Kebap', icon: '🥙', value: 'kebab' },
-  { id: 'dessert', name: 'Dessert', icon: '🍰', value: 'dessert' },
-  { id: 'pub', name: 'Pub', icon: '🍺', value: 'pub' },
-  { id: 'cafe', name: 'Cafe', icon: '☕', value: 'cafe' }
+  { id: 'all', name: 'Hepsi', icon: 'select-all', iconType: 'MaterialIcons', value: 'all' },
+  { id: 'fast-food', name: 'Fast-food', icon: 'fastfood', iconType: 'MaterialIcons', value: 'fast-food' },
+  { id: 'asian-food', name: 'Asian-food', icon: 'cutlery', iconType: 'FontAwesome', value: 'asian-food' },
+  { id: 'kebab', name: 'Steak', icon: 'food-steak', iconType: 'MaterialCommunityIcons', value: 'kebab' },
+  { id: 'dessert', name: 'Dessert', icon: 'cupcake', iconType: 'MaterialCommunityIcons', value: 'dessert' },
+  { id: 'pub', name: 'Pub', icon: 'glass', iconType: 'FontAwesome', value: 'pub' },
+  { id: 'cafe', name: 'Cafe', icon: 'coffee', iconType: 'FontAwesome', value: 'cafe' }
 ];
 
 export const distanceOptions = [
@@ -26,8 +26,8 @@ export const priceRanges = [
 
 export const ratingOptions = [
   { value: 'all', label: 'Hepsi' },
-  { value: '4.5', label: '4.5+ ⭐' },
-  { value: '4.0', label: '4.0+ ⭐' },
-  { value: '3.5', label: '3.5+ ⭐' },
-  { value: '3.0', label: '3.0+ ⭐' }
+  { value: '4.5', label: '4.5+', icon: 'star' },
+  { value: '4.0', label: '4.0+', icon: 'star' },
+  { value: '3.5', label: '3.5+', icon: 'star' },
+  { value: '3.0', label: '3.0+', icon: 'star' }
 ];

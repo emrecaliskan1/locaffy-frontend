@@ -30,12 +30,17 @@ export const styles = StyleSheet.create({
   },
   locationContainer: {
     alignItems: 'center',
-    marginLeft: 100
+    flex: 1,
+    justifyContent: 'center'
   },
   locationLabel: {
     fontSize: 12,
     color: '#7F8C8D',
     marginBottom: 2,
+  },
+  locationTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   locationText: {
     fontSize: 16,

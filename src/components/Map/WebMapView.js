@@ -4,6 +4,8 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
+import { FontAwesome, FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { getRestaurantIconForHTML } from '../../utils/restaurantIcons';
 
 export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
   const mapRef = useRef(null);
@@ -25,6 +27,12 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
     leafletCSS.rel = 'stylesheet';
     leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
     document.head.appendChild(leafletCSS);
+
+    // FontAwesome CSS yükleme
+    const fontAwesomeCSS = document.createElement('link');
+    fontAwesomeCSS.rel = 'stylesheet';
+    fontAwesomeCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+    document.head.appendChild(fontAwesomeCSS);
 
     const leafletJS = document.createElement('script');
     leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
@@ -69,26 +77,26 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
       restaurantMarkers.length = 0;
 
       restaurants.forEach((restaurant) => {
-        
-        const restaurantEmoji = (() => {
-          const iconMap = {
-            'fast-food': '🍔',
-            'asian-food': '🍣', 
-            'kebab': '🥙',
-            'dessert': '🍰',
-            'pub': '🍺',
-            'cafe': '☕',
-            'default': '🍽️'
+
+        const getRestaurantMarkerColor = (type) => {
+          const colorMap = {
+            'fast-food': '#DC143C', 
+            'asian-food': '#DC143C',
+            'kebab': '#DC143C',
+            'dessert': '#DC143C', 
+            'pub': '#DC143C', 
+            'cafe': '#DC143C', 
+            'default': '#DC143C' 
           };
-          return iconMap[restaurant.type] || iconMap.default;
-        })();
+          return colorMap[type] || colorMap.default;
+        };
 
         const restaurantIcon = window.L.divIcon({
           className: 'restaurant-marker',
           html: `
             <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-              <div style="background: #EA4335; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                <span style="color: white; font-size: 14px;">${restaurantEmoji}</span>
+              <div style="background: ${getRestaurantMarkerColor(restaurant.type)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                <i class="${getRestaurantIconForHTML(restaurant.type)}" style="color: white; font-size: 14px;"></i>
               </div>
               <div style="
                 background: rgba(0,0,0,0.8); 

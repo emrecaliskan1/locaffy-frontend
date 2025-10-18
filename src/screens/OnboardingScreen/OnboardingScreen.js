@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { styles } from './styles';
 
 export default function OnboardingScreen({ navigation }) {
@@ -9,17 +10,17 @@ export default function OnboardingScreen({ navigation }) {
     {
       title: 'Yakındaki Lezzetleri Keşfet',
       subtitle: 'Bulunduğun konuma en yakın restoranları ve kafeleri bul',
-      icon: '📍'
+      icon: 'map-marker-alt'
     },
     {
       title: 'Kolayca Rezervasyon Yap',
       subtitle: 'Sadece birkaç dokunuşla masanı rezerve et',
-      icon: '📅'
+      icon: 'calendar-alt'
     },
     {
       title: 'Siparişini Ver',
       subtitle: 'Menüye bak, siparişini ver, masanda bekle',
-      icon: '🛒'
+      icon: 'shopping-cart'
     }
   ];
 
@@ -51,7 +52,7 @@ export default function OnboardingScreen({ navigation }) {
 
         <View style={styles.iconContainer}>
           <View style={styles.iconCircle}>
-            <Text style={styles.iconText}>{pages[currentPage].icon}</Text>
+            <FontAwesome5 name={pages[currentPage].icon} size={32} color="#667eea" style={styles.iconText} />
           </View>
         </View>
 

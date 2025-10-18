@@ -118,9 +118,23 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
   },
+  featureLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  featureIcon: {
+    marginRight: 8,
+  },
   featureLabel: {
     fontSize: 16,
     color: '#2C3E50',
+  },
+  ratingOptionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ratingIcon: {
+    marginLeft: 4,
   },
   footer: {
     paddingHorizontal: 20,
