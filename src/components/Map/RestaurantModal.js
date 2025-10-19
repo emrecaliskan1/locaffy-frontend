@@ -43,20 +43,20 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
             <View style={styles.modalInfoRow}>
               <View style={styles.modalRatingContainer}>
                 <FontAwesome name="star" size={14} color="#FFD700" />
-                <Text style={styles.modalRating}> {restaurant.rating}</Text>
+                <Text style={styles.modalRating}>{restaurant.rating}</Text>
               </View>
               <Text style={styles.modalDistance}>{restaurant.distance}</Text>
             </View>
             
             <View style={styles.modalLocationRow}>
               <FontAwesome name="map-marker" size={14} color="#E74C3C" />
-              <Text style={styles.modalAddress}> {restaurant.address}</Text>
+              <Text style={styles.modalAddress}>{restaurant.address}</Text>
             </View>
             
             {restaurant.priceRange && (
               <View style={styles.modalPriceRow}>
                 <FontAwesome name="dollar" size={14} color="#27AE60" />
-                <Text style={styles.modalPrice}> {restaurant.priceRange}</Text>
+                <Text style={styles.modalPrice}>{restaurant.priceRange}</Text>
               </View>
             )}
           </View>

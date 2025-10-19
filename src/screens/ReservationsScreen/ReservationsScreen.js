@@ -7,6 +7,7 @@ import {
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { mockReservations } from '../../static-data';
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
@@ -23,8 +24,11 @@ export default function ReservationsScreen({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Rezervasyonlarım</Text>
           <View style={styles.placeholder} />

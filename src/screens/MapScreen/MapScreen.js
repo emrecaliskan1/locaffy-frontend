@@ -6,10 +6,11 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { restaurants } from '../../static-data/restaurants';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
@@ -26,6 +27,8 @@ export default function MapScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [infoCardVisible, setInfoCardVisible] = useState(true);
+  const [infoCardAnimation] = useState(new Animated.Value(1));
 
   useEffect(() => {
     getLocation();
@@ -78,6 +81,48 @@ export default function MapScreen({ navigation }) {
     setSelectedRestaurant(null);
   };
 
+  const toggleInfoCard = () => {
+    if (infoCardVisible) {
+      Animated.timing(infoCardAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setInfoCardVisible(false));
+    } else {
+      setInfoCardVisible(true);
+      Animated.timing(infoCardAnimation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
+  // Map screendeki bilgilendirme Card'ı için
+  const categoryInfo = [
+    { 
+      types: ['fast-food', 'asian-food', 'kebab'], 
+      icon: 'cutlery', 
+      iconFamily: 'FontAwesome',
+      label: 'Yemek', 
+      description: 'Fast-food, Asya mutfağı, Steakhouse'
+    },
+    { 
+      types: ['dessert'], 
+      icon: 'birthday-cake', 
+      iconFamily: 'FontAwesome',
+      label: 'Tatlı', 
+      description: 'Tatlıcı, Pastane'
+    },
+    { 
+      types: ['cafe'], 
+      icon: 'coffee', 
+      iconFamily: 'FontAwesome',
+      label: 'Kahve', 
+      description: 'Cafe'
+    }
+  ];
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -98,13 +143,65 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.loadingText}>Konum alınıyor...</Text>
         </View>
       ) : (
-        <ModernMapView
-          restaurants={restaurants}
-          onMarkerPress={handleMarkerPress}
-          userLocation={userLocation}
-          region={region}
-          styles={styles}
-        />
+        <>
+          <ModernMapView
+            restaurants={restaurants}
+            onMarkerPress={handleMarkerPress}
+            userLocation={userLocation}
+            region={region}
+            styles={styles}
+          />
+          
+          {infoCardVisible && (
+            <Animated.View 
+              style={[
+                styles.infoCard, 
+                { 
+                  opacity: infoCardAnimation,
+                  transform: [{ 
+                    translateY: infoCardAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [100, 0], 
+                    }) 
+                  }]
+                }
+              ]}
+            >
+              <View style={styles.infoCardHeader}>
+                <Text style={styles.infoCardTitle}>Marker Kategorileri</Text>
+                <TouchableOpacity 
+                  style={styles.infoCardCloseButton} 
+                  onPress={toggleInfoCard}
+                >
+                  <FontAwesome name="times" size={12} color="#666" />
+                </TouchableOpacity>
+              </View>
+              
+              <View style={styles.infoCardContent}>
+                {categoryInfo.map((category, index) => (
+                  <View key={index} style={styles.categoryRow}>
+                    <View style={styles.categoryIcon}>
+                      <FontAwesome name={category.icon} size={14} color="#fff" />
+                    </View>
+                    <View style={styles.categoryText}>
+                      <Text style={styles.categoryLabel}>{category.label}</Text>
+                      <Text style={styles.categoryDescription}>{category.description}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Animated.View>
+          )}
+
+          {!infoCardVisible && (
+            <TouchableOpacity 
+              style={styles.infoToggleButton} 
+              onPress={toggleInfoCard}
+            >
+              <FontAwesome name="info-circle" size={16} color="#4285F4" />
+            </TouchableOpacity>
+          )}
+        </>
       )}
 
       <RestaurantModal

@@ -426,10 +426,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  modalRatingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   modalRating: {
     fontSize: 16,
     color: '#F39C12',
     fontWeight: '600',
+    marginLeft: 4,
   },
   modalDistance: {
     fontSize: 14,
@@ -439,8 +444,9 @@ export const styles = StyleSheet.create({
   modalAddress: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 10,
     lineHeight: 20,
+    marginLeft: 4,
+    flex: 1,
   },
   modalLocationRow: {
     flexDirection: 'row',
@@ -451,6 +457,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#27AE60',
     fontWeight: '600',
+    marginLeft: 4,
   },
   modalPriceRow: {
     flexDirection: 'row',
@@ -837,7 +844,7 @@ export const styles = StyleSheet.create({
   },
   osmMapBackground: {
     flex: 1,
-    backgroundColor: '#F0F8F0', // OpenStreetMap benzeri yeşil ton
+    backgroundColor: '#F0F8F0',
     position: 'relative',
   },
   centerButton: {
@@ -856,5 +863,84 @@ export const styles = StyleSheet.create({
   },
   centerButtonText: {
     fontSize: 18,
+  },
+  
+  // Bilgilendirme kartı stilleri
+  infoCard: {
+    position: 'absolute',
+    bottom: 135, 
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 10,
+    padding: 12,
+    minWidth: 180,
+    maxWidth: 200,
+    ...createShadowStyle(6),
+    borderWidth: 1,
+    borderColor: 'rgba(102, 126, 234, 0.1)',
+  },
+  infoCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  infoCardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  infoCardCloseButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoCardContent: {
+    gap: 8,
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 3,
+  },
+  categoryIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#EA4335',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  categoryText: {
+    flex: 1,
+  },
+  categoryLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 1,
+  },
+  categoryDescription: {
+    fontSize: 10,
+    color: '#666',
+    lineHeight: 14,
+  },
+  infoToggleButton: {
+    position: 'absolute',
+    bottom: 140,  
+    right: 15, 
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...createShadowStyle(6),
+    borderWidth: 1,
+    borderColor: 'rgba(102, 126, 234, 0.1)',
   },
 });
