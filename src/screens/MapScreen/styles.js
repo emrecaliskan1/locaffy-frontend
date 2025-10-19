@@ -931,7 +931,7 @@ export const styles = StyleSheet.create({
   },
   infoToggleButton: {
     position: 'absolute',
-    bottom: 140,  
+    bottom: 135,  
     right: 15, 
     width: 36,
     height: 36,

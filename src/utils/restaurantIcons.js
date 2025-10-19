@@ -29,7 +29,7 @@ export const getRestaurantIconComponent = (type, size = 24, customColor = null) 
   }
 };
 
-// HTML marker'lar için FontAwesome CSS class döndüren fonksiyon (3 kategori gruplandırma)
+// HTML marker'lar için FontAwesome CSS class döndüren fonksiyon (4 kategori gruplandırma)
 export const getRestaurantIconForHTML = (type) => {
 
   const foodCategories = ['kebab', 'asian-food', 'fast-food'];

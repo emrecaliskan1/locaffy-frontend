@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { restaurants } from '../../static-data/restaurants';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
@@ -120,6 +120,13 @@ export default function MapScreen({ navigation }) {
       iconFamily: 'FontAwesome',
       label: 'Kahve', 
       description: 'Cafe'
+    },
+    { 
+      types: ['pub'], 
+      icon: 'wine-glass-alt', 
+      iconFamily: 'FontAwesome5',
+      label: 'Bar', 
+      description: 'Pub, Bar, Alkollü mekanlar'
     }
   ];
 
@@ -181,7 +188,11 @@ export default function MapScreen({ navigation }) {
                 {categoryInfo.map((category, index) => (
                   <View key={index} style={styles.categoryRow}>
                     <View style={styles.categoryIcon}>
-                      <FontAwesome name={category.icon} size={14} color="#fff" />
+                      {category.iconFamily === 'FontAwesome5' ? (
+                        <FontAwesome5 name={category.icon} size={14} color="#fff" />
+                      ) : (
+                        <FontAwesome name={category.icon} size={14} color="#fff" />
+                      )}
                     </View>
                     <View style={styles.categoryText}>
                       <Text style={styles.categoryLabel}>{category.label}</Text>
