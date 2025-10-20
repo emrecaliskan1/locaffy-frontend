@@ -248,5 +248,30 @@ export const restaurants = [
     features: ['WiFi', 'Çalışma Alanı', 'Kredi Kartı'],
     priceRange: '₺₺',
     minOrder: 0
+  },
+  {
+     id: 12,
+    name: 'Caffeine',
+    type: 'cafe',
+    rating: 0,
+    reviews: 0,
+    distance: '',
+    deliveryTime: '',
+    image: require('../../assets/icon.png'),
+    isOpen: true,
+    isFavorite: false,
+    category: 'cafe',
+    isSelfService: false,
+    coordinate: {
+      latitude: 41.6695,
+      longitude: 26.5988,
+    },
+    address: 'Özgür çocuklar parkı yanı ders çalışma kafesi',
+    phone: '',
+    workingHours: '08:00 - 22:00',
+    description: 'The Caffeine Cafe',
+    features: ['WiFi', 'Çalışma Alanı', 'Kredi Kartı'],
+    priceRange: '₺₺',
+    minOrder: 0
   }
 ];

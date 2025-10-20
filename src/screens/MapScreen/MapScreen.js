@@ -29,6 +29,7 @@ export default function MapScreen({ navigation }) {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [infoCardVisible, setInfoCardVisible] = useState(true);
   const [infoCardAnimation] = useState(new Animated.Value(1));
+  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
 
   useEffect(() => {
     getLocation();
@@ -157,6 +158,7 @@ export default function MapScreen({ navigation }) {
             userLocation={userLocation}
             region={region}
             styles={styles}
+            onBottomSheetToggle={setBottomSheetExpanded}
           />
           
           {infoCardVisible && (
@@ -204,7 +206,7 @@ export default function MapScreen({ navigation }) {
             </Animated.View>
           )}
 
-          {!infoCardVisible && (
+          {!infoCardVisible && !bottomSheetExpanded && (
             <TouchableOpacity 
               style={styles.infoToggleButton} 
               onPress={toggleInfoCard}

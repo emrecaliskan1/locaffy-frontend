@@ -7,6 +7,7 @@ import {
   ScrollView,
   Switch
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { categories, distanceOptions, priceRanges, ratingOptions } from '../../static-data';
@@ -79,8 +80,7 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={styles.container}>
-
+      <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeText}>İptal</Text>
@@ -248,7 +248,7 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
             <Text style={styles.applyButtonText}>Filtreleri Uygula</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };

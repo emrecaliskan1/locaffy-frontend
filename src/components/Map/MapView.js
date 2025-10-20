@@ -4,7 +4,7 @@ import { WebMapView } from './WebMapView';
 import { MobileMapView } from './MobileMapView';
 import { DraggableBottomSheet } from './DraggableBottomSheet';
 
-export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
+export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region, styles, onBottomSheetToggle }) => {
   
   if (Platform.OS === 'web') {
     return (
@@ -21,6 +21,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           styles={styles}
+          onToggle={onBottomSheetToggle}
         />
       </View>
     );
@@ -39,6 +40,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
           restaurants={restaurants}
           onMarkerPress={onMarkerPress}
           styles={styles}
+          onToggle={onBottomSheetToggle}
         />
       </View>
     );

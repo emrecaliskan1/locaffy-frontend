@@ -8,15 +8,17 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 export const RestaurantCard = ({ item, onPress, styles }) => (
+
   <TouchableOpacity 
     style={styles.restaurantCard}
-    onPress={() => onPress(item)}
-  >
+    onPress={() => onPress(item)}>
+
     <View style={styles.cardImageContainer}>
       <Image source={item.image} style={styles.cardImage} />
       <TouchableOpacity style={styles.favoriteButton}>
         <FontAwesome name={item.isFavorite ? "heart" : "heart-o"} size={16} color={item.isFavorite ? "#E74C3C" : "#95A5A6"} style={styles.favoriteIcon} />
       </TouchableOpacity>
+
       <View style={styles.statusBadge}>
         <Text style={styles.statusText}>{item.isOpen ? 'Açık' : 'Kapalı'}</Text>
       </View>
@@ -44,6 +46,7 @@ export const RestaurantCard = ({ item, onPress, styles }) => (
           <Text style={styles.infoText}>{item.deliveryTime}</Text>
         </View>
       </View>
+      
     </View>
   </TouchableOpacity>
 );

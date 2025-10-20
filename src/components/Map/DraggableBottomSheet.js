@@ -14,7 +14,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
 const BOTTOM_SHEET_MIN_HEIGHT = 50;
 
-export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles }) => {
+export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
 
@@ -31,7 +31,11 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles }) => 
       useNativeDriver: false,
     }).start();
     
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    if (onToggle) {
+      onToggle(newExpandedState);
+    }
   };
 
   return (

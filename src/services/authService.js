@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/api/auth';
+const BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/auth`;
 
 const getToken = () => localStorage.getItem('authToken');
 const saveToken = (token) => localStorage.setItem('authToken', token);
