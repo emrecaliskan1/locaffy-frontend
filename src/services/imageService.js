@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/images`;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const BASE_URL = `${API_BASE_URL}/images`;
 
 const getToken = () => localStorage.getItem('authToken');
 
@@ -84,7 +85,7 @@ export const imageService = {
       const formData = new FormData();
       formData.append('file', imageFile);
       
-      const response = await axios.post(`http://localhost:8080/api/menu/items/${menuItemId}/image`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/menu/items/${menuItemId}/image`, formData, {
         headers: getMultipartHeaders()
       });
       return response.data;
@@ -96,7 +97,7 @@ export const imageService = {
   // BUSINESS OWNER
   deleteMenuItemImage: async (menuItemId) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/menu/items/${menuItemId}/image`, {
+      const response = await axios.delete(`${API_BASE_URL}/menu/items/${menuItemId}/image`, {
         headers: getHeaders()
       });
       return response.data;

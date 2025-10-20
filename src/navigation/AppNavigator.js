@@ -1,5 +1,7 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAuth } from '../context/AuthContext';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AuthScreen from '../screens/AuthScreen/AuthScreen';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -19,24 +21,37 @@ import NotificationSettingsScreen from '../screens/ProfileScreen/NotificationSet
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const { isLoggedIn, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null; // Loading state
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Main" component={BottomTabNavigator} />
-        <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
-        <Stack.Screen name="Reservation" component={ReservationScreen} />
-        <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
-        <Stack.Screen name="Menu" component={MenuScreen} />
-        <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
-        <Stack.Screen name="Orders" component={OrdersScreen} />
-        <Stack.Screen name="Reservations" component={ReservationsScreen} />
-        <Stack.Screen name="Review" component={ReviewScreen} />
-        <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
-        <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />
-        <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Auth" component={AuthScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Main" component={BottomTabNavigator} />
+            <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
+            <Stack.Screen name="Reservation" component={ReservationScreen} />
+            <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
+            <Stack.Screen name="Menu" component={MenuScreen} />
+            <Stack.Screen name="Cart" component={CartScreen} />
+            <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
+            <Stack.Screen name="Orders" component={OrdersScreen} />
+            <Stack.Screen name="Reservations" component={ReservationsScreen} />
+            <Stack.Screen name="Review" component={ReviewScreen} />
+            <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+            <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />
+            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

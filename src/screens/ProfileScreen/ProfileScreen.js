@@ -1,47 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert,
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
+import { useAuth } from '../../context/AuthContext';
+import Toast from '../../components/Toast';
 
 export default function ProfileScreen({ navigation }) {
+  const { user, logout } = useAuth();
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  
   const userInfo = {
-    name: 'Emre Çalışkan',
-    email: 'emre@example.com',
-    phone: '+90 555 123 45 67',
+    username: user?.username || '',
+    email: user?.email || '',
     avatar: null,
-    memberSince: 'Ocak 2024',
+    totalOrders: 23,
+    favoriteRestaurants: 5
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Çıkış Yap',
-      'Hesabınızdan çıkmak istediğinizden emin misiniz?',
-      [
-        {
-          text: 'İptal',
-          style: 'cancel',
-        },
-        {
-          text: 'Çıkış Yap',
-          style: 'destructive',
-          onPress: () => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Auth' }],
-            });
-          },
-        },
-      ]
-    );
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
+
+  const handleLogout = async () => {
+    try {
+      const result = await logout();
+      if (result.success) {
+        showToast('Çıkış yapıldı', 'success');
+      } else {
+        showToast(result.message || 'Çıkış yapılamadı', 'error');
+      }
+    } catch (error) {
+      showToast('Çıkış yapılırken hata oluştu', 'error');
+    }
   };
 
   const menuItems = [
@@ -66,16 +68,20 @@ export default function ProfileScreen({ navigation }) {
       title: 'Favori Restoranlar',
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
-      iconColor: '#E74C3C', // Light red
-      onPress: () => navigation.navigate('FavoriteRestaurants'),
+      iconColor: '#E74C3C', 
+      onPress: () => {
+        // Favori restoranlar özelliği yakında eklenecek
+      },
     },
     {
       id: 3,
       title: 'Bildirimler',
       subtitle: 'Bildirim ayarlarını yönetin',
       icon: 'bell',
-      iconColor: '#F39C12', // Light yellow/orange
-      onPress: () => navigation.navigate('NotificationSettings'),
+      iconColor: '#F39C12', 
+      onPress: () => {
+        // Bildirim ayarları yakında eklenecek
+      },
     },
     {
       id: 4,
@@ -84,7 +90,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'question-circle',
       iconColor: '#667eea',
       onPress: () => {
-        Alert.alert('Bilgi', 'Yardım merkezi yakında eklenecek!');
+        // Yardım merkezi yakında eklenecek
       },
     },
     {
@@ -94,7 +100,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'info-circle',
       iconColor: '#667eea',
       onPress: () => {
-        Alert.alert('Locaffy', 'Versiyon 1.0.0\n\nYerel restoranları keşfedin ve sipariş verin.');
+        // Uygulama bilgileri
       },
     },
   ];
@@ -117,15 +123,27 @@ export default function ProfileScreen({ navigation }) {
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarText}>
-                  {userInfo.name.split(' ').map(n => n[0]).join('')}
+                  {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : '--'}
                 </Text>
               </View>
             )}
           </View>
           
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{userInfo.name}</Text>
+            <Text style={styles.userName}>{userInfo.username}</Text>
             <Text style={styles.userEmail}>{userInfo.email}</Text>
+          </View>
+        </View>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{userInfo.totalOrders}</Text>
+            <Text style={styles.statLabel}>Toplam Sipariş</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{userInfo.favoriteRestaurants}</Text>
+            <Text style={styles.statLabel}>Favori Restoran</Text>
           </View>
         </View>
 
@@ -157,6 +175,14 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={1000}
+        onHide={hideToast}
+      />
     </View>
   );
 }
