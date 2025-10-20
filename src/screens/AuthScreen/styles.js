@@ -138,7 +138,7 @@ export const styles = StyleSheet.create({
   eyeIcon: {
     fontSize: 18,
     color: '#7F8C8D',
-    marginLeft: 15
+    marginLeft: 5
   },
   forgotPassword: {
     alignSelf: 'flex-end',

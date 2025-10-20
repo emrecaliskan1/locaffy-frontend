@@ -9,7 +9,7 @@ export default function OnboardingScreen({ navigation }) {
   const pages = [
     {
       title: 'Yakındaki Lezzetleri Keşfet',
-      subtitle: 'Bulunduğun konuma en yakın restoranları ve kafeleri bul',
+      subtitle: 'Bulunduğun konuma en yakın restoranları veya kafeleri bul',
       icon: 'map-marker-alt'
     },
     {
@@ -20,7 +20,7 @@ export default function OnboardingScreen({ navigation }) {
     {
       title: 'Siparişini Ver',
       subtitle: 'Menüye bak, siparişini ver, masanda bekle',
-      icon: 'shopping-cart'
+      icon: 'utensils'
     }
   ];
 
@@ -52,7 +52,7 @@ export default function OnboardingScreen({ navigation }) {
 
         <View style={styles.iconContainer}>
           <View style={styles.iconCircle}>
-            <FontAwesome5 name={pages[currentPage].icon} size={32} color="#667eea" style={styles.iconText} />
+            <FontAwesome5 name={pages[currentPage].icon} size={32} color="#ffffffff" style={styles.iconText} />
           </View>
         </View>
 
