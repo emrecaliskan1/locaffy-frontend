@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/admin`;
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const BASE_URL = `${API_BASE_URL}/admin`;
 
 const getToken = () => localStorage.getItem('authToken');
 

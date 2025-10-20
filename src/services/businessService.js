@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const BUSINESS_URL = `${process.env.REACT_APP_API_BASE_URL}/business`;
-const APPLICATION_URL = `${process.env.REACT_APP_API_BASE_URL}/business-applications`;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const BUSINESS_URL = `${API_BASE_URL}/business`;
+const APPLICATION_URL = `${API_BASE_URL}/business-applications`;
 
 const getToken = () => localStorage.getItem('authToken');
 const getHeaders = () => {

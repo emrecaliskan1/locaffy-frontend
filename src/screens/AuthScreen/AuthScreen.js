@@ -8,21 +8,24 @@ import {
   Platform,
   ScrollView,
   Animated,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
+import { authService } from '../../services/authService';
 
 export default function AuthScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '',
-    phone: ''
+    username: '',
+    passwordConfirm: ''
   });
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -95,12 +98,39 @@ export default function AuthScreen({ navigation }) {
     }));
   };
 
-  const handleLogin = () => {
-    navigation.replace('Main');
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await authService.login(formData.email, formData.password);
+      
+      if (response && response.accessToken) {
+        navigation.replace('Main');
+      }
+    } catch (error) {
+      console.log('Login error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRegister = () => {
-    navigation.replace('Main');
+  const handleRegister = async () => {
+    setLoading(true);
+    try {
+      const response = await authService.register(
+        formData.username,
+        formData.email, 
+        formData.password, 
+        formData.passwordConfirm
+      );
+      
+      if (response && response.accessToken) {
+        navigation.replace('Main');
+      }
+    } catch (error) {
+      console.log('Register error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -206,8 +236,16 @@ export default function AuthScreen({ navigation }) {
                     <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-                    <Text style={styles.primaryButtonText}>Giriş Yap</Text>
+                  <TouchableOpacity 
+                    style={[styles.primaryButton, loading && styles.disabledButton]} 
+                    onPress={handleLogin}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#FFFFFF" size="small" />
+                    ) : (
+                      <Text style={styles.primaryButtonText}>Giriş Yap</Text>
+                    )}
                   </TouchableOpacity>
 
                   <View style={styles.linkContainer}>
@@ -225,20 +263,9 @@ export default function AuthScreen({ navigation }) {
                     <FontAwesome name="user" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
-                      placeholder="Ad Soyad"
-                      value={formData.name}
-                      onChangeText={(value) => handleInputChange('name', value)}
-                    />
-                  </View>
-
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="phone" size={16} color="#95A5A6" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Telefon Numarası"
-                      value={formData.phone}
-                      onChangeText={(value) => handleInputChange('phone', value)}
-                      keyboardType="phone-pad"
+                      placeholder="Kullanıcı Adı"
+                      value={formData.username}
+                      onChangeText={(value) => handleInputChange('username', value)}
                     />
                   </View>
 
@@ -258,7 +285,7 @@ export default function AuthScreen({ navigation }) {
                     <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
-                      placeholder="Şifre"
+                      placeholder="Şifre (en az 6 karakter)"
                       value={formData.password}
                       onChangeText={(value) => handleInputChange('password', value)}
                       secureTextEntry={!showPassword}
@@ -268,8 +295,30 @@ export default function AuthScreen({ navigation }) {
                     </TouchableOpacity>
                   </View>
 
-                  <TouchableOpacity style={styles.primaryButton} onPress={handleRegister}>
-                    <Text style={styles.primaryButtonText}>Hesap Oluştur</Text>
+                  <View style={styles.inputContainer}>
+                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Şifre Tekrar"
+                      value={formData.passwordConfirm}
+                      onChangeText={(value) => handleInputChange('passwordConfirm', value)}
+                      secureTextEntry={!showPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <TouchableOpacity 
+                    style={[styles.primaryButton, loading && styles.disabledButton]} 
+                    onPress={handleRegister}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#FFFFFF" size="small" />
+                    ) : (
+                      <Text style={styles.primaryButtonText}>Hesap Oluştur</Text>
+                    )}
                   </TouchableOpacity>
 
                   <View style={styles.linkContainer}>

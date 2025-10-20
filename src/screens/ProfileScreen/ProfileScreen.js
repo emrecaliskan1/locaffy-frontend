@@ -9,18 +9,43 @@ import {
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CommonActions } from '@react-navigation/native';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
+import { authService } from '../../services/authService';
 
 export default function ProfileScreen({ navigation }) {
-  const userInfo = {
-    name: 'Emre Çalışkan',
-    email: 'emre@example.com',
-    phone: '+90 555 123 45 67',
+  const [userInfo, setUserInfo] = React.useState({
+    username: '',
+    email: '',
     avatar: null,
-    memberSince: 'Ocak 2024',
     totalOrders: 23,
     favoriteRestaurants: 5
+  });
+
+  // Kullanıcı bilgilerini yükle
+  React.useEffect(() => {
+    loadUserInfo();
+  }, []);
+
+  const loadUserInfo = async () => {
+    try {
+      const userData = await authService.getUserInfo();
+      if (userData) {
+        setUserInfo(prevInfo => ({
+          ...prevInfo,
+          username: userData.username || 'Kullanıcı',
+          email: userData.email || 'kullanici@example.com',
+        }));
+      }
+    } catch (error) {
+      // Hata durumunda varsayılan değerleri kullan
+      setUserInfo(prevInfo => ({
+        ...prevInfo,
+        username: '',
+        email: '',
+      }));
+    }
   };
 
   const handleLogout = () => {
@@ -35,11 +60,18 @@ export default function ProfileScreen({ navigation }) {
         {
           text: 'Çıkış Yap',
           style: 'destructive',
-          onPress: () => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Auth' }],
-            });
+          onPress: async () => {
+            try {
+              await authService.clearToken();
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'Auth' }],
+                })
+              );
+            } catch (error) {
+              Alert.alert('Hata', 'Çıkış yapılırken bir hata oluştu.');
+            }
           },
         },
       ]
@@ -60,7 +92,7 @@ export default function ProfileScreen({ navigation }) {
       title: 'Favori Restoranlar',
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
-      iconColor: '#E74C3C', // Light red
+      iconColor: '#E74C3C', 
       onPress: () => {
         Alert.alert('Bilgi', 'Favori restoranlar özelliği yakında eklenecek!');
       },
@@ -70,7 +102,7 @@ export default function ProfileScreen({ navigation }) {
       title: 'Bildirimler',
       subtitle: 'Bildirim ayarlarını yönetin',
       icon: 'bell',
-      iconColor: '#F39C12', // Light yellow/orange
+      iconColor: '#F39C12', 
       onPress: () => {
         Alert.alert('Bilgi', 'Bildirim ayarları yakında eklenecek!');
       },
@@ -115,7 +147,7 @@ export default function ProfileScreen({ navigation }) {
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarText}>
-                  {userInfo.name.split(' ').map(n => n[0]).join('')}
+                  {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : '--'}
                 </Text>
               </View>
             )}
@@ -125,10 +157,8 @@ export default function ProfileScreen({ navigation }) {
           </View>
           
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{userInfo.name}</Text>
+            <Text style={styles.userName}>{userInfo.username}</Text>
             <Text style={styles.userEmail}>{userInfo.email}</Text>
-            <Text style={styles.userPhone}>{userInfo.phone}</Text>
-            <Text style={styles.memberSince}>Üye: {userInfo.memberSince}</Text>
           </View>
         </View>
 

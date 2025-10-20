@@ -169,6 +169,22 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
+  disabledButton: {
+    backgroundColor: '#BDC3C7',
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  inputError: {
+    borderColor: '#E74C3C',
+    borderWidth: 1,
+  },
+  errorText: {
+    color: '#E74C3C',
+    fontSize: 12,
+    marginTop: -15,
+    marginBottom: 10,
+    marginLeft: 16,
+  },
   linkContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
