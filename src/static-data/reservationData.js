@@ -53,8 +53,21 @@ export const mockReservations = {
       time: '18:30',
       people: 3,
       specialRequests: 'Vejetaryen seçenekler',
+      phone: '+90 555 123 45 67'
+    },
+    {
+      id: 5,
+      restaurantName: 'Cafe Loca',
+      restaurantImage: require('../../assets/korean.jpeg'),
+      reservationNumber: '#R12342',
+      status: 'tamamlandı',
+      statusText: 'Tamamlandı',
+      date: '2024-01-15',
+      time: '14:00',
+      people: 2,
+      specialRequests: null,
       phone: '+90 555 123 45 67',
-      rating: 5
+      rating: 4
     },
     {
       id: 4,
