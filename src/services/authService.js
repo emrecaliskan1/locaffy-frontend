@@ -16,7 +16,7 @@ const saveToken = async (token) => {
   try {
     await AsyncStorage.setItem('authToken', token);
   } catch (error) {
-    console.log(error);
+    // Token kaydetme hatası
   }
 };
 
@@ -24,7 +24,7 @@ const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('authToken');
   } catch (error) {
-    console.log(error);
+    // Token silme hatası
   }
 };
 
@@ -32,7 +32,7 @@ const saveUserInfo = async (userInfo) => {
   try {
     await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
   } catch (error) {
-    console.log(error);
+    // User info kaydetme hatası
   }
 };
 
@@ -49,7 +49,7 @@ const removeUserInfo = async () => {
   try {
     await AsyncStorage.removeItem('userInfo');
   } catch (error) {
-    console.log(error);
+    // User info silme hatası
   }
 };
 
@@ -65,7 +65,8 @@ export const authService = {
       };
       const response = await axios.post(`${BASE_URL}/register`, requestBody, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
@@ -80,7 +81,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -92,7 +93,8 @@ export const authService = {
         password
       }, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
@@ -107,7 +109,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -127,7 +129,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -142,10 +144,13 @@ export const authService = {
         }
       });
       await removeToken();
+      await removeUserInfo();
       return response.data;
     } catch (error) {
+      // Hata olsa bile local token'ları temizle
       await removeToken();
-      throw error.message;
+      await removeUserInfo();
+      throw error;
     }
   },
 

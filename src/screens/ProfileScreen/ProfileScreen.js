@@ -1,81 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert,
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CommonActions } from '@react-navigation/native';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import Toast from '../../components/Toast';
 
 export default function ProfileScreen({ navigation }) {
-  const [userInfo, setUserInfo] = React.useState({
-    username: '',
-    email: '',
+  const { user, logout } = useAuth();
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  
+  const userInfo = {
+    username: user?.username || '',
+    email: user?.email || '',
     avatar: null,
     totalOrders: 23,
     favoriteRestaurants: 5
-  });
-
-  // Kullanıcı bilgilerini yükle
-  React.useEffect(() => {
-    loadUserInfo();
-  }, []);
-
-  const loadUserInfo = async () => {
-    try {
-      const userData = await authService.getUserInfo();
-      if (userData) {
-        setUserInfo(prevInfo => ({
-          ...prevInfo,
-          username: userData.username || 'Kullanıcı',
-          email: userData.email || 'kullanici@example.com',
-        }));
-      }
-    } catch (error) {
-      // Hata durumunda varsayılan değerleri kullan
-      setUserInfo(prevInfo => ({
-        ...prevInfo,
-        username: '',
-        email: '',
-      }));
-    }
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Çıkış Yap',
-      'Hesabınızdan çıkmak istediğinizden emin misiniz?',
-      [
-        {
-          text: 'İptal',
-          style: 'cancel',
-        },
-        {
-          text: 'Çıkış Yap',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await authService.clearToken();
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: 'Auth' }],
-                })
-              );
-            } catch (error) {
-              Alert.alert('Hata', 'Çıkış yapılırken bir hata oluştu.');
-            }
-          },
-        },
-      ]
-    );
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
+
+  const handleLogout = async () => {
+    try {
+      const result = await logout();
+      if (result.success) {
+        showToast('Çıkış yapıldı', 'success');
+      } else {
+        showToast(result.message || 'Çıkış yapılamadı', 'error');
+      }
+    } catch (error) {
+      showToast('Çıkış yapılırken hata oluştu', 'error');
+    }
   };
 
   const menuItems = [
@@ -94,7 +62,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'heart',
       iconColor: '#E74C3C', 
       onPress: () => {
-        Alert.alert('Bilgi', 'Favori restoranlar özelliği yakında eklenecek!');
+        // Favori restoranlar özelliği yakında eklenecek
       },
     },
     {
@@ -104,7 +72,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'bell',
       iconColor: '#F39C12', 
       onPress: () => {
-        Alert.alert('Bilgi', 'Bildirim ayarları yakında eklenecek!');
+        // Bildirim ayarları yakında eklenecek
       },
     },
     {
@@ -114,7 +82,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'question-circle',
       iconColor: '#667eea',
       onPress: () => {
-        Alert.alert('Bilgi', 'Yardım merkezi yakında eklenecek!');
+        // Yardım merkezi yakında eklenecek
       },
     },
     {
@@ -124,7 +92,7 @@ export default function ProfileScreen({ navigation }) {
       icon: 'info-circle',
       iconColor: '#667eea',
       onPress: () => {
-        Alert.alert('Locaffy', 'Versiyon 1.0.0\n\nYerel restoranları keşfedin ve sipariş verin.');
+        // Uygulama bilgileri
       },
     },
   ];
@@ -202,6 +170,14 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={1000}
+        onHide={hideToast}
+      />
     </View>
   );
 }

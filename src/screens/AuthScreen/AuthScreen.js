@@ -15,12 +15,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import Toast from '../../components/Toast';
 
 export default function AuthScreen({ navigation }) {
+  const { login, register, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,6 +35,16 @@ export default function AuthScreen({ navigation }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const floatAnim1 = useRef(new Animated.Value(0)).current;
   const floatAnim2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (loading) {
+      if (activeTab === 'login') {
+        showToast('Giriş yapılıyor...', 'info');
+      } else {
+        showToast('Kayıt işlemi yapılıyor...', 'info');
+      }
+    }
+  }, [loading, activeTab]);
 
   useEffect(() => {
   
@@ -98,44 +110,51 @@ export default function AuthScreen({ navigation }) {
     }));
   };
 
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
+
   const handleLogin = async () => {
-    setLoading(true);
     try {
-      const response = await authService.login(formData.email, formData.password);
-      
-      if (response && response.accessToken) {
-        navigation.replace('Main');
+      const result = await login(formData.email, formData.password);
+      if (result.success) {
+        showToast('Giriş yapıldı', 'success');
+      } else {
+        showToast(result.message || 'Giriş başarısız', 'error');
       }
     } catch (error) {
-      console.log('Login error:', error);
-    } finally {
-      setLoading(false);
+      const errorMessage = 'Giriş yapılırken bir hata oluştu';
+      showToast(errorMessage, 'error');
     }
   };
 
   const handleRegister = async () => {
-    setLoading(true);
     try {
-      const response = await authService.register(
+      const result = await register(
         formData.username,
         formData.email, 
         formData.password, 
         formData.passwordConfirm
       );
-      
-      if (response && response.accessToken) {
-        navigation.replace('Main');
+      if (result.success) {
+        showToast('Kayıt başarılı', 'success');
+      } else {
+        showToast(result.message || 'Kayıt başarısız', 'error');
       }
     } catch (error) {
-      console.log('Register error:', error);
-    } finally {
-      setLoading(false);
+      const errorMessage = 'Kayıt yapılırken bir hata oluştu';
+      showToast(errorMessage, 'error');
     }
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      
       <Animated.View 
         style={[
           styles.floatingElement1,
@@ -183,7 +202,9 @@ export default function AuthScreen({ navigation }) {
             <View style={styles.tabContainer}>
               <TouchableOpacity 
                 style={[styles.tab, activeTab === 'login' && styles.activeTab]}
-                onPress={() => setActiveTab('login')}
+                onPress={() => {
+                  setActiveTab('login');
+                }}
               >
                 <Text style={[styles.tabText, activeTab === 'login' && styles.activeTabText]}>
                   Giriş Yap
@@ -191,7 +212,9 @@ export default function AuthScreen({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.tab, activeTab === 'register' && styles.activeTab]}
-                onPress={() => setActiveTab('register')}
+                onPress={() => {
+                  setActiveTab('register');
+                }}
               >
                 <Text style={[styles.tabText, activeTab === 'register' && styles.activeTabText]}>
                   Kayıt Ol
@@ -201,6 +224,7 @@ export default function AuthScreen({ navigation }) {
 
 
             <View style={styles.formContainer}>
+              
               {activeTab === 'login' ? (
   
                 <View>
@@ -334,6 +358,14 @@ export default function AuthScreen({ navigation }) {
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={toast.type === 'info' ? 5000 : 1000}
+        onHide={hideToast}
+      />
     </View>
   );
 }

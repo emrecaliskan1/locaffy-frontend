@@ -11,24 +11,38 @@ import CartScreen from '../screens/CartScreen/CartScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import ReservationsScreen from '../screens/ReservationsScreen';
 import OrderConfirmationScreen from '../screens/OrdersScreen/OrderConfirmationScreen/OrderConfirmationScreen';
+import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const { isLoggedIn, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Main" component={BottomTabNavigator} />
-        <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
-        <Stack.Screen name="Reservation" component={ReservationScreen} />
-        <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
-        <Stack.Screen name="Menu" component={MenuScreen} />
-        <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
-        <Stack.Screen name="Orders" component={OrdersScreen} />
-        <Stack.Screen name="Reservations" component={ReservationsScreen} />
+        {isLoggedIn ? (
+          <>
+            <Stack.Screen name="Main" component={BottomTabNavigator} />
+            <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
+            <Stack.Screen name="Reservation" component={ReservationScreen} />
+            <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
+            <Stack.Screen name="Menu" component={MenuScreen} />
+            <Stack.Screen name="Cart" component={CartScreen} />
+            <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
+            <Stack.Screen name="Orders" component={OrdersScreen} />
+            <Stack.Screen name="Reservations" component={ReservationsScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Auth" component={AuthScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
