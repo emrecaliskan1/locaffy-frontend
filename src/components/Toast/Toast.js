@@ -1,101 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+// TOASTIFY BİLDİRİM COMPONENTİ
 
-const Toast = ({ message, type = 'info', duration = 1000, onHide }) => {
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [slideAnim] = useState(new Animated.Value(-100));
+const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-100)).current;
 
   useEffect(() => {
-    // Giriş animasyonu
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Belirtilen süre sonra çıkış animasyonu
-    const timer = setTimeout(() => {
+    if (visible) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
-          toValue: 0,
+          toValue: 1,
           duration: 300,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
-          toValue: -100,
+          toValue: 0,
           duration: 300,
           useNativeDriver: true,
         }),
-      ]).start(() => {
-        if (onHide) onHide();
-      });
-    }, duration);
+      ]).start();
 
-    return () => clearTimeout(timer);
-  }, [fadeAnim, slideAnim, duration, onHide]);
+      const timer = setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: -100,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          onHide && onHide();
+        });
+      }, duration);
 
-  const getToastColor = () => {
+      return () => clearTimeout(timer);
+    }
+  }, [visible, duration, fadeAnim, slideAnim, onHide]);
+
+  if (!visible) return null;
+
+  const getToastStyle = () => {
     switch (type) {
       case 'success':
-        return '#4CAF50';
+        return {
+          backgroundColor: '#fff',
+          borderLeftColor: '#4CAF50',
+        };
       case 'error':
-        return '#F44336';
-      case 'warning':
-        return '#FF9800';
+        return {
+          backgroundColor: '#fff',
+          borderLeftColor: '#f44336',
+        };
+      case 'info':
+        return {
+          backgroundColor: '#fff',
+          borderLeftColor: '#2196F3',
+        };
       default:
-        return '#2196F3';
+        return {
+          backgroundColor: '#fff',
+          borderLeftColor: '#2196F3',
+        };
     }
   };
 
-  const getToastIcon = () => {
+  const getIconConfig = () => {
     switch (type) {
       case 'success':
-        return 'check-circle';
+        return { name: 'check-circle', color: '#4CAF50' };
       case 'error':
-        return 'exclamation-circle';
-      case 'warning':
-        return 'exclamation-triangle';
+        return { name: 'times-circle', color: '#f44336' };
+      case 'info':
+        return { name: 'info-circle', color: '#2196F3' };
       default:
-        return 'info-circle';
+        return { name: 'info-circle', color: '#2196F3' };
     }
   };
 
-  if (!message) return null;
+  const iconConfig = getIconConfig();
 
   return (
     <Animated.View
       style={[
         styles.container,
+        getToastStyle(),
         {
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
-          backgroundColor: getToastColor(),
         },
       ]}
     >
-      <FontAwesome
-        name={getToastIcon()}
-        size={20}
-        color="white"
-        style={styles.icon}
-      />
-      <Text style={styles.message}>{message}</Text>
+      <FontAwesome name={iconConfig.name} size={20} color={iconConfig.color} />
+      <Text style={[styles.message, { color: iconConfig.color }]}>{message}</Text>
     </Animated.View>
   );
 };
@@ -103,16 +106,16 @@ const Toast = ({ message, type = 'info', duration = 1000, onHide }) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 50,
-    left: 16,
-    right: 16,
-    backgroundColor: '#333',
-    padding: 16,
+    top: 60,
+    left: 20,
+    right: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderRadius: 8,
+    borderLeftWidth: 4,
     flexDirection: 'row',
     alignItems: 'center',
-    zIndex: 9999,
-    elevation: 10,
+    zIndex: 99999,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -120,16 +123,13 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    maxWidth: width - 32,
-  },
-  icon: {
-    marginRight: 12,
+    elevation: 10,
   },
   message: {
-    flex: 1,
-    color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+    marginLeft: 12,
+    flex: 1,
   },
 });
 

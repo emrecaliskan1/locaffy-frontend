@@ -16,7 +16,7 @@ const saveToken = async (token) => {
   try {
     await AsyncStorage.setItem('authToken', token);
   } catch (error) {
-    console.log(error);
+    // Token kaydetme hatası
   }
 };
 
@@ -24,7 +24,7 @@ const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('authToken');
   } catch (error) {
-    console.log(error);
+    // Token silme hatası
   }
 };
 
@@ -32,7 +32,7 @@ const saveUserInfo = async (userInfo) => {
   try {
     await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
   } catch (error) {
-    console.log(error);
+    // User info kaydetme hatası
   }
 };
 
@@ -49,7 +49,7 @@ const removeUserInfo = async () => {
   try {
     await AsyncStorage.removeItem('userInfo');
   } catch (error) {
-    console.log(error);
+    // User info silme hatası
   }
 };
 
@@ -65,7 +65,8 @@ export const authService = {
       };
       const response = await axios.post(`${BASE_URL}/register`, requestBody, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
@@ -80,7 +81,6 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      console.log('Register error:', error.response?.data || error.message);
       throw error;
     }
   },
@@ -93,7 +93,8 @@ export const authService = {
         password
       }, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
@@ -108,7 +109,6 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      console.log('Login error:', error.response?.data || error.message);
       throw error;
     }
   },
@@ -129,7 +129,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -147,9 +147,9 @@ export const authService = {
       await removeUserInfo();
       return response.data;
     } catch (error) {
+      // Hata olsa bile local token'ları temizle
       await removeToken();
       await removeUserInfo();
-      console.log('Logout error:', error.response?.data || error.message);
       throw error;
     }
   },

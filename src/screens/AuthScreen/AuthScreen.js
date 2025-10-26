@@ -22,7 +22,7 @@ export default function AuthScreen({ navigation }) {
   const { login, register, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -35,6 +35,16 @@ export default function AuthScreen({ navigation }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const floatAnim1 = useRef(new Animated.Value(0)).current;
   const floatAnim2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (loading) {
+      if (activeTab === 'login') {
+        showToast('Giriş yapılıyor...', 'info');
+      } else {
+        showToast('Kayıt işlemi yapılıyor...', 'info');
+      }
+    }
+  }, [loading, activeTab]);
 
   useEffect(() => {
   
@@ -100,26 +110,25 @@ export default function AuthScreen({ navigation }) {
     }));
   };
 
-  const showToast = (message, type = 'info') => {
-    setToast({ show: true, message, type });
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
   };
 
   const hideToast = () => {
-    setToast({ show: false, message: '', type: 'info' });
+    setToast({ visible: false, message: '', type: 'success' });
   };
 
   const handleLogin = async () => {
     try {
       const result = await login(formData.email, formData.password);
-      
       if (result.success) {
-        showToast('Giriş başarılı!', 'success');
-        // AuthContext otomatik olarak navigation'ı handle edecek
+        showToast('Giriş yapıldı', 'success');
       } else {
-        showToast(result.message, 'error');
+        showToast(result.message || 'Giriş başarısız', 'error');
       }
     } catch (error) {
-      showToast('Bir hata oluştu', 'error');
+      const errorMessage = 'Giriş yapılırken bir hata oluştu';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -131,21 +140,21 @@ export default function AuthScreen({ navigation }) {
         formData.password, 
         formData.passwordConfirm
       );
-      
       if (result.success) {
-        showToast('Kayıt başarılı!', 'success');
-        // AuthContext otomatik olarak navigation'ı handle edecek
+        showToast('Kayıt başarılı', 'success');
       } else {
-        showToast(result.message, 'error');
+        showToast(result.message || 'Kayıt başarısız', 'error');
       }
     } catch (error) {
-      showToast('Bir hata oluştu', 'error');
+      const errorMessage = 'Kayıt yapılırken bir hata oluştu';
+      showToast(errorMessage, 'error');
     }
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      
       <Animated.View 
         style={[
           styles.floatingElement1,
@@ -193,7 +202,9 @@ export default function AuthScreen({ navigation }) {
             <View style={styles.tabContainer}>
               <TouchableOpacity 
                 style={[styles.tab, activeTab === 'login' && styles.activeTab]}
-                onPress={() => setActiveTab('login')}
+                onPress={() => {
+                  setActiveTab('login');
+                }}
               >
                 <Text style={[styles.tabText, activeTab === 'login' && styles.activeTabText]}>
                   Giriş Yap
@@ -201,7 +212,9 @@ export default function AuthScreen({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.tab, activeTab === 'register' && styles.activeTab]}
-                onPress={() => setActiveTab('register')}
+                onPress={() => {
+                  setActiveTab('register');
+                }}
               >
                 <Text style={[styles.tabText, activeTab === 'register' && styles.activeTabText]}>
                   Kayıt Ol
@@ -211,6 +224,7 @@ export default function AuthScreen({ navigation }) {
 
 
             <View style={styles.formContainer}>
+              
               {activeTab === 'login' ? (
   
                 <View>
@@ -345,6 +359,7 @@ export default function AuthScreen({ navigation }) {
         </ScrollView>
       </KeyboardAvoidingView>
       
+<<<<<<< HEAD
       {toast.show && (
         <Toast
           message={toast.message}
@@ -352,6 +367,15 @@ export default function AuthScreen({ navigation }) {
           onHide={hideToast}
         />
       )}
+=======
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={toast.type === 'info' ? 5000 : 1000}
+        onHide={hideToast}
+      />
+>>>>>>> b69e138 (authContext eklendi, auth validasyonları eklendi, toastify bildirim componenti ve çıkış butonu işlevselliği eklendi.)
     </View>
   );
 }

@@ -13,29 +13,21 @@ import CartScreen from '../screens/CartScreen/CartScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import ReservationsScreen from '../screens/ReservationsScreen';
 import OrderConfirmationScreen from '../screens/OrdersScreen/OrderConfirmationScreen/OrderConfirmationScreen';
-import ReviewScreen from '../screens/ReservationsScreen/ReviewScreen';
-import AccountInfoScreen from '../screens/ProfileScreen/AccountInfoScreen';
-import FavoriteRestaurantsScreen from '../screens/ProfileScreen/FavoriteRestaurantsScreen';
-import NotificationSettingsScreen from '../screens/ProfileScreen/NotificationSettingsScreen';
+import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { isLoggedIn, isLoading } = useAuth();
-
+  
   if (isLoading) {
-    return null; // Loading state
+    return null;
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isLoggedIn ? (
-          <>
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-            <Stack.Screen name="Auth" component={AuthScreen} />
-          </>
-        ) : (
+        {isLoggedIn ? (
           <>
             <Stack.Screen name="Main" component={BottomTabNavigator} />
             <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
@@ -46,10 +38,11 @@ export default function AppNavigator() {
             <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
-            <Stack.Screen name="Review" component={ReviewScreen} />
-            <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
-            <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />
-            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Auth" component={AuthScreen} />
           </>
         )}
       </Stack.Navigator>

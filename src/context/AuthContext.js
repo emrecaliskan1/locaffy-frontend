@@ -17,35 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const getErrorMessage = (error) => {
-    // Backend hata mesajlarını düzenle
-    if (error.response?.status === 403) {
-      return 'E-posta veya şifre yanlış';
-    }
-    
-    if (error.response?.status === 409) {
-      return 'Bu e-posta adresi zaten kullanılıyor';
-    }
-    
-    if (error.response?.status === 400) {
-      const backendMessage = error.response?.data?.message;
-      if (backendMessage?.includes('email')) {
-        return 'Geçerli bir e-posta adresi giriniz';
-      }
-      if (backendMessage?.includes('password')) {
-        return 'Şifre en az 6 karakter olmalıdır';
-      }
-      return backendMessage || 'Girilen bilgiler geçersiz';
-    }
-    
-    return error.message || 'Bir hata oluştu';
-  };
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   // Uygulama başlangıcında kullanıcı bilgilerini kontrol et
   useEffect(() => {
     checkAuthStatus();
@@ -204,3 +175,33 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+
+const getErrorMessage = (error) => {
+    // Backend hata mesajlarını düzenle
+    if (error.response?.status === 403) {
+      return 'E-posta veya şifre yanlış';
+    }
+    
+    if (error.response?.status === 409) {
+      return 'Bu e-posta adresi zaten kullanılıyor';
+    }
+    
+    if (error.response?.status === 400) {
+      const backendMessage = error.response?.data?.message;
+      if (backendMessage?.includes('email')) {
+        return 'Geçerli bir e-posta adresi giriniz';
+      }
+      if (backendMessage?.includes('password')) {
+        return 'Şifre en az 6 karakter olmalıdır';
+      }
+      return backendMessage || 'Girilen bilgiler geçersiz';
+    }
+    
+    return error.message || 'Bir hata oluştu';
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
