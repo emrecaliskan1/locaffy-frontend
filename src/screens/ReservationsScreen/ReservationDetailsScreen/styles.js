@@ -12,5 +12,47 @@ export const styles = StyleSheet.create({
   label: { color: '#7F8C8D' },
   value: { fontWeight: '600', color: '#2C3E50' },
   confirmButton: { marginTop: 30, backgroundColor: '#FF6B35', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
-  confirmText: { color: '#FFFFFF', fontWeight: 'bold' }
+  confirmText: { color: '#FFFFFF', fontWeight: 'bold' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 40,
+    alignItems: 'center',
+    width: 340,
+    maxWidth: '90%',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  successSubtitle: {
+    fontSize: 18,
+    color: '#667eea',
+    marginTop: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  successDetails: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });

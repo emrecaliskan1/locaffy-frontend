@@ -16,11 +16,6 @@ export default function OnboardingScreen({ navigation }) {
       title: 'Kolayca Rezervasyon Yap',
       subtitle: 'Sadece birkaç dokunuşla masanı rezerve et',
       icon: 'calendar-alt'
-    },
-    {
-      title: 'Siparişini Ver',
-      subtitle: 'Menüye bak, siparişini ver, masanda bekle',
-      icon: 'utensils'
     }
   ];
 

@@ -19,8 +19,6 @@ export default function ProfileScreen({ navigation }) {
     phone: '+90 555 123 45 67',
     avatar: null,
     memberSince: 'Ocak 2024',
-    totalOrders: 23,
-    favoriteRestaurants: 5
   };
 
   const handleLogout = () => {
@@ -48,6 +46,14 @@ export default function ProfileScreen({ navigation }) {
 
   const menuItems = [
     {
+      id: 0,
+      title: 'Hesap Bilgileri',
+      subtitle: 'Kişisel bilgilerinizi görüntüleyin ve düzenleyin',
+      icon: 'user-circle',
+      iconColor: '#667eea',
+      onPress: () => navigation.navigate('AccountInfo'),
+    },
+    {
       id: 1,
       title: 'Rezervasyonlarım',
       subtitle: 'Aktif ve geçmiş rezervasyonlar',
@@ -61,9 +67,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
       iconColor: '#E74C3C', // Light red
-      onPress: () => {
-        Alert.alert('Bilgi', 'Favori restoranlar özelliği yakında eklenecek!');
-      },
+      onPress: () => navigation.navigate('FavoriteRestaurants'),
     },
     {
       id: 3,
@@ -71,9 +75,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Bildirim ayarlarını yönetin',
       icon: 'bell',
       iconColor: '#F39C12', // Light yellow/orange
-      onPress: () => {
-        Alert.alert('Bilgi', 'Bildirim ayarları yakında eklenecek!');
-      },
+      onPress: () => navigation.navigate('NotificationSettings'),
     },
     {
       id: 4,
@@ -119,28 +121,11 @@ export default function ProfileScreen({ navigation }) {
                 </Text>
               </View>
             )}
-            <TouchableOpacity style={styles.editButton}>
-              <FontAwesome name="pencil" size={16} color="#FFFFFF" />
-            </TouchableOpacity>
           </View>
           
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{userInfo.name}</Text>
             <Text style={styles.userEmail}>{userInfo.email}</Text>
-            <Text style={styles.userPhone}>{userInfo.phone}</Text>
-            <Text style={styles.memberSince}>Üye: {userInfo.memberSince}</Text>
-          </View>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userInfo.totalOrders}</Text>
-            <Text style={styles.statLabel}>Toplam Sipariş</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userInfo.favoriteRestaurants}</Text>
-            <Text style={styles.statLabel}>Favori Restoran</Text>
           </View>
         </View>
 
