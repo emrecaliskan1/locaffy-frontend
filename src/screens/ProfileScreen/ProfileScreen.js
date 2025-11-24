@@ -69,9 +69,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
       iconColor: '#E74C3C', 
-      onPress: () => {
-        // Favori restoranlar özelliği yakında eklenecek
-      },
+      onPress: () => navigation.navigate('FavoriteRestaurants'),
     },
     {
       id: 3,
@@ -79,9 +77,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Bildirim ayarlarını yönetin',
       icon: 'bell',
       iconColor: '#F39C12', 
-      onPress: () => {
-        // Bildirim ayarları yakında eklenecek
-      },
+      onPress: () => navigation.navigate('NotificationSettings'),
     },
     {
       id: 4,

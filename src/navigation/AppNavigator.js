@@ -13,7 +13,9 @@ import CartScreen from '../screens/CartScreen/CartScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import ReservationsScreen from '../screens/ReservationsScreen';
 import OrderConfirmationScreen from '../screens/OrdersScreen/OrderConfirmationScreen/OrderConfirmationScreen';
-import { useAuth } from '../context/AuthContext';
+import AccountInfoScreen from '../screens/ProfileScreen/AccountInfoScreen';
+import FavoriteRestaurantsScreen from '../screens/ProfileScreen/FavoriteRestaurantsScreen';
+import NotificationSettingsScreen from '../screens/ProfileScreen/NotificationSettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +40,9 @@ export default function AppNavigator() {
             <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
+            <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+            <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />
+            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
           </>
         ) : (
           <>

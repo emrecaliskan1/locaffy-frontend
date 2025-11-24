@@ -359,15 +359,6 @@ export default function AuthScreen({ navigation }) {
         </ScrollView>
       </KeyboardAvoidingView>
       
-<<<<<<< HEAD
-      {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onHide={hideToast}
-        />
-      )}
-=======
       <Toast
         visible={toast.visible}
         message={toast.message}
@@ -375,7 +366,6 @@ export default function AuthScreen({ navigation }) {
         duration={toast.type === 'info' ? 5000 : 1000}
         onHide={hideToast}
       />
->>>>>>> b69e138 (authContext eklendi, auth validasyonları eklendi, toastify bildirim componenti ve çıkış butonu işlevselliği eklendi.)
     </View>
   );
 }
