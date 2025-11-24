@@ -1,22 +1,45 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, StatusBar, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
-import { restaurants } from '../../static-data/restaurants';
+import { userService } from '../../services';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
-  // Favori restoranlar - isFavorite: true olanları filtrele
-  const favoriteRestaurants = restaurants.filter(restaurant => restaurant.isFavorite);
+  const [favoriteRestaurants, setFavoriteRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      const favorites = await userService.getFavoritePlaces();
+      setFavoriteRestaurants(favorites);
+    } catch (error) {
+      Alert.alert('Hata', 'Favori restoranlar yüklenirken bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFavorites();
+  }, []);
 
   const handleRestaurantPress = (restaurant) => {
     // Restoran detay sayfasına git
     navigation.navigate('RestaurantDetail', { restaurant });
   };
 
-  const handleRemoveFavorite = (id) => {
-    // Favorilerden çıkarma işlemi
-    console.log('Remove favorite:', id);
+  const handleRemoveFavorite = async (placeId) => {
+    try {
+      await userService.removeFromFavorites(placeId);
+      // Favorilerden çıkarıldıktan sonra listeyi güncelle
+      setFavoriteRestaurants(prev => prev.filter(restaurant => restaurant.id !== placeId));
+      Alert.alert('Başarılı', 'Restoran favorilerden çıkarıldı');
+    } catch (error) {
+      console.log('Error removing favorite:', error);
+      Alert.alert('Hata', 'Favorilerden çıkarılırken bir hata oluştu');
+    }
   };
 
   return (
@@ -33,11 +56,25 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
       </SafeAreaView>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.subtitle}>
-          {favoriteRestaurants.length} favori restoran
-        </Text>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <Text style={styles.loadingText}>Favori restoranlarınız yükleniyor...</Text>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.subtitle}>
+              {favoriteRestaurants.length} favori restoran
+            </Text>
 
-        {favoriteRestaurants.map((restaurant) => (
+            {favoriteRestaurants.length === 0 ? (
+              <View style={styles.emptyState}>
+                <FontAwesome name="heart-o" size={50} color={COLORS.gray} />
+                <Text style={styles.emptyStateText}>Henüz favori restoranınız yok</Text>
+                <Text style={styles.emptyStateSubtext}>Beğendiğiniz restoranları favorilerinize ekleyin</Text>
+              </View>
+            ) : (
+              favoriteRestaurants.map((restaurant) => (
           <TouchableOpacity
             key={restaurant.id}
             style={styles.restaurantCard}
@@ -59,7 +96,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
                   <FontAwesome name="heart" size={20} color="#E74C3C" />
                 </TouchableOpacity>
               </View>
-              <Text style={styles.restaurantCuisine}>{restaurant.type}</Text>
+              <Text style={styles.restaurantCuisine}>{restaurant.category || restaurant.type}</Text>
               <View style={styles.restaurantFooter}>
                 <View style={styles.ratingContainer}>
                   <FontAwesome name="star" size={14} color="#F39C12" />
@@ -72,9 +109,12 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
               </View>
             </View>
           </TouchableOpacity>
-        ))}
+              ))
+            )}
 
-        <View style={{ height: 40 }} />
+            <View style={{ height: 40 }} />
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -106,6 +146,38 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#7F8C8D',
+    textAlign: 'center',
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginTop: 8,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
   subtitle: {
     fontSize: 14,

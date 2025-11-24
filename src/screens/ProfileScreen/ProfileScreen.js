@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
   ScrollView,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import Toast from '../../components/Toast';
+import { userService } from '../../services';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  const [userStats, setUserStats] = useState({ totalOrders: 0, favoriteRestaurants: 0 });
+  const [isLoading, setIsLoading] = useState(true);
   
   const userInfo = {
     username: user?.username || '',
     email: user?.email || '',
     avatar: null,
-    totalOrders: 23,
-    favoriteRestaurants: 5
+    ...userStats
   };
 
   const showToast = (message, type = 'success') => {
@@ -32,6 +35,22 @@ export default function ProfileScreen({ navigation }) {
   const hideToast = () => {
     setToast({ visible: false, message: '', type: 'success' });
   };
+
+  const loadUserStats = async () => {
+    try {
+      setIsLoading(true);
+      const stats = await userService.getStats();
+      setUserStats(stats);
+    } catch (error) {
+      console.log('Error loading user stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUserStats();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -133,12 +152,20 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userInfo.totalOrders}</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#667eea" />
+            ) : (
+              <Text style={styles.statNumber}>{userInfo.totalOrders}</Text>
+            )}
             <Text style={styles.statLabel}>Toplam Sipariş</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userInfo.favoriteRestaurants}</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#667eea" />
+            ) : (
+              <Text style={styles.statNumber}>{userInfo.favoriteRestaurants}</Text>
+            )}
             <Text style={styles.statLabel}>Favori Restoran</Text>
           </View>
         </View>

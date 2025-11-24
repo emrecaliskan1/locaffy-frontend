@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
-import { restaurants } from '../../static-data/restaurants';
+import { placeService } from '../../services/placeService';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
 
 export default function MapScreen({ navigation }) {
@@ -24,6 +24,8 @@ export default function MapScreen({ navigation }) {
   });
 
   const [userLocation, setUserLocation] = useState(null);
+  const [places, setPlaces] = useState([]);
+  const [placesLoading, setPlacesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
@@ -67,6 +69,23 @@ export default function MapScreen({ navigation }) {
       setLoading(false);
     }
   };
+
+  const loadPlaces = async () => {
+    setPlacesLoading(true);
+    try {
+      const placesData = await placeService.getNearbyPlaces();
+      setPlaces(placesData);
+    } catch (error) {
+      console.error('Failed to load places:', error);
+      Alert.alert('Hata', 'Mekanlar yüklenirken bir hata oluştu');
+    } finally {
+      setPlacesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPlaces();
+  }, []);
 
   const handleMarkerPress = (restaurant) => {
     setSelectedRestaurant(restaurant);
@@ -145,15 +164,17 @@ export default function MapScreen({ navigation }) {
         </View>
       </SafeAreaView>
 
-      {loading ? (
+      {loading || placesLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#4285F4" />
-          <Text style={styles.loadingText}>Konum alınıyor...</Text>
+          <Text style={styles.loadingText}>
+            {loading ? 'Konum alınıyor...' : 'Mekanlar yükleniyor...'}
+          </Text>
         </View>
       ) : (
         <>
           <ModernMapView
-            restaurants={restaurants}
+            restaurants={places}
             onMarkerPress={handleMarkerPress}
             userLocation={userLocation}
             region={region}

@@ -81,7 +81,9 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error;
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Kayıt olurken bir hata oluştu';
+      throw new Error(errorMessage);
     }
   },
 
@@ -109,7 +111,9 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error;
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Giriş yapılırken bir hata oluştu';
+      throw new Error(errorMessage);
     }
   },
 
@@ -129,7 +133,9 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      throw error;
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Oturum yenilenirken hata oluştu';
+      throw new Error(errorMessage);
     }
   },
 
@@ -150,7 +156,9 @@ export const authService = {
       // Hata olsa bile local token'ları temizle
       await removeToken();
       await removeUserInfo();
-      throw error;
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Çıkış yapılırken bir hata oluştu';
+      throw new Error(errorMessage);
     }
   },
 

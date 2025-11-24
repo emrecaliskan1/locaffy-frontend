@@ -1,28 +1,69 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, StatusBar, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
+import { userService } from '../../services';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AccountInfoScreen({ navigation, route }) {
+  const { user } = useAuth();
   const [userInfo, setUserInfo] = useState({
-    name: 'Emre Çalışkan',
-    email: 'emre@example.com',
-    phone: '+90 555 123 45 67',
+    name: '',
+    email: '',
+    username: '',
+    phone: '',
   });
   const [passwordExpanded, setPasswordExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleInputChange = (field, value) => {
     setUserInfo(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+  const loadUserProfile = async () => {
+    try {
+      setLoading(true);
+      const profile = await userService.getProfile();
+      setUserInfo({
+        name: profile.name || user?.username || '',
+        email: profile.email || user?.email || '',
+        username: profile.username || user?.username || profile.name || '',
+        phone: profile.phone || '',
+      });
+    } catch (error) {
+      console.log('Error loading profile:', error);
+      setUserInfo({
+        name: user?.username || '',
+        email: user?.email || '',
+        username: user?.username || '',
+        phone: '',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUserProfile();
+  }, [user]);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await userService.updateProfile({
+        name: userInfo.name,
+        email: userInfo.email,
+        phone: userInfo.phone,
+      });
+      Alert.alert('Başarılı', 'Profil bilgileri güncellendi');
       navigation.goBack();
-    }, 1000);
+    } catch (error) {
+      Alert.alert('Hata', 'Profil güncellenirken bir hata oluştu');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -43,7 +84,8 @@ export default function AccountInfoScreen({ navigation, route }) {
         <View style={styles.avatarSection}>
           <View style={styles.avatarPlaceholder}>
             <Text style={styles.avatarText}>
-              {userInfo.name.split(' ').map(n => n[0]).join('')}
+              {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : 
+               userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase() : '--'}
             </Text>
           </View>
           <TouchableOpacity style={styles.changePhotoButton}>
@@ -212,18 +254,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   avatarPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#E8E8E8',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.PRIMARY,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
+    elevation: 6,
+    shadowColor: COLORS.PRIMARY,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
   },
   avatarText: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: 'bold',
-    color: '#95A5A6',
+    color: '#FFFFFF',
+    letterSpacing: 2,
   },
   changePhotoButton: {
     flexDirection: 'row',

@@ -1,15 +1,23 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 const BASE_URL = `${API_BASE_URL}/reviews`;
 
-const getToken = () => localStorage.getItem('authToken');
+const getToken = async () => {
+  try {
+    return await AsyncStorage.getItem('authToken');
+  } catch (e) {
+    return null;
+  }
+};
 
-const getHeaders = () => {
-  const token = getToken();
+const buildHeaders = async (extra = {}) => {
+  const token = await getToken();
   return {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...extra,
   };
 };
 
@@ -18,12 +26,15 @@ export const reviewService = {
   // USER
   createReview: async (reviewData) => {
     try {
-      const response = await axios.post(`${BASE_URL}`, reviewData, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.post(`${BASE_URL}`, reviewData, { headers });
       return response.data;
     } catch (error) {
-      throw error.response?.data || error.message;
+      console.log('Error creating review:', error);
+      
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Yorum oluşturulurken bir hata oluştu';
+      throw new Error(errorMessage);
     }
   },
 
@@ -33,19 +44,22 @@ export const reviewService = {
       const response = await axios.get(`${BASE_URL}/place/${placeId}`);
       return response.data;
     } catch (error) {
-      throw error.response?.data || error.message;
+      throw error;
     }
   },
 
   // USER
   deleteReview: async (reviewId) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/${reviewId}`, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.delete(`${BASE_URL}/${reviewId}`, { headers });
       return response.data;
     } catch (error) {
-      throw error.response?.data || error.message;
+      console.log('Error deleting review:', error);
+      
+      // Backend ErrorResponse formatını handle et
+      const errorMessage = error.response?.data?.message || 'Yorum silinirken bir hata oluştu';
+      throw new Error(errorMessage);
     }
   }
 };

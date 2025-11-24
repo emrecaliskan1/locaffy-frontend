@@ -178,30 +178,35 @@ export const AuthProvider = ({ children }) => {
 
 
 const getErrorMessage = (error) => {
-    // Backend hata mesajlarını düzenle
-    if (error.response?.status === 403) {
-      return 'E-posta veya şifre yanlış';
-    }
-    
-    if (error.response?.status === 409) {
-      return 'Bu e-posta adresi zaten kullanılıyor';
-    }
-    
-    if (error.response?.status === 400) {
-      const backendMessage = error.response?.data?.message;
-      if (backendMessage?.includes('email')) {
-        return 'Geçerli bir e-posta adresi giriniz';
-      }
-      if (backendMessage?.includes('password')) {
-        return 'Şifre en az 6 karakter olmalıdır';
-      }
-      return backendMessage || 'Girilen bilgiler geçersiz';
-    }
-    
-    return error.message || 'Bir hata oluştu';
-  };
+  if (error.message) {
+    return error.message;
+  }
+  
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  
+  if (error.response?.status === 401 || error.response?.status === 403) {
+    return 'E-posta veya şifre yanlış';
+  }
+  
+  if (error.response?.status === 409) {
+    return 'Bu e-posta adresi zaten kullanılıyor';
+  }
+  
+  if (error.response?.status === 400) {
+    return 'Girdiğiniz bilgileri kontrol ediniz';
+  }
+  
+  if (error.response?.status === 404) {
+    return 'Kullanıcı bulunamadı';
+  }
+  
+  // Genel hata mesajı
+  return 'Bir hata oluştu. Lütfen tekrar deneyin.';
+};
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };

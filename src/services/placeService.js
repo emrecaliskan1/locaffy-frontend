@@ -1,15 +1,23 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 const BASE_URL = `${API_BASE_URL}/places`;
 
-const getToken = () => localStorage.getItem('authToken');
+const getToken = async () => {
+  try {
+    return await AsyncStorage.getItem('authToken');
+  } catch (e) {
+    return null;
+  }
+};
 
-const getHeaders = () => {
-  const token = getToken();
+const buildHeaders = async (extra = {}) => {
+  const token = await getToken();
   return {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...extra,
   };
 };
 
@@ -26,7 +34,7 @@ export const placeService = {
       });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -41,7 +49,7 @@ export const placeService = {
       });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
@@ -51,20 +59,21 @@ export const placeService = {
       const response = await axios.get(`${BASE_URL}/${placeId}`);
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // BUSINESS OWNER , ADMIN
   updateOccupancyRate: async (placeId, occupancyRate) => {
     try {
+      const headers = await buildHeaders();
       const response = await axios.put(`${BASE_URL}/${placeId}/occupancy`, null, {
         params: { occupancyRate },
-        headers: getHeaders()
+        headers,
       });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   }
 };

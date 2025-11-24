@@ -127,8 +127,7 @@ export default function AuthScreen({ navigation }) {
         showToast(result.message || 'Giriş başarısız', 'error');
       }
     } catch (error) {
-      const errorMessage = 'Giriş yapılırken bir hata oluştu';
-      showToast(errorMessage, 'error');
+      showToast(error.message || 'Giriş yapılırken bir hata oluştu', 'error');
     }
   };
 
@@ -146,8 +145,8 @@ export default function AuthScreen({ navigation }) {
         showToast(result.message || 'Kayıt başarısız', 'error');
       }
     } catch (error) {
-      const errorMessage = 'Kayıt yapılırken bir hata oluştu';
-      showToast(errorMessage, 'error');
+      // AuthContext'ten gelen error message'ı kullan
+      showToast(error.message || 'Kayıt yapılırken bir hata oluştu', 'error');
     }
   };
 

@@ -1,15 +1,23 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 const BUSINESS_URL = `${API_BASE_URL}/business`;
 const APPLICATION_URL = `${API_BASE_URL}/business-applications`;
 
-const getToken = () => localStorage.getItem('authToken');
-const getHeaders = () => {
-  const token = getToken();
+const getToken = async () => {
+  try {
+    return await AsyncStorage.getItem('authToken');
+  } catch (e) {
+    return null;
+  }
+};
+
+const buildHeaders = async () => {
+  const token = await getToken();
   return {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
+    ...(token && { Authorization: `Bearer ${token}` })
   };
 };
 
@@ -20,49 +28,47 @@ export const businessService = {
   // BUSINESS OWNER
   getMyPlaces: async () => {
     try {
-      const response = await axios.get(`${BUSINESS_URL}/places`, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BUSINESS_URL}/places`, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // BUSINESS OWNER 
   updatePlace: async (placeId, placeData) => {
     try {
-      const response = await axios.put(`${BUSINESS_URL}/places/${placeId}`, placeData, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.put(`${BUSINESS_URL}/places/${placeId}`, placeData, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // BUSINESS OWNER 
   updateOccupancyRate: async (placeId, occupancyRate) => {
     try {
+      const headers = await buildHeaders();
       const response = await axios.put(`${BUSINESS_URL}/places/${placeId}/occupancy`, null, {
         params: { occupancyRate },
-        headers: getHeaders()
+        headers
       });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // BUSINESS OWNER 
   getPlaceMenu: async (placeId) => {
     try {
-      const response = await axios.get(`${BUSINESS_URL}/places/${placeId}/menu`, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BUSINESS_URL}/places/${placeId}/menu`, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   }
 };
@@ -75,75 +81,68 @@ export const businessApplicationService = {
   submitApplication: async (applicationData) => {
     try {
       const response = await axios.post(`${APPLICATION_URL}`, applicationData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // ADMIN 
   getPendingApplications: async () => {
     try {
-      const response = await axios.get(`${APPLICATION_URL}/pending`, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.get(`${APPLICATION_URL}/pending`, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // ADMIN 
   getApplicationById: async (applicationId) => {
     try {
-      const response = await axios.get(`${APPLICATION_URL}/${applicationId}`, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.get(`${APPLICATION_URL}/${applicationId}`, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // ADMIN 
   updateApplicationStatus: async (applicationId, statusData) => {
     try {
-      const response = await axios.put(`${APPLICATION_URL}/${applicationId}/status`, statusData, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.put(`${APPLICATION_URL}/${applicationId}/status`, statusData, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // ADMIN 
   approveApplication: async (applicationId) => {
     try {
-      const response = await axios.put(`${APPLICATION_URL}/${applicationId}/approve`, {}, {
-        headers: getHeaders()
-      });
+      const headers = await buildHeaders();
+      const response = await axios.put(`${APPLICATION_URL}/${applicationId}/approve`, {}, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   },
 
   // ADMIN 
   rejectApplication: async (applicationId, rejectionReason) => {
     try {
+      const headers = await buildHeaders();
       const response = await axios.put(`${APPLICATION_URL}/${applicationId}/reject`, {
         rejectionReason
-      }, {
-        headers: getHeaders()
-      });
+      }, { headers });
       return response.data;
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   }
 };

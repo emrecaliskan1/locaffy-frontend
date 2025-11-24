@@ -6,32 +6,59 @@ import {
   FlatList,
   StatusBar,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 
-import { mockReservations } from '../../static-data';
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
 import { Alert } from 'react-native';
+import { reservationService } from '../../services';
 
 
 export default function ReservationsScreen({ navigation, route }) {
   const [activeTab, setActiveTab] = useState('active');
   const { fromProfile, fromRestaurant } = route.params || {};
 
-  const [activeReservations, setActiveReservations] = useState(mockReservations.active);
-  const [pastReservations, setPastReservations] = useState(mockReservations.completed);
+  const [activeReservations, setActiveReservations] = useState([]);
+  const [pastReservations, setPastReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Modal için state
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
 
+  const loadReservations = async () => {
+    try {
+      setLoading(true);
+      const reservations = await reservationService.getMyReservations();
+      
+      // Rezervasyonları durumuna göre ayır
+      const active = reservations.filter(res => 
+        res.status === 'CONFIRMED' || res.status === 'PENDING'
+      );
+      const past = reservations.filter(res => 
+        res.status === 'COMPLETED' || res.status === 'CANCELLED'
+      );
+      
+      setActiveReservations(active);
+      setPastReservations(past);
+    } catch (error) {
+      console.log('Error loading reservations:', error);
+      Alert.alert('Hata', 'Rezervasyonlar yüklenirken bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Değerlendirme sonrası güncelleme için listener
   useEffect(() => {
+    loadReservations();
+    
     const unsubscribe = navigation.addListener('focus', () => {
       // Ekran her açıldığında verileri yenile
-      // TODO: Backend'den güncel veriyi çek
+      loadReservations();
     });
 
     return unsubscribe;
@@ -119,7 +146,12 @@ export default function ReservationsScreen({ navigation, route }) {
         styles={styles} 
       />
 
-      {activeTab === 'active' ? (
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#667eea" />
+          <Text style={styles.loadingText}>Rezervasyonlar yükleniyor...</Text>
+        </View>
+      ) : activeTab === 'active' ? (
         <FlatList
           data={activeReservations}
           keyExtractor={(item) => item.id.toString()}
