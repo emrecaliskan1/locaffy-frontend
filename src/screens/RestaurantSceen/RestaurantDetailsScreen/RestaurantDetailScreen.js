@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
-import { mockRestaurantDetailData, restaurants } from '../../../static-data';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
@@ -18,27 +17,36 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
   const [activeTab, setActiveTab] = useState('menu');
 
-  const restaurantData = restaurant 
-    ? restaurants.find(r => r.id === restaurant.id) || restaurant
-    : restaurants[0];
+  const restaurantData = restaurant || {
+    id: 1,
+    name: 'Bilinmeyen Mekan',
+    address: 'Adres bilgisi yok',
+    averageRating: 0,
+    totalRatings: 0,
+  };
 
-  const mockRestaurantData = {
+  // Menu ve review'ler şu an için boş - backend'den gelince eklenecek
+  const finalRestaurantData = {
     ...restaurantData,
-    menu: mockRestaurantDetailData.menu,
-    reviews: mockRestaurantDetailData.reviews,
-    reviewCount: restaurantData?.reviews || mockRestaurantDetailData.reviews.length,
+    menu: [],
+    reviews: [], 
+    reviewCount: restaurantData.totalRatings || 0,
+    image: restaurantData.mainImageUrl || null,
+    rating: restaurantData.averageRating || 0,
+    distance: '1.2 km', // Şimdilik sabit
+    time: '25-30 dk', // Şimdilik sabit
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'menu':
-        return <MenuTab restaurant={mockRestaurantData} styles={styles} />;
+        return <MenuTab restaurant={finalRestaurantData} styles={styles} />;
       case 'reviews':
-        return <ReviewsTab restaurant={mockRestaurantData} styles={styles} />;
+        return <ReviewsTab restaurant={finalRestaurantData} styles={styles} />;
       case 'info':
-        return <InfoTab restaurant={mockRestaurantData} styles={styles} />;
+        return <InfoTab restaurant={finalRestaurantData} styles={styles} />;
       default:
-        return <MenuTab restaurant={mockRestaurantData} styles={styles} />;
+        return <MenuTab restaurant={finalRestaurantData} styles={styles} />;
     }
   };
 
@@ -53,7 +61,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           >
             <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{mockRestaurantData.name}</Text>
+          <Text style={styles.headerTitle}>{finalRestaurantData.name}</Text>
           <TouchableOpacity style={styles.shareButton}>
             <FontAwesome name="heart-o" size={18} color="#E74C3C" style={styles.shareIcon} />
           </TouchableOpacity>
@@ -63,37 +71,43 @@ export default function RestaurantDetailScreen({ route, navigation }) {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.imageContainer}>
-          <Image
-            source={mockRestaurantData.image}
-            style={styles.restaurantImage}
-            resizeMode="cover"
-          />
+          {finalRestaurantData.image ? (
+            <Image
+              source={{ uri: finalRestaurantData.image }}
+              style={styles.restaurantImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={[styles.restaurantImage, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
+              <Text style={{ color: '#999', fontSize: 16 }}>Resim yok</Text>
+            </View>
+          )}
           <View style={styles.imageOverlay}>
             <View style={styles.ratingContainer}>
               <View style={styles.ratingWrapper}>
                 <FontAwesome name="star" size={16} color="#F39C12" />
-                <Text style={styles.rating}> {mockRestaurantData.rating}</Text>
+                <Text style={styles.rating}> {finalRestaurantData.rating}</Text>
               </View>
-              <Text style={styles.reviewCount}>({mockRestaurantData.reviewCount})</Text>
+              <Text style={styles.reviewCount}>({finalRestaurantData.reviewCount})</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.restaurantInfo}>
-          <Text style={styles.restaurantName}>{mockRestaurantData.name}</Text>
-          <Text style={styles.restaurantType}>{mockRestaurantData.type}</Text>
+          <Text style={styles.restaurantName}>{finalRestaurantData.name}</Text>
+          <Text style={styles.restaurantType}>{finalRestaurantData.placeType || 'Restoran'}</Text>
           <View style={styles.restaurantMeta}>
             <View style={styles.metaItem}>
-              <FontAwesome name="dollar" size={14} color="#27AE60" />
-              <Text style={styles.metaText}> {mockRestaurantData.priceRange}</Text>
+              <FontAwesome name="map-marker" size={14} color="#27AE60" />
+              <Text style={styles.metaText}> {finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
             </View>
             <View style={styles.metaItem}>
-              <FontAwesome name="truck" size={14} color="#3498DB" />
-              <Text style={styles.metaText}> {mockRestaurantData.deliveryTime}</Text>
+              <FontAwesome name="phone" size={14} color="#3498DB" />
+              <Text style={styles.metaText}> {finalRestaurantData.phoneNumber || 'Telefon yok'}</Text>
             </View>
             <View style={styles.metaItem}>
-              <FontAwesome name="shopping-bag" size={14} color="#E67E22" />
-              <Text style={styles.metaText}> ₺{mockRestaurantData.minOrder}+ min</Text>
+              <FontAwesome name="clock-o" size={14} color="#E67E22" />
+              <Text style={styles.metaText}> {finalRestaurantData.openingHours || 'Çalışma saatleri belirtilmemiş'}</Text>
             </View>
           </View>
         </View>
