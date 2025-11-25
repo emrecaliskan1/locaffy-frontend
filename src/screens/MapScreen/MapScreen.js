@@ -73,11 +73,13 @@ export default function MapScreen({ navigation }) {
   const loadPlaces = async () => {
     setPlacesLoading(true);
     try {
-      // HomeScreen ile aynı koordinatları kullan - orada çalışıyor!
-      const result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000);
+      // Kullanıcının mevcut konumunu kullan, yoksa varsayılan koordinatlar
+      const lat = userLocation ? userLocation.latitude : 41.6771;
+      const lng = userLocation ? userLocation.longitude : 26.5557;
+      const result = await placeService.getNearbyPlaces(lat, lng, 10000);
       setPlaces(result || []);
     } catch (error) {
-      Alert.alert('API Hatası', `Error: ${error.message}`);
+      console.error('Places loading error:', error);
       setPlaces([]);
     } finally {
       setPlacesLoading(false);
@@ -85,8 +87,14 @@ export default function MapScreen({ navigation }) {
   };
 
   useEffect(() => {
-    loadPlaces();
+    // Places will be loaded after getting user location
   }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      loadPlaces();
+    }
+  }, [userLocation]);
 
   useEffect(() => {
     if (userLocation) {
@@ -155,7 +163,7 @@ export default function MapScreen({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Edirne Haritası</Text>
+          <Text style={styles.headerTitle}>Mevcut Konum</Text>
           <TouchableOpacity 
             style={styles.searchButton} 
             onPress={getLocation}>

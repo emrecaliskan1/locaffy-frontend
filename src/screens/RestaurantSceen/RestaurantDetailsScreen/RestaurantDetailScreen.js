@@ -114,7 +114,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
 
         <TouchableOpacity 
           style={styles.reservationButton}
-          onPress={() => navigation.navigate('Reservation', { restaurant: mockRestaurantData })}
+          onPress={() => navigation.navigate('Reservation', { restaurant: finalRestaurantData })}
         >
           <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>

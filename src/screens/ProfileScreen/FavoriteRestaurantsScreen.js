@@ -63,10 +63,6 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
           </View>
         ) : (
           <>
-            <Text style={styles.subtitle}>
-              {favoriteRestaurants.length} favori restoran
-            </Text>
-
             {favoriteRestaurants.length === 0 ? (
               <View style={styles.emptyState}>
                 <FontAwesome name="heart-o" size={50} color={COLORS.gray} />
