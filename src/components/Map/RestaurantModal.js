@@ -28,7 +28,7 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
           <View style={styles.modalHeader}>
             <View style={styles.modalRestaurantIcon}>
               <View style={styles.modalIconEmoji}>
-                {getRestaurantIconComponent(restaurant.type, 24, '#FFFFFF')}
+                {getRestaurantIconComponent(restaurant.placeType, 24, '#FFFFFF')}
               </View>
             </View>
             <TouchableOpacity style={styles.modalCloseButton} onPress={onClose}>
@@ -38,14 +38,14 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
           
           <View style={styles.modalBody}>
             <Text style={styles.modalRestaurantName}>{restaurant.name}</Text>
-            <Text style={styles.modalRestaurantType}>{restaurant.type}</Text>
+            <Text style={styles.modalRestaurantType}>{restaurant.placeType}</Text>
             
             <View style={styles.modalInfoRow}>
               <View style={styles.modalRatingContainer}>
                 <FontAwesome name="star" size={14} color="#FFD700" />
-                <Text style={styles.modalRating}>{restaurant.rating}</Text>
+                <Text style={styles.modalRating}>{restaurant.averageRating || '0.0'}</Text>
               </View>
-              <Text style={styles.modalDistance}>{restaurant.distance}</Text>
+              <Text style={styles.modalDistance}>{restaurant.distance ? `${(restaurant.distance / 1000).toFixed(1)} km` : 'Yakın'}</Text>
             </View>
             
             <View style={styles.modalLocationRow}>
@@ -53,12 +53,10 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
               <Text style={styles.modalAddress}>{restaurant.address}</Text>
             </View>
             
-            {restaurant.priceRange && (
-              <View style={styles.modalPriceRow}>
-                <FontAwesome name="dollar" size={14} color="#27AE60" />
-                <Text style={styles.modalPrice}>{restaurant.priceRange}</Text>
-              </View>
-            )}
+            <View style={styles.modalPriceRow}>
+              <FontAwesome name="clock-o" size={14} color="#27AE60" />
+              <Text style={styles.modalPrice}>{restaurant.openingHours}</Text>
+            </View>
           </View>
           
           <View style={styles.modalActions}>

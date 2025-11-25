@@ -73,11 +73,12 @@ export default function MapScreen({ navigation }) {
   const loadPlaces = async () => {
     setPlacesLoading(true);
     try {
-      const placesData = await placeService.getNearbyPlaces();
-      setPlaces(placesData);
+      // HomeScreen ile aynı koordinatları kullan - orada çalışıyor!
+      const result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000);
+      setPlaces(result || []);
     } catch (error) {
-      console.error('Failed to load places:', error);
-      Alert.alert('Hata', 'Mekanlar yüklenirken bir hata oluştu');
+      Alert.alert('API Hatası', `Error: ${error.message}`);
+      setPlaces([]);
     } finally {
       setPlacesLoading(false);
     }
@@ -86,6 +87,12 @@ export default function MapScreen({ navigation }) {
   useEffect(() => {
     loadPlaces();
   }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      loadPlaces();
+    }
+  }, [userLocation]);
 
   const handleMarkerPress = (restaurant) => {
     setSelectedRestaurant(restaurant);
@@ -121,32 +128,25 @@ export default function MapScreen({ navigation }) {
   // Map screendeki bilgilendirme Card'ı için
   const categoryInfo = [
     { 
-      types: ['fast-food', 'asian-food', 'kebab'], 
+      types: ['RESTAURANT', 'BISTRO'], 
       icon: 'cutlery', 
       iconFamily: 'FontAwesome',
       label: 'Yemek', 
-      description: 'Fast-food, Asya mutfağı, Steakhouse'
+      description: 'Restoran, Bistro'
     },
     { 
-      types: ['dessert'], 
-      icon: 'birthday-cake', 
-      iconFamily: 'FontAwesome',
-      label: 'Tatlı', 
-      description: 'Tatlıcı, Pastane'
-    },
-    { 
-      types: ['cafe'], 
+      types: ['CAFE'], 
       icon: 'coffee', 
       iconFamily: 'FontAwesome',
       label: 'Kahve', 
       description: 'Cafe'
     },
     { 
-      types: ['pub'], 
-      icon: 'wine-glass-alt', 
-      iconFamily: 'FontAwesome5',
+      types: ['BAR'], 
+      icon: 'glass', 
+      iconFamily: 'FontAwesome',
       label: 'Bar', 
-      description: 'Pub, Bar, Alkollü mekanlar'
+      description: 'Bar, Alkollü mekanlar'
     }
   ];
 
@@ -173,6 +173,7 @@ export default function MapScreen({ navigation }) {
         </View>
       ) : (
         <>
+          
           <ModernMapView
             restaurants={places}
             onMarkerPress={handleMarkerPress}

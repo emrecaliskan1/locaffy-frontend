@@ -31,8 +31,10 @@ export default function HomeScreen({ navigation }) {
   });
 
   const filteredRestaurants = places.filter(place => {
-    const matchesSearch = place.name.toLowerCase().includes(searchText.toLowerCase());
-    const matchesCategory = appliedFilters.category === 'all' || place.placeType === appliedFilters.category;
+    const matchesSearch = place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
+    const matchesCategory = appliedFilters.category === 'all' || 
+                           place.placeType?.toLowerCase() === appliedFilters.category.toLowerCase() ||
+                           place.placeType === appliedFilters.category.toUpperCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -50,10 +52,11 @@ export default function HomeScreen({ navigation }) {
         const placeType = appliedFilters.category !== 'all' ? appliedFilters.category.toUpperCase() : undefined;
         result = await placeService.getFilteredPlaces(placeType, minRating);
       } else {
-        result = await placeService.getNearbyPlaces(41.6771, 26.5557, 5000);
+        // Use default Edirne coordinates
+        result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000);
       }
       
-      setPlaces(result);
+      setPlaces(result || []);
     } catch (error) {
       console.error('Error loading places:', error);
       setPlaces([]);

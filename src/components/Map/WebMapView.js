@@ -18,6 +18,17 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
     }
   }, [mapLoaded, userLocation, restaurants]);
 
+  // Restaurants verisi degistiginde marker'ları güncelle
+  useEffect(() => {
+    if (mapLoaded && window.map && restaurants) {
+      setTimeout(() => {
+        if (window.updateMapMarkers) {
+          window.updateMapMarkers(restaurants);
+        }
+      }, 100);
+    }
+  }, [restaurants, mapLoaded]);
+
   const initializeMap = () => {
     const mapElement = mapRef.current;
     if (!mapElement) return;
@@ -71,7 +82,18 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
 
     const restaurantMarkers = [];
 
-    // Restoran marker'larını oluştur
+    const getRestaurantMarkerColor = (type) => {
+      const colorMap = {
+        'CAFE': '#DC143C',
+        'RESTAURANT': '#DC143C', 
+        'BAR': '#DC143C',
+        'BISTRO': '#DC143C',
+        'default': '#DC143C'
+      };
+      return colorMap[type] || colorMap.default;
+    };
+
+    // Restoran marker'larını olustur
     const createRestaurantMarkers = (showLabels = true) => {
       restaurantMarkers.forEach(marker => map.removeLayer(marker));
       restaurantMarkers.length = 0;
@@ -80,13 +102,11 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
 
         const getRestaurantMarkerColor = (type) => {
           const colorMap = {
-            'fast-food': '#DC143C', 
-            'asian-food': '#DC143C',
-            'kebab': '#DC143C',
-            'dessert': '#DC143C', 
-            'pub': '#DC143C', 
-            'cafe': '#DC143C', 
-            'default': '#DC143C' 
+            'CAFE': '#DC143C',
+            'RESTAURANT': '#DC143C', 
+            'BAR': '#DC143C',
+            'BISTRO': '#DC143C',
+            'default': '#DC143C'
           };
           return colorMap[type] || colorMap.default;
         };
@@ -95,8 +115,8 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
           className: 'restaurant-marker',
           html: `
             <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-              <div style="background: ${getRestaurantMarkerColor(restaurant.type)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                <i class="${getRestaurantIconForHTML(restaurant.type)}" style="color: white; font-size: 14px;"></i>
+              <div style="background: ${getRestaurantMarkerColor(restaurant.placeType)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                <i class="${getRestaurantIconForHTML(restaurant.placeType)}" style="color: white; font-size: 14px;"></i>
               </div>
               <div style="
                 background: rgba(0,0,0,0.8); 
@@ -121,7 +141,7 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
           iconAnchor: [70, 32]
         });
 
-        const marker = window.L.marker([restaurant.coordinate.latitude, restaurant.coordinate.longitude], { icon: restaurantIcon })
+        const marker = window.L.marker([restaurant.latitude, restaurant.longitude], { icon: restaurantIcon })
           .addTo(map)
           .on('click', () => {
             if (onMarkerPress) {
@@ -133,8 +153,60 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
       });
     };
 
-    // İlk marker'ları oluştur
+    // İlk marker'ları olustur
     createRestaurantMarkers(map.getZoom() >= 15);
+    
+    window.updateMapMarkers = function(newRestaurants) {
+      if (newRestaurants && newRestaurants.length > 0) {
+        // Eski marker'ları temizle
+        restaurantMarkers.forEach(marker => map.removeLayer(marker));
+        restaurantMarkers.length = 0;
+        
+        newRestaurants.forEach((restaurant) => {
+          const restaurantIcon = window.L.divIcon({
+            className: 'restaurant-marker',
+            html: `
+              <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+                <div style="background: ${getRestaurantMarkerColor(restaurant.placeType)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                  <i class="${getRestaurantIconForHTML(restaurant.placeType)}" style="color: white; font-size: 14px;"></i>
+                </div>
+                <div style="
+                  background: rgba(0,0,0,0.8); 
+                  color: white; 
+                  padding: 4px 8px; 
+                  border-radius: 6px; 
+                  font-size: 11px; 
+                  white-space: nowrap; 
+                  max-width: 120px; 
+                  text-align: center; 
+                  font-weight: 500; 
+                  margin-top: 2px;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  display: ${map.getZoom() >= 15 ? 'block' : 'none'};
+                ">
+                  ${restaurant.name}
+                </div>
+              </div>
+            `,
+            iconSize: [140, 60],
+            iconAnchor: [70, 32]
+          });
+
+          const marker = window.L.marker([restaurant.latitude, restaurant.longitude], { icon: restaurantIcon })
+            .addTo(map)
+            .on('click', () => {
+              if (onMarkerPress) {
+                onMarkerPress(restaurant);
+              }
+            });
+
+          restaurantMarkers.push(marker);
+        });
+      }
+    };
+
+    window.map = map;
 
     // Zoom değiştiğinde marker'ları güncelle
     map.on('zoomend', () => {

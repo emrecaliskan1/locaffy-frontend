@@ -92,13 +92,23 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
     }
   };  
   
-  // Sayfa yüklendiğinde konumu alır
+  // Sayfa yüklendiginde konumu alır
   useEffect(() => {
     if (!currentLocation) {
       setCurrentLocation(edirneCenter);
     }
     getCurrentLocation();
   }, []);
+
+  // Restaurants verisi degistiginde haritayı güncelle
+  useEffect(() => {
+    if (webViewRef.current && restaurants) {
+      webViewRef.current.postMessage(JSON.stringify({
+        type: 'updateRestaurants',
+        restaurants: restaurants
+      }));
+    }
+  }, [restaurants]);
 
 
 
@@ -144,6 +154,9 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
       
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <script>
+        // Restaurants verisini window objesi üzerine ekle
+        window.restaurantsData = ${JSON.stringify(restaurants)};
+        
         var map = L.map('mapid').setView([${centerLat}, ${centerLng}], 16);
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -156,22 +169,17 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
         var accuracyCircle = null;
         var restaurantMarkers = [];
         
-        // Icon mapping fonksiyonu (3 kategori gruplandırma)
+        // Icon mapping fonksiyonu (actual database place types)
         function getRestaurantIconClass(type) {
-          // Yemek kategorileri: kebab, asian-food, fast-food -> utensils
-          const foodCategories = ['kebab', 'asian-food', 'fast-food'];
-          
-          if (foodCategories.includes(type)) {
-            return 'fas fa-utensils';  // Yemek ikonu
-          } else if (type === 'cafe') {
-            return 'fas fa-coffee';    // Kafe ikonu
-          } else if (type === 'dessert') {
-            return 'fas fa-birthday-cake';  // Tatlı ikonu
-          } else if (type === 'pub') {
-            return 'fas fa-wine-glass';     // İçki ikonu
+          if (type === 'RESTAURANT' || type === 'BISTRO') {
+            return 'fas fa-utensils';
+          } else if (type === 'CAFE') {
+            return 'fas fa-coffee';
+          } else if (type === 'BAR') {
+            return 'fas fa-wine-glass';
           }
           
-          return 'fas fa-utensils';  // Default yemek ikonu
+          return 'fas fa-utensils';
         }
         
         // Restoran marker'larını oluşturan fonksiyon
@@ -180,20 +188,19 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
           restaurantMarkers.forEach(marker => map.removeLayer(marker));
           restaurantMarkers.length = 0;
 
-          const restaurants = ${JSON.stringify(restaurants)};
+          // Restaurants veriyi window objesi üzerinden al
+          const restaurants = window.restaurantsData || [];
           
-          restaurants.forEach((restaurant) => {
+          restaurants.forEach((restaurant, index) => {
 
             // Restoran type'ına göre marker rengi belirle
             const getRestaurantMarkerColor = (type) => {
               const colorMap = {
-                'fast-food': '#DC143C', // Red
-                'asian-food': '#DC143C', // Red
-                'kebab': '#DC143C', // Red
-                'dessert': '#DC143C', // Red
-                'pub': '#DC143C', // Red
-                'cafe': '#DC143C', // Red
-                'default': '#DC143C' // Red
+                'CAFE': '#DC143C',
+                'RESTAURANT': '#DC143C', 
+                'BAR': '#DC143C',
+                'BISTRO': '#DC143C',
+                'default': '#DC143C'
               };
               return colorMap[type] || colorMap.default;
             };
@@ -202,8 +209,8 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
               className: 'custom-restaurant-marker',
               html: \`
                 <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-                  <div style="background: \${getRestaurantMarkerColor(restaurant.type)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
-                    <i class="\${getRestaurantIconClass(restaurant.type)}" style="color: white; font-size: 14px;"></i>
+                  <div style="background: \${getRestaurantMarkerColor(restaurant.placeType)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                    <i class="\${getRestaurantIconClass(restaurant.placeType)}" style="color: white; font-size: 14px;"></i>
                   </div>
                   <div style="
                     background: rgba(0,0,0,0.8); 
@@ -228,7 +235,7 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
               iconAnchor: [70, 32]
             });
 
-            const marker = L.marker([restaurant.coordinate.latitude, restaurant.coordinate.longitude], { icon: restaurantIcon })
+            const marker = L.marker([restaurant.latitude, restaurant.longitude], { icon: restaurantIcon })
               .addTo(map)
               .on('click', function() {
                 window.ReactNativeWebView.postMessage(JSON.stringify({

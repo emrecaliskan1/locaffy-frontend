@@ -3,13 +3,17 @@ import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector
 // Restoran type'ına göre icon bilgilerini döndüren fonksiyon
 export const getRestaurantIcon = (type) => {
   const iconMap = {
-    'fast-food': { name: 'fastfood', iconType: 'MaterialIcons', color: '#ffffffff' },
-    'asian-food': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
-    'kebab': { name: 'food-steak', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
-    'dessert': { name: 'cupcake', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
-    'pub': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
-    'cafe': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
-    'default': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' }
+    'CAFE': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
+    'RESTAURANT': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
+    'BAR': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
+    'BISTRO': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
+    // 'fast-food': { name: 'fastfood', iconType: 'MaterialIcons', color: '#ffffffff' },
+    // 'asian-food': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
+    // 'kebab': { name: 'food-steak', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
+    // 'dessert': { name: 'cupcake', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
+    // 'pub': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
+    // 'cafe': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
+    // 'default': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' }
   };
   return iconMap[type] || iconMap.default;
 };
@@ -29,20 +33,27 @@ export const getRestaurantIconComponent = (type, size = 24, customColor = null) 
   }
 };
 
-// HTML marker'lar için FontAwesome CSS class döndüren fonksiyon (4 kategori gruplandırma)
+// HTML marker'lar için FontAwesome CSS class döndüren fonksiyon
 export const getRestaurantIconForHTML = (type) => {
-
-  const foodCategories = ['kebab', 'asian-food', 'fast-food'];
-  
-  if (foodCategories.includes(type)) {
-    return 'fas fa-utensils';  
-  } else if (type === 'cafe') {
-    return 'fas fa-coffee';    
-  } else if (type === 'dessert') {
-    return 'fas fa-birthday-cake';  
-  } else if (type === 'pub') {
-    return 'fas fa-wine-glass';     
+  if (type === 'RESTAURANT' || type === 'BISTRO') {
+    return 'fas fa-utensils';
+  } else if (type === 'CAFE') {
+    return 'fas fa-coffee';
+  } else if (type === 'BAR') {
+    return 'fas fa-wine-glass';
   }
   
-  return 'fas fa-utensils'; 
+  // Legacy support
+  const foodCategories = ['kebab', 'asian-food', 'fast-food'];
+  if (foodCategories.includes(type)) {
+    return 'fas fa-utensils';
+  } else if (type === 'cafe') {
+    return 'fas fa-coffee';
+  } else if (type === 'dessert') {
+    return 'fas fa-birthday-cake';
+  } else if (type === 'pub') {
+    return 'fas fa-wine-glass';
+  }
+  
+  return 'fas fa-utensils';
 };

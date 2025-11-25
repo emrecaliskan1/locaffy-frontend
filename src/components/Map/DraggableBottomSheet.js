@@ -69,15 +69,17 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
             >
               <View style={styles.restaurantItemInfo}>
                 <Text style={styles.restaurantItemName}>{restaurant.name}</Text>
-                <Text style={styles.restaurantItemType}>{restaurant.type}</Text>
-                <Text style={styles.restaurantItemRating}>⭐ {restaurant.rating}</Text>
+                <Text style={styles.restaurantItemType}>{restaurant.placeType}</Text>
+                <Text style={styles.restaurantItemRating}>⭐ {restaurant.averageRating || '0.0'}</Text>
                 <Text style={styles.restaurantItemAddress}>{restaurant.address}</Text>
               </View>
               <View style={styles.restaurantItemRight}>
                 <View style={styles.restaurantItemIcon}>
-                  {getRestaurantIconComponent(restaurant.type, 18, '#DC143C')}
+                  {getRestaurantIconComponent(restaurant.placeType, 18, '#DC143C')}
                 </View>
-                <Text style={styles.restaurantItemDistance}>{restaurant.distance}</Text>
+                <Text style={styles.restaurantItemDistance}>
+                  {restaurant.distance ? `${(restaurant.distance / 1000).toFixed(1)} km` : 'Yakın'}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}

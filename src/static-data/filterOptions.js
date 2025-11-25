@@ -1,11 +1,9 @@
 export const categories = [
   { id: 'all', name: 'Hepsi', icon: 'select-all', iconType: 'MaterialIcons', value: 'all' },
-  { id: 'fast-food', name: 'Fast-food', icon: 'fastfood', iconType: 'MaterialIcons', value: 'fast-food' },
-  { id: 'asian-food', name: 'Asian-food', icon: 'cutlery', iconType: 'FontAwesome', value: 'asian-food' },
-  { id: 'kebab', name: 'Steak', icon: 'food-steak', iconType: 'MaterialCommunityIcons', value: 'kebab' },
-  { id: 'dessert', name: 'Dessert', icon: 'cupcake', iconType: 'MaterialCommunityIcons', value: 'dessert' },
-  { id: 'pub', name: 'Pub', icon: 'glass', iconType: 'FontAwesome', value: 'pub' },
-  { id: 'cafe', name: 'Cafe', icon: 'coffee', iconType: 'FontAwesome', value: 'cafe' }
+  { id: 'cafe', name: 'Cafe', icon: 'coffee', iconType: 'FontAwesome', value: 'cafe' },
+  { id: 'restaurant', name: 'Restoran', icon: 'cutlery', iconType: 'FontAwesome', value: 'restaurant' },
+  { id: 'bar', name: 'Bar', icon: 'glass', iconType: 'FontAwesome', value: 'bar' },
+  { id: 'bistro', name: 'Bistro', icon: 'cutlery', iconType: 'FontAwesome', value: 'bistro' }
 ];
 
 export const distanceOptions = [
