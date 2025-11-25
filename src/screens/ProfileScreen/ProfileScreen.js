@@ -80,7 +80,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Aktif ve geçmiş rezervasyonlar',
       icon: 'calendar',
       iconColor: '#667eea',
-      onPress: () => navigation.navigate('Reservations'),
+      onPress: () => navigation.navigate('Reservations', { fromProfile: true }),
     },
     {
       id: 2,

@@ -167,6 +167,24 @@ export const authService = {
     return !!token;
   },
 
+  // Token geçerliliğini kontrol et
+  validateToken: async () => {
+    try {
+      const token = await getToken();
+      if (!token) return false;
+      
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BASE_URL}/validate`, { headers });
+      return response.status === 200;
+    } catch (error) {
+      console.log('Token validation failed:', error);
+      // Token geçersizse temizle
+      await removeToken();
+      await removeUserInfo();
+      return false;
+    }
+  },
+
   clearToken: async () => {
     await removeToken();
     await removeUserInfo();

@@ -32,15 +32,41 @@ export default function ReservationsScreen({ navigation, route }) {
   const loadReservations = async () => {
     try {
       setLoading(true);
-      const reservations = await reservationService.getMyReservations();
+      const reservations = await reservationService.getUserReservations();
       
-      // Rezervasyonları durumuna göre ayır
-      const active = reservations.filter(res => 
-        res.status === 'CONFIRMED' || res.status === 'PENDING'
-      );
-      const past = reservations.filter(res => 
-        res.status === 'COMPLETED' || res.status === 'CANCELLED'
-      );
+      // Rezervasyonları tarih ve durumuna göre ayır
+      const now = new Date();
+      const active = reservations.filter(res => {
+        let resTime;
+        
+        if (res.reservationTime.includes('T')) {
+          const [datePart, timePart] = res.reservationTime.split('T');
+          const [year, month, day] = datePart.split('-');
+          const [hour, minute] = timePart.split(':');
+          
+          resTime = new Date(year, month - 1, day, hour, minute);
+        } else {
+          resTime = new Date(res.reservationTime);
+        }
+        
+        return resTime >= now && (res.status === 'APPROVED' || res.status === 'PENDING');
+      });
+      
+      const past = reservations.filter(res => {
+        let resTime;
+        
+        if (res.reservationTime.includes('T')) {
+          const [datePart, timePart] = res.reservationTime.split('T');
+          const [year, month, day] = datePart.split('-');
+          const [hour, minute] = timePart.split(':');
+          
+          resTime = new Date(year, month - 1, day, hour, minute);
+        } else {
+          resTime = new Date(res.reservationTime);
+        }
+        
+        return resTime < now || res.status === 'REJECTED' || res.status === 'CANCELLED';
+      });
       
       setActiveReservations(active);
       setPastReservations(past);
