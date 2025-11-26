@@ -16,10 +16,12 @@ import { dayNames, monthNames, availableTimes, maxPeople } from '../../../static
 import { reservationService } from '../../../services';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAuth } from '../../../context/AuthContext';
+import { useTheme } from '../../../context/ThemeContext';
 
 export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedPeople, setSelectedPeople] = useState(2);
@@ -212,37 +214,37 @@ export default function ReservationScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
           <TouchableOpacity 
-            style={styles.backButton}
             onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
+            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Rezervasyon</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Rezervasyon</Text>
           <View style={styles.placeholder} />
         </View>
       </SafeAreaView>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {loading && (
-          <View style={styles.loadingWrapper}>
-            <ActivityIndicator size="large" color="#FF6B35" />
-            <Text style={styles.loadingText}>Tarihler yükleniyor...</Text>
+          <View style={[styles.loadingWrapper, { backgroundColor: theme.colors.background }]}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Tarihler yüklenyor...</Text>
           </View>
         )}
         {/* Restoran Bilgileri */}
-        <View style={styles.restaurantInfo}>
-          <Text style={styles.restaurantName}>{restaurant.name}</Text>
-          <Text style={styles.restaurantType}>{restaurant.type}</Text>
+        <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
+          <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>{restaurant.type}</Text>
         </View>
 
         {/* Tarih Seçimi */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📅 Tarih Seçin</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>📅 Tarih Seçin</Text>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -254,60 +256,60 @@ export default function ReservationScreen({ route, navigation }) {
         </View>
 
         {/* Kişi Sayısı Seçimi */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>👥 Kişi Sayısı</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>👥 Kişi Sayısı</Text>
           <View style={styles.peopleContainer}>
             {Array.from({ length: (reservationData ? reservationData.maxPeople : mockReservationData.maxPeople) }, (_, i) => i + 1).map(renderPeopleOption)}
           </View>
         </View>
 
         {/* Saat Seçimi */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🕐 Saat Seçin</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>🕐 Saat Seçin</Text>
           <View style={styles.timesContainer}>
             {(reservationData ? reservationData.availableTimes : mockReservationData.availableTimes).map(renderTimeSlot)}
           </View>
         </View>
 
         {/* Not Bölümü */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>💬 Notunuz (İsteğe Bağlı)</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>💬 Notunuz (İsteğe Bağlı)</Text>
           <TextInput
-            style={styles.noteInput}
+            style={[styles.noteInput, { backgroundColor: theme.colors.background, borderColor: theme.colors.border, color: theme.colors.text }]}
             placeholder="Özel istekleriniz, alerji durumu vs..."
-            placeholderTextColor="#95A5A6"
+            placeholderTextColor={theme.colors.textTertiary}
             value={note}
             onChangeText={setNote}
             multiline
             numberOfLines={3}
             maxLength={200}
           />
-          <Text style={styles.charCount}>{note.length}/200</Text>
+          <Text style={[styles.charCount, { color: theme.colors.textTertiary }]}>{note.length}/200</Text>
         </View>
 
         {/* Seçim özeti + Temizle butonu */}
-        <View style={[styles.section, styles.summarySection]}>
-          <Text style={styles.sectionTitle}>Rezervasyon Bilgileri</Text>
+        <View style={[styles.section, styles.summarySection, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Rezervasyon Bilgileri</Text>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Tarih:</Text>
-            <Text style={styles.summaryValue}>{selectedDate ? formatDate(selectedDate).full : 'Seçilmedi'}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>Tarih:</Text>
+            <Text style={[styles.summaryValue, { color: theme.colors.text }]}>{selectedDate ? formatDate(selectedDate).full : 'Seçilmedi'}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Saat:</Text>
-            <Text style={styles.summaryValue}>{selectedTime || 'Seçilmedi'}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>Saat:</Text>
+            <Text style={[styles.summaryValue, { color: theme.colors.text }]}>{selectedTime || 'Seçilmedi'}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Kişi:</Text>
-            <Text style={styles.summaryValue}>{selectedPeople}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>Kişi:</Text>
+            <Text style={[styles.summaryValue, { color: theme.colors.text }]}>{selectedPeople}</Text>
           </View>
           <View style={styles.summaryActions}>
-            <TouchableOpacity style={styles.clearButton} onPress={() => {
+            <TouchableOpacity style={[styles.clearButton, { backgroundColor: theme.colors.background }]} onPress={() => {
               setSelectedDate(null);
               setSelectedTime(null);
               setSelectedPeople(2);
               setNote('');
             }}>
-              <Text style={styles.clearButtonText}>Temizle</Text>
+              <Text style={[styles.clearButtonText, { color: theme.colors.text }]}>Temizle</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -317,7 +319,8 @@ export default function ReservationScreen({ route, navigation }) {
           <TouchableOpacity 
             style={[
               styles.continueButton,
-              (!selectedDate || !selectedTime || submitting) && styles.disabledButton
+              { backgroundColor: theme.colors.primary },
+              (!selectedDate || !selectedTime || submitting) && { backgroundColor: theme.colors.border }
             ]}
             onPress={handleContinue}
             disabled={!selectedDate || !selectedTime || submitting}
@@ -325,7 +328,7 @@ export default function ReservationScreen({ route, navigation }) {
             {submitting ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
-              <Text style={styles.continueButtonText}>Rezervasyon İsteği Gönder</Text>
+              <Text style={[styles.continueButtonText, { color: '#FFFFFF' }]}>Rezervasyon İsteği Gönder</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -455,8 +458,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedDateItem: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
+    backgroundColor: '#667eea',
+    borderColor: '#667eea',
   },
   dateDay: {
     fontSize: 18,
@@ -487,8 +490,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedPeopleOption: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
+    backgroundColor: '#667eea',
+    borderColor: '#667eea',
   },
   peopleText: {
     fontSize: 16,
@@ -514,8 +517,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedTimeSlot: {
-    backgroundColor: '#FF6B35',
-    borderColor: '#FF6B35',
+    backgroundColor: '#667eea',
+    borderColor: '#667eea',
   },
   timeText: {
     fontSize: 16,

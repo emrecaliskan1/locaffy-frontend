@@ -6,17 +6,20 @@ import {
   Image,
   ScrollView,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Switch
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
 import { userService, reservationService } from '../../services';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
+  const { isDarkMode, theme, toggleTheme } = useTheme();
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [userStats, setUserStats] = useState({ totalReservations: 0, favoriteRestaurants: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -101,6 +104,16 @@ export default function ProfileScreen({ navigation }) {
     },
     {
       id: 3,
+      title: 'Karanlık Mod',
+      subtitle: 'Görünüm temasını değiştirin',
+      icon: isDarkMode ? 'moon-o' : 'sun-o',
+      iconColor: '#F39C12',
+      onPress: toggleTheme,
+      isToggle: true,
+      toggleValue: isDarkMode,
+    },
+    {
+      id: 4,
       title: 'Bildirimler',
       subtitle: 'Bildirim ayarlarını yönetin',
       icon: 'bell',
@@ -108,7 +121,7 @@ export default function ProfileScreen({ navigation }) {
       onPress: () => navigation.navigate('NotificationSettings'),
     },
     {
-      id: 4,
+      id: 5,
       title: 'Yardım ve Destek',
       subtitle: 'SSS ve iletişim',
       icon: 'question-circle',
@@ -117,7 +130,7 @@ export default function ProfileScreen({ navigation }) {
       },
     },
     {
-      id: 5,
+      id: 6,
       title: 'Hakkında',
       subtitle: 'Uygulama bilgileri',
       icon: 'info-circle',
@@ -128,17 +141,17 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profil</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.colors.statusBar} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Profil</Text>
         </View>
       </SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Kullanıcı Kartı */}
-        <View style={styles.userCard}>
+        <View style={[styles.userCard, { backgroundColor: theme.colors.card }]}>
           <View style={styles.avatarContainer}>
             {userInfo.avatar ? (
               <Image source={userInfo.avatar} style={styles.avatar} />
@@ -153,39 +166,40 @@ export default function ProfileScreen({ navigation }) {
           
           {/* Kullanıcı Bilgileri */}
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{userInfo.username}</Text>
-            <Text style={styles.userEmail}>{userInfo.email}</Text>
+            <Text style={[styles.userName, { color: theme.colors.text }]}>{userInfo.username}</Text>
+            <Text style={[styles.userEmail, { color: theme.colors.textSecondary }]}>{userInfo.email}</Text>
           </View>
         </View>
 
         {/* Kullanıcı İstatistikleri */}
-        <View style={styles.statsContainer}>
+        <View style={[styles.statsContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
           <View style={styles.statItem}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#667eea" />
             ) : (
-              <Text style={styles.statNumber}>{userInfo.totalReservations}</Text>
+              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{userInfo.totalReservations}</Text>
             )}
-            <Text style={styles.statLabel}>Toplam Rezervasyon</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Toplam Rezervasyon</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.statItem}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#667eea" />
             ) : (
-              <Text style={styles.statNumber}>{userInfo.favoriteRestaurants}</Text>
+              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{userInfo.favoriteRestaurants}</Text>
             )}
-            <Text style={styles.statLabel}>Favori Restoran</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Favori Restoran</Text>
           </View>
         </View>
 
         {/* Menü Seçenekleri */}
-        <View style={styles.menuContainer}>
+        <View style={[styles.menuContainer, { backgroundColor: theme.colors.card }]}>
           {menuItems.map((item, index) => (
             <TouchableOpacity
               key={item.id}
               style={[
                 styles.menuItem,
+                { borderBottomColor: theme.colors.borderLight },
                 index === menuItems.length - 1 && styles.lastMenuItem
               ]}
               onPress={item.onPress}
@@ -193,16 +207,25 @@ export default function ProfileScreen({ navigation }) {
               <View style={styles.menuItemLeft}>
                 <FontAwesome name={item.icon} size={18} color={item.iconColor || "#667eea"} style={styles.menuIcon} />
                 <View style={styles.menuTextContainer}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                  <Text style={[styles.menuTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                  <Text style={[styles.menuSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
                 </View>
               </View>
-              <Text style={styles.chevron}>›</Text>
+              {item.isToggle ? (
+                <Switch
+                  value={item.toggleValue}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: '#767577', true: '#667eea' }}
+                  thumbColor={item.toggleValue ? '#ffffff' : '#f4f3f4'}
+                />
+              ) : (
+                <Text style={[styles.chevron, { color: theme.colors.textTertiary }]}>›</Text>
+              )}
             </TouchableOpacity>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <TouchableOpacity style={[styles.logoutButton, { backgroundColor: theme.colors.error }]} onPress={handleLogout}>
           <Text style={styles.logoutText}>Çıkış Yap</Text>
         </TouchableOpacity>
 

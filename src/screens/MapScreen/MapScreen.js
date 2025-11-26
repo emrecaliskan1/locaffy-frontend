@@ -14,8 +14,10 @@ import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from
 import { styles } from './styles';
 import { placeService } from '../../services/placeService';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function MapScreen({ navigation }) {
+  const { theme } = useTheme();
   const [region, setRegion] = useState({
     latitude: 41.6771,
     longitude: 26.5557,
@@ -159,24 +161,24 @@ export default function MapScreen({ navigation }) {
   ];
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Mevcut Konum</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Mevcut Konum</Text>
           <TouchableOpacity 
-            style={styles.searchButton} 
+            style={[styles.searchButton, { backgroundColor: theme.colors.card }]} 
             onPress={getLocation}>
-            <FontAwesome name="map-marker" size={18} color="#4285F4" style={styles.searchIcon} />
+            <FontAwesome name="map-marker" size={18} color={theme.colors.primary} style={styles.searchIcon} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
 
       {loading || placesLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4285F4" />
-          <Text style={styles.loadingText}>
-            {loading ? 'Konum alınıyor...' : 'Mekanlar yükleniyor...'}
+        <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+            {loading ? 'Konum alınıyor...' : 'Mekanlar yüklenyor...'}
           </Text>
         </View>
       ) : (
@@ -221,7 +223,7 @@ export default function MapScreen({ navigation }) {
               <View style={styles.infoCardContent}>
                 {categoryInfo.map((category, index) => (
                   <View key={index} style={styles.categoryRow}>
-                    <View style={styles.categoryIcon}>
+                    <View style={[styles.categoryIcon, { backgroundColor: category.color }]}>
                       {category.iconFamily === 'FontAwesome5' ? (
                         <FontAwesome5 name={category.icon} size={14} color="#fff" />
                       ) : (
@@ -240,10 +242,10 @@ export default function MapScreen({ navigation }) {
 
           {!infoCardVisible && !bottomSheetExpanded && (
             <TouchableOpacity 
-              style={styles.infoToggleButton} 
+              style={[styles.infoToggleButton, { backgroundColor: theme.colors.card }]} 
               onPress={toggleInfoCard}
             >
-              <FontAwesome name="info-circle" size={16} color="#4285F4" />
+              <FontAwesome name="info-circle" size={16} color={theme.colors.primary} />
             </TouchableOpacity>
           )}
         </>

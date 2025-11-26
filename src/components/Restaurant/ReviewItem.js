@@ -5,9 +5,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 export const ReviewItem = ({ item, index, styles }) => {
   const [userName, setUserName] = useState('Kullanıcı');
+  const { theme } = useTheme();
 
   // UserId'den username'i çek
   useEffect(() => {
@@ -50,10 +52,10 @@ export const ReviewItem = ({ item, index, styles }) => {
   };
 
   return (
-    <View key={item.id || index} style={styles.reviewItem}>
-      <View style={styles.reviewHeader}>
-        <View style={styles.reviewUser}>
-          <Text style={styles.reviewUserName}>
+    <View key={item.id || index} style={[styles.reviewItem, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+      <View style={[styles.reviewHeader, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.reviewUser, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.reviewUserName, { color: theme.colors.text }]}>
             {userName}
           </Text>
           <View style={styles.reviewRating}>
@@ -68,12 +70,12 @@ export const ReviewItem = ({ item, index, styles }) => {
             ))}
           </View>
         </View>
-        <Text style={styles.reviewDate}>
+        <Text style={[styles.reviewDate, { color: theme.colors.textTertiary }]}>
           {formatDate(item.createdAt || item.date)}
         </Text>
       </View>
       {item.comment && (
-        <Text style={styles.reviewComment}>{item.comment}</Text>
+        <Text style={[styles.reviewComment, { color: theme.colors.textSecondary }]}>{item.comment}</Text>
       )}
     </View>
   );

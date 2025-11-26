@@ -6,6 +6,7 @@ import {
   TextInput,
 } from 'react-native';
 import {FontAwesome } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 export const SearchHeader = ({ 
   searchText, 
@@ -14,27 +15,31 @@ export const SearchHeader = ({
   onFocus,
   onBlur,
   styles 
-}) => (
-  <View style={styles.searchContainer}>
-    <View style={styles.searchBar}>
-  <Text style={styles.searchIcon}><FontAwesome name="search"/></Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Mekan veya dilediğin yemeği ara..."
-        value={searchText}
-        onChangeText={onSearchChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        placeholderTextColor="#95A5A6"
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-      <TouchableOpacity 
-        style={styles.filterButton}
-        onPress={onFilterPress}
-      >
-        <FontAwesome name="sliders" size={16} color="#95A5A6" style={styles.filterIcon} />
-      </TouchableOpacity>
+}) => {
+  const { theme } = useTheme();
+  
+  return (
+    <View style={[styles.searchContainer, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.searchBar, { backgroundColor: '#FFFFFF', borderColor: '#E0E0E0' }]}>
+        <Text style={[styles.searchIcon, { color: '#999999' }]}><FontAwesome name="search"/></Text>
+        <TextInput
+          style={[styles.searchInput, { backgroundColor: '#FFFFFF', color: '#000000' }]}
+          placeholder="Mekan veya dilediğin yemeği ara..."
+          value={searchText}
+          onChangeText={onSearchChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          placeholderTextColor="#999999"
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
+        <TouchableOpacity 
+          style={[styles.filterButton, { backgroundColor: '#FFFFFF' }]}
+          onPress={onFilterPress}
+        >
+          <FontAwesome name="sliders" size={16} color="#667eea" style={styles.filterIcon} />
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+};

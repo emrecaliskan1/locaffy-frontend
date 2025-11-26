@@ -14,9 +14,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import FilterModal from '../../components/FilterModal';
 import { RestaurantCard, SearchHeader } from '../../components/Home';
 import { placeService } from '../../services';
+import { useTheme } from '../../context/ThemeContext';
 import { styles } from './styles';
 
 export default function HomeScreen({ navigation }) {
+  const { theme } = useTheme();
   const [searchText, setSearchText] = useState('');
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -80,15 +82,15 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.colors.statusBar} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
           <View style={styles.locationContainer}>
-            <Text style={styles.locationLabel}>Konum</Text>
+            <Text style={[styles.locationLabel, { color: theme.colors.textSecondary }]}>Konum</Text>
             <View style={styles.locationTextContainer}>
               <FontAwesome name="map-marker" size={14} color="#667eea" />
-              <Text style={styles.locationText}> Merkez, Edirne</Text>
+              <Text style={[styles.locationText, { color: theme.colors.text }]}> Merkez, Edirne</Text>
             </View>
           </View>
         </View>

@@ -14,9 +14,11 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
 import { reviewService } from '../../../services';
+import { useTheme } from '../../../context/ThemeContext';
 
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('menu');
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
@@ -74,19 +76,23 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
           <TouchableOpacity 
-            style={styles.backButton}
             onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
+            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{finalRestaurantData.name}</Text>
-          <TouchableOpacity style={styles.shareButton}>
-            <FontAwesome name="heart-o" size={18} color="#E74C3C" style={styles.shareIcon} />
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
+          <TouchableOpacity style={[
+            styles.shareButton, 
+            { backgroundColor: theme.colors.background },
+            theme.dark && { borderWidth: 1, borderColor: '#FFFFFF' }
+          ]}>
+            <FontAwesome name="heart-o" size={18} color={theme.dark ? "#FFFFFF" : "#000000"} style={styles.shareIcon} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -105,34 +111,29 @@ export default function RestaurantDetailScreen({ route, navigation }) {
               <Text style={{ color: '#999', fontSize: 16 }}>Resim yok</Text>
             </View>
           )}
-          <View style={styles.imageOverlay}>
-            <View style={styles.ratingContainer}>
-              <View style={styles.ratingWrapper}>
-                <FontAwesome name="star" size={16} color="#F39C12" />
-                <Text style={styles.rating}> {finalRestaurantData.rating.toFixed(1)}</Text>
-              </View>
-              <Text style={styles.reviewCount}>
-                ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})
-              </Text>
-            </View>
-          </View>
         </View>
 
-        <View style={styles.restaurantInfo}>
-          <Text style={styles.restaurantName}>{finalRestaurantData.name}</Text>
-          <Text style={styles.restaurantType}>{finalRestaurantData.placeType || 'Restoran'}</Text>
+        <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
+          <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{finalRestaurantData.placeType || 'Restoran'}</Text>
           <View style={styles.restaurantMeta}>
             <View style={styles.metaItem}>
               <FontAwesome name="map-marker" size={14} color="#27AE60" />
-              <Text style={styles.metaText}> {finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
+              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
             </View>
             <View style={styles.metaItem}>
               <FontAwesome name="phone" size={14} color="#3498DB" />
-              <Text style={styles.metaText}> {finalRestaurantData.phoneNumber || 'Telefon yok'}</Text>
+              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.phoneNumber || 'Telefon yok'}</Text>
             </View>
             <View style={styles.metaItem}>
               <FontAwesome name="clock-o" size={14} color="#E67E22" />
-              <Text style={styles.metaText}> {finalRestaurantData.openingHours || 'Çalışma saatleri belirtilmemiş'}</Text>
+              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.openingHours || 'Çalışma saatleri belirtilmemiş'}</Text>
+            </View>
+          </View>
+          <View style={styles.restaurantMeta}>
+            <View style={styles.metaItem}>
+              <FontAwesome name="star" size={14} color="#F39C12" />
+              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
             </View>
           </View>
         </View>
@@ -145,34 +146,52 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
         </TouchableOpacity>
 
-        <View style={styles.tabContainer}>
+        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background }]}>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'menu' && styles.activeTab]}
+            style={[
+              styles.tab, 
+              { backgroundColor: theme.colors.card, marginRight: 8 },
+              activeTab === 'menu' 
+                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
+                : { borderColor: theme.colors.border }
+            ]}
             onPress={() => setActiveTab('menu')}
           >
-            <Text style={[styles.tabText, activeTab === 'menu' && styles.activeTabText]}>
-              <FontAwesome5 name="utensils" size={12} color="#FFFFFF" /> Menü
+            <Text style={[styles.tabText, { color: activeTab === 'menu' ? '#FFFFFF' : theme.colors.text }]}>
+              <FontAwesome5 name="utensils" size={12} color={activeTab === 'menu' ? '#FFFFFF' : theme.colors.text} /> Menü
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
+            style={[
+              styles.tab, 
+              { backgroundColor: theme.colors.card, marginRight: 8 },
+              activeTab === 'reviews' 
+                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
+                : { borderColor: theme.colors.border }
+            ]}
             onPress={() => setActiveTab('reviews')}
           >
-            <Text style={[styles.tabText, activeTab === 'reviews' && styles.activeTabText]}>
-              <FontAwesome name="comments-o" color="#FFFFFF" size={12} /> Yorumlar
+            <Text style={[styles.tabText, { color: activeTab === 'reviews' ? '#FFFFFF' : theme.colors.text }]}>
+              <FontAwesome name="comments-o" color={activeTab === 'reviews' ? '#FFFFFF' : theme.colors.text} size={12} /> Yorumlar
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'info' && styles.activeTab]}
+            style={[
+              styles.tab, 
+              { backgroundColor: theme.colors.card },
+              activeTab === 'info' 
+                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
+                : { borderColor: theme.colors.border }
+            ]}
             onPress={() => setActiveTab('info')}
           >
-            <Text style={[styles.tabText, activeTab === 'info' && styles.activeTabText]}>
-              <FontAwesome name="info" color="#FFFFFF" size={14} style={{marginTop:2,marginRight:2}} /> Bilgiler
+            <Text style={[styles.tabText, { color: activeTab === 'info' ? '#FFFFFF' : theme.colors.text }]}>
+              <FontAwesome name="info" color={activeTab === 'info' ? '#FFFFFF' : theme.colors.text} size={14} style={{marginTop:2,marginRight:2}} /> Bilgiler
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.tabContentContainer}>
+        <View style={[styles.tabContentContainer, { backgroundColor: theme.colors.background }]}>
           {renderTabContent()}
         </View>
       </ScrollView>

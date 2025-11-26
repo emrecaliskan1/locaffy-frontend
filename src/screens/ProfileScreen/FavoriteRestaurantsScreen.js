@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
 import { userService } from '../../services';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
+  const { theme } = useTheme();
   const [favoriteRestaurants, setFavoriteRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,14 +38,14 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
 
   return (
     
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={20} color="#2C3E50" />
+            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Favori Restoranlar</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Favori Restoranlar</Text>
           <View style={{ width: 40 }} />
         </View>
       </SafeAreaView>
@@ -51,22 +53,22 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Favori restoranlarınız yükleniyor...</Text>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Favori restoranlarınız yükleniyor...</Text>
           </View>
         ) : (
           <>
             {favoriteRestaurants.length === 0 ? (
               <View style={styles.emptyState}>
-                <FontAwesome name="heart-o" size={50} color={COLORS.gray} />
-                <Text style={styles.emptyStateText}>Henüz favori restoranınız yok</Text>
-                <Text style={styles.emptyStateSubtext}>Beğendiğiniz restoranları favorilerinize ekleyin</Text>
+                <FontAwesome name="heart-o" size={50} color={theme.colors.textSecondary} />
+                <Text style={[styles.emptyStateText, { color: theme.colors.text }]}>Henüz favori restoranınız yok</Text>
+                <Text style={[styles.emptyStateSubtext, { color: theme.colors.textSecondary }]}>Beğendiğiniz restoranları favorilerinize ekleyin</Text>
               </View>
             ) : (
               favoriteRestaurants.map((restaurant) => (
           <TouchableOpacity
             key={restaurant.id}
-            style={styles.restaurantCard}
+            style={[styles.restaurantCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
             onPress={() => handleRestaurantPress(restaurant)}
             activeOpacity={0.9}
           >
@@ -77,7 +79,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
             />
             <View style={styles.restaurantInfo}>
               <View style={styles.restaurantHeader}>
-                <Text style={styles.restaurantName}>{restaurant.name}</Text>
+                <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
                 <TouchableOpacity
                   style={styles.favoriteButton}
                   onPress={() => handleRemoveFavorite(restaurant.id)}
@@ -85,15 +87,15 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
                   <FontAwesome name="heart" size={20} color="#E74C3C" />
                 </TouchableOpacity>
               </View>
-              <Text style={styles.restaurantCuisine}>{restaurant.category || restaurant.type}</Text>
+              <Text style={[styles.restaurantCuisine, { color: theme.colors.textSecondary }]}>{restaurant.category || restaurant.type}</Text>
               <View style={styles.restaurantFooter}>
                 <View style={styles.ratingContainer}>
                   <FontAwesome name="star" size={14} color="#F39C12" />
-                  <Text style={styles.ratingText}>{restaurant.rating > 0 ? restaurant.rating : 'Yeni'}</Text>
+                  <Text style={[styles.ratingText, { color: theme.colors.text }]}>{restaurant.rating > 0 ? restaurant.rating : 'Yeni'}</Text>
                 </View>
                 <View style={styles.distanceContainer}>
-                  <FontAwesome name="map-marker" size={14} color="#95A5A6" />
-                  <Text style={styles.distanceText}>{restaurant.distance || 'Yakınınızda'}</Text>
+                  <FontAwesome name="map-marker" size={14} color={theme.colors.textSecondary} />
+                  <Text style={[styles.distanceText, { color: theme.colors.textSecondary }]}>{restaurant.distance || 'Yakınınızda'}</Text>
                 </View>
               </View>
             </View>

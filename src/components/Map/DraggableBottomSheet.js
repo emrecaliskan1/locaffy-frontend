@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
+import { useTheme } from '../../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
@@ -17,6 +18,7 @@ const BOTTOM_SHEET_MIN_HEIGHT = 50;
 export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
+  const { theme } = useTheme();
 
   // Alt sayfa açma/kapatma fonksiyonu
   const toggleSheet = () => {
@@ -41,40 +43,42 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
         styles.bottomSheet,
         {
           height: animatedHeight,
+          backgroundColor: theme.colors.card,
+          borderTopColor: theme.colors.border,
         },
       ]}
     >
       <TouchableOpacity 
-        style={styles.bottomSheetHeader}
+        style={[styles.bottomSheetHeader, { backgroundColor: theme.colors.card }]}
         onPress={toggleSheet}
         activeOpacity={0.8}
       >
-        <View style={styles.bottomSheetHandle} />
-        <Text style={styles.bottomSheetTitle}>Yakındaki Restoranlar</Text>
+        <View style={[styles.bottomSheetHandle, { backgroundColor: theme.colors.border }]} />
+        <Text style={[styles.bottomSheetTitle, { color: theme.colors.text }]}>Yakındaki Restoranlar</Text>
       </TouchableOpacity>
       
       {isExpanded && (
         <ScrollView 
-          style={styles.restaurantScrollList} 
+          style={[styles.restaurantScrollList, { backgroundColor: theme.colors.card }]} 
           showsVerticalScrollIndicator={false}
         >
           {restaurants.map((restaurant) => (
             <TouchableOpacity
               key={restaurant.id}
-              style={styles.restaurantListItem}
+              style={[styles.restaurantListItem, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}
               onPress={() => onMarkerPress(restaurant)}
             >
-              <View style={styles.restaurantItemInfo}>
-                <Text style={styles.restaurantItemName}>{restaurant.name}</Text>
-                <Text style={styles.restaurantItemType}>{restaurant.placeType}</Text>
-                <Text style={styles.restaurantItemRating}>⭐ {restaurant.averageRating || '0.0'}</Text>
-                <Text style={styles.restaurantItemAddress}>{restaurant.address}</Text>
+              <View style={[styles.restaurantItemInfo, { backgroundColor: theme.colors.background }]}>
+                <Text style={[styles.restaurantItemName, { color: theme.colors.text }]}>{restaurant.name}</Text>
+                <Text style={[styles.restaurantItemType, { color: theme.colors.textSecondary }]}>{restaurant.placeType}</Text>
+                <Text style={[styles.restaurantItemRating, { color: theme.colors.text }]}>⭐ {restaurant.averageRating || '0.0'}</Text>
+                <Text style={[styles.restaurantItemAddress, { color: theme.colors.textTertiary }]}>{restaurant.address}</Text>
               </View>
-              <View style={styles.restaurantItemRight}>
+              <View style={[styles.restaurantItemRight, { backgroundColor: theme.colors.background }]}>
                 <View style={styles.restaurantItemIcon}>
-                  {getRestaurantIconComponent(restaurant.placeType, 18, '#DC143C')}
+                  {getRestaurantIconComponent(restaurant.placeType, 18, theme.colors.primary)}
                 </View>
-                <Text style={styles.restaurantItemDistance}>
+                <Text style={[styles.restaurantItemDistance, { color: theme.colors.textSecondary }]}>
                   {restaurant.distance ? `${(restaurant.distance / 1000).toFixed(1)} km` : 'Yakın'}
                 </Text>
               </View>

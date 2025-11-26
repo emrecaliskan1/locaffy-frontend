@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
 import { reservationService, placeService, reviewService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
 const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isReviewed, setIsReviewed] = useState(true);
@@ -77,11 +79,11 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
   }, [item.placeId, isPast, item.status, user?.userId, user?.username]);
 
   return (
-    <View style={styles.reservationCard}>
-      <View style={styles.reservationHeader}>
+    <View style={[styles.reservationCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+      <View style={[styles.reservationHeader, { backgroundColor: theme.colors.card }]}>
         <View style={styles.restaurantInfo}>
-          <Text style={styles.restaurantName}>{item.placeName}</Text>
-          <Text style={styles.reservationNumber}>#{item.id}</Text>
+          <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{item.placeName}</Text>
+          <Text style={[styles.reservationNumber, { color: theme.colors.textSecondary }]}>#{item.id}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}> 
           <Text style={[styles.statusText, { fontSize: item.status === 'APPROVED' ? 12 : 14 }]}>
@@ -91,19 +93,19 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
       </View>
 
       {/* Rezervasyon Detayları */}
-      <View style={styles.reservationDetails}>
+      <View style={[styles.reservationDetails, { backgroundColor: theme.colors.card }]}>
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>📅 Tarih & Saat:</Text>
-          <Text style={styles.detailValue}>{formatDate(item.reservationTime)}</Text>
+          <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>📅 Tarih & Saat:</Text>
+          <Text style={[styles.detailValue, { color: theme.colors.text }]}>{formatDate(item.reservationTime)}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>👥 Kişi:</Text>
-          <Text style={styles.detailValue}>{item.numberOfPeople} kişi</Text>
+          <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>👥 Kişi:</Text>
+          <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.numberOfPeople} kişi</Text>
         </View>
         {item.note && (
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>💬 Not:</Text>
-            <Text style={styles.detailValue}>{item.note}</Text>
+            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>💬 Not:</Text>
+            <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.note}</Text>
           </View>
         )}
       </View>
@@ -113,7 +115,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
           {showReviewButton && (
             <TouchableOpacity 
-              style={[styles.rateButton, { flex: 1 }]}
+              style={[styles.rateButton, { flex: 1, backgroundColor: theme.colors.primary }]}
               onPress={() => setShowReviewModal(true)}
             > 
               <Text style={styles.rateButtonText}>Değerlendir</Text>
@@ -133,7 +135,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
-              style={[styles.rejectReasonButton, { flex: 1 }]}
+              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: theme.colors.warning }]}
               onPress={() => setShowRejectModal(true)}
             > 
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>
@@ -144,7 +146,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
           {showCancelButton && (
             <TouchableOpacity 
-              style={[styles.cancelButton, { flex: 1, alignItems: 'center', justifyContent: 'center' }]} 
+              style={[styles.cancelButton, { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.error }]} 
               onPress={() => onCancel && onCancel(item)}
             >
               <Text style={styles.cancelButtonText}>İptal Et</Text>
@@ -152,7 +154,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
-              style={[styles.rejectReasonButton, { flex: 1 }]}
+              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: theme.colors.warning }]}
               onPress={() => setShowRejectModal(true)}
             > 
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>

@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
+import { useTheme } from '../../context/ThemeContext';
 
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
 import { Alert } from 'react-native';
@@ -20,6 +21,7 @@ import { reservationService } from '../../services';
 export default function ReservationsScreen({ navigation, route }) {
   const [activeTab, setActiveTab] = useState('active');
   const { fromProfile, fromRestaurant } = route.params || {};
+  const { theme } = useTheme();
 
   const [activeReservations, setActiveReservations] = useState([]);
   const [pastReservations, setPastReservations] = useState([]);
@@ -151,17 +153,17 @@ export default function ReservationsScreen({ navigation, route }) {
   );
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
-        <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
           <TouchableOpacity 
-            style={styles.backButton}
             onPress={handleBackPress}
+            style={styles.backButton}
           >
-            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
+            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Rezervasyonlarım</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Rezervasyonlarım</Text>
           <View style={styles.placeholder} />
         </View>
       </SafeAreaView>
@@ -173,9 +175,9 @@ export default function ReservationsScreen({ navigation, route }) {
       />
 
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#667eea" />
-          <Text style={styles.loadingText}>Rezervasyonlar yükleniyor...</Text>
+        <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Rezervasyonlar yüklenyor...</Text>
         </View>
       ) : activeTab === 'active' ? (
         <FlatList
