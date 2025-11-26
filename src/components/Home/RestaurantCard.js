@@ -32,7 +32,7 @@ export const RestaurantCard = ({ item, onPress, styles }) => (
         <Text style={styles.restaurantName}>{item.name}</Text>
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={12} color="#FFD700" style={styles.ratingIcon} />
-          <Text style={styles.rating}>{item.averageRating || '0.0'}</Text>
+          <Text style={styles.rating}>{item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</Text>
           <Text style={styles.reviews}>({item.totalRatings || 0})</Text>
         </View>
       </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,36 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 export const ReviewItem = ({ item, index, styles }) => {
+  const [userName, setUserName] = useState('Kullanıcı');
+
+  // UserId'den username'i çek
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        if (item.username) {
+          setUserName(item.username);
+          return;
+        }
+        if (item.user?.username) {
+          setUserName(item.user.username);
+          return;
+        }
+        if (item.user?.name) {
+          setUserName(item.user.name);
+          return;
+        }
+        if (item.userName) {
+          setUserName(item.userName);
+          return;
+        }
+      } catch (error) {
+        setUserName('Kullanıcı');
+      }
+    };
+    fetchUserName();
+  }, [item.username, item.user?.username, item.userName]);
+
   const formatDate = (dateString) => {
-    if (!dateString) return 'Tarih belirtilmemiş';
-    
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('tr-TR', {
@@ -27,7 +54,7 @@ export const ReviewItem = ({ item, index, styles }) => {
       <View style={styles.reviewHeader}>
         <View style={styles.reviewUser}>
           <Text style={styles.reviewUserName}>
-            {item.user?.username || item.userName || 'Anonim Kullanıcı'}
+            {userName}
           </Text>
           <View style={styles.reviewRating}>
             {[...Array(5)].map((_, starIndex) => (

@@ -52,8 +52,8 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const finalRestaurantData = {
     ...restaurantData,
     image: restaurantData.mainImageUrl || null,
-    rating: restaurantData.averageRating || 0,
-    reviewCount: reviews.length || restaurantData.totalRatings || 0,
+    rating: reviews.length > 0 ? (restaurantData.averageRating || 0) : 0,
+    reviewCount: reviews.length || 0,
     menu: restaurantData.menuItems || [],
     reviews: reviews,
     loadingReviews: loadingReviews,
@@ -109,9 +109,11 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             <View style={styles.ratingContainer}>
               <View style={styles.ratingWrapper}>
                 <FontAwesome name="star" size={16} color="#F39C12" />
-                <Text style={styles.rating}> {finalRestaurantData.rating}</Text>
+                <Text style={styles.rating}> {finalRestaurantData.rating.toFixed(1)}</Text>
               </View>
-              <Text style={styles.reviewCount}>({finalRestaurantData.reviewCount})</Text>
+              <Text style={styles.reviewCount}>
+                ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})
+              </Text>
             </View>
           </View>
         </View>

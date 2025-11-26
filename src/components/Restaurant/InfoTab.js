@@ -32,7 +32,10 @@ export const InfoTab = ({ restaurant, styles }) => (
 
       <View style={styles.infoRow}>
         <Text style={styles.infoIcon}>⭐</Text>
-        <Text style={styles.infoText}>Ortalama Puan: {restaurant.averageRating || 0}/5 ({restaurant.totalRatings || 0} değerlendirme)</Text>
+        <Text style={styles.infoText}>
+          Ortalama Puan: {restaurant.rating ? restaurant.rating.toFixed(1) : 0}/5 
+          ({restaurant.reviewCount || 0} {restaurant.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})
+        </Text>
       </View>
 
       <View style={styles.webMapPlaceholder}>
