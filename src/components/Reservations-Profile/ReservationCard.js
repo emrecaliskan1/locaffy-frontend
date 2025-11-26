@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
-import { reservationService } from '../../services';
+import { reservationService, placeService, reviewService } from '../../services';
+import { useAuth } from '../../context/AuthContext';
+import ReviewModal from '../ReviewModal/ReviewModal';
 
 const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
+  const { user } = useAuth();
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [isReviewed, setIsReviewed] = useState(true);
+  const [placeDetails, setPlaceDetails] = useState(null);
 
-  const formatDate = (reservationTime) => {
-    return reservationService.formatReservationTime(reservationTime);
+  const handleReviewSubmitted = () => {
+    setIsReviewed(true);
+    setShowReviewModal(false);
   };
 
   const getStatusColor = (status) => {
@@ -23,9 +30,51 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
     return reservationService.getReservationStatusText(status);
   };
 
+  const formatDate = (reservationTime) => {
+    return reservationService.formatReservationTime(reservationTime);
+  };
+
   const showCancelButton = (item.status === 'APPROVED' || item.status === 'PENDING') && !isPast;
-  const showReviewButton = isPast && item.status === 'APPROVED' && reservationService.isReservationPast(item.reservationTime);
+  const showReviewButton = isPast && item.status === 'APPROVED' && reservationService.isReservationPast(item.reservationTime) && !isReviewed;
   const showRejectReasonButton = item.status === 'REJECTED' && item.rejectionReason;
+
+  useEffect(() => {
+    const fetchPlaceDetails = async () => {
+      if (item.placeId) {
+        try {
+          const details = await placeService.getPlaceDetails(item.placeId);
+          setPlaceDetails(details);
+        } catch (error) {
+        }
+      }
+    };
+
+    fetchPlaceDetails();
+  }, [item.placeId]);
+
+  // Kullanıcının bu place için yorum yapıp yapmadığını kontrol et
+  useEffect(() => {
+    const checkUserReview = async () => {
+      if (!isPast || item.status !== 'APPROVED' || !item.placeId || !user?.userId) {
+        setIsReviewed(false);
+        return;
+      }
+      try {
+        const reviews = await reviewService.getPlaceReviews(item.placeId); 
+        if (reviews && reviews.length > 0) {
+          const hasUserReview = reviews.some(review => {
+            return (review.user?.id === user.userId) || (review.userId === user.userId);
+          });
+          setIsReviewed(hasUserReview);
+        } else {
+          setIsReviewed(false);
+        }
+      } catch (error) {
+        setIsReviewed(false);
+      }
+    };
+    checkUserReview();
+  }, [item.placeId, isPast, item.status, user?.userId, user?.username]);
 
   return (
     <View style={styles.reservationCard}>
@@ -65,10 +114,22 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
           {showReviewButton && (
             <TouchableOpacity 
               style={[styles.rateButton, { flex: 1 }]}
-              onPress={() => navigation?.navigate('Review', { reservation: item })}
+              onPress={() => setShowReviewModal(true)}
             > 
               <Text style={styles.rateButtonText}>Değerlendir</Text>
             </TouchableOpacity>
+          )}
+          {(isPast && item.status === 'APPROVED' && reservationService.isReservationPast(item.reservationTime) && isReviewed) && (
+            <View 
+              style={[
+                styles.rateButton, 
+                { flex: 1, backgroundColor: '#95A5A6', opacity: 0.8 }
+              ]}
+            > 
+              <Text style={[styles.rateButtonText, { color: '#FFFFFF' }]}>
+                Değerlendirme Yapıldı
+              </Text>
+            </View>
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
@@ -175,6 +236,22 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Review Modal */}
+      <ReviewModal
+        visible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        reservation={{
+          ...item,
+          place: {
+            id: item.placeId,
+            name: item.placeName,
+            address: placeDetails?.address || item.placeAddress || item.address || 'Adres bilgisi yüklenemiyor'
+          },
+          reservationNumber: item.id
+        }}
+        onReviewSubmitted={handleReviewSubmitted}
+      />
     </View>
   );
 };

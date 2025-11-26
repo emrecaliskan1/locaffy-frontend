@@ -45,17 +45,6 @@ export const userService = {
     }
   },
 
-  getFavoritePlaces: async () => {
-    try {
-      const headers = await buildHeaders();
-      const response = await axios.get(`${BASE_URL}/favorites`, { headers });
-      return response.data;
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Favori mekanlar yüklenirken bir hata oluştu';
-      throw new Error(errorMessage);
-    }
-  },
-
   addToFavorites: async (placeId) => {
     try {
       const headers = await buildHeaders();
@@ -74,17 +63,6 @@ export const userService = {
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Favorilerden çıkarılırken bir hata oluştu';
-      throw new Error(errorMessage);
-    }
-  },
-
-  getStats: async () => {
-    try {
-      const headers = await buildHeaders();
-      const response = await axios.get(`${BASE_URL}/stats`, { headers });
-      return response.data;
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Kullanıcı istatistikleri alınırken bir hata oluştu';
       throw new Error(errorMessage);
     }
   }

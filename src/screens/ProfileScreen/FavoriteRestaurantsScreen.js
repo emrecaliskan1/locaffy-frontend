@@ -10,15 +10,8 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   const loadFavorites = async () => {
-    try {
-      setLoading(true);
-      const favorites = await userService.getFavoritePlaces();
-      setFavoriteRestaurants(favorites);
-    } catch (error) {
-      Alert.alert('Hata', 'Favori restoranlar yüklenirken bir hata oluştu');
-    } finally {
-      setLoading(false);
-    }
+    //Favorilere ekleme kısmı henüz yok gelecek.
+    setLoading(false);
   };
 
   useEffect(() => {

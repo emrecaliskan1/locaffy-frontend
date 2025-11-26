@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,20 @@ import {
   ScrollView,
   Image,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
+import { reviewService } from '../../../services';
 
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
   const [activeTab, setActiveTab] = useState('menu');
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   const restaurantData = restaurant || {
     id: 1,
@@ -25,14 +29,34 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     totalRatings: 0,
   };
 
+  //MEKAN YORUMLARINI YÜKLE
+  const loadReviews = async () => {
+    if (!restaurantData.id) return;
+    
+    try {
+      setLoadingReviews(true);
+      const fetchedReviews = await reviewService.getPlaceReviews(restaurantData.id);
+      setReviews(fetchedReviews || []);
+    } catch (error) {
+      setReviews([]);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReviews();
+  }, [restaurantData.id]);
+
   //BACKEND'DEN GELEN RESTAURANT DATASI
   const finalRestaurantData = {
     ...restaurantData,
     image: restaurantData.mainImageUrl || null,
     rating: restaurantData.averageRating || 0,
-    reviewCount: restaurantData.totalRatings || 0,
+    reviewCount: reviews.length || restaurantData.totalRatings || 0,
     menu: restaurantData.menuItems || [],
-    reviews: restaurantData.reviews || [],
+    reviews: reviews,
+    loadingReviews: loadingReviews,
   };
 
   //RESTORAN DETAY SAYFASINDAKİ TAB SEKMELERİ

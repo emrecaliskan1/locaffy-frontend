@@ -30,21 +30,27 @@ export const reviewService = {
       const response = await axios.post(`${BASE_URL}`, reviewData, { headers });
       return response.data;
     } catch (error) {
-      console.log('Error creating review:', error);
-      
-      // Backend ErrorResponse formatını handle et
-      const errorMessage = error.response?.data?.message || 'Yorum oluşturulurken bir hata oluştu';
+      let errorMessage = 'Yorum oluşturulurken bir hata oluştu';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
       throw new Error(errorMessage);
     }
   },
 
-  // PUBLIC
+  // PUBLIC 
   getPlaceReviews: async (placeId) => {
     try {
-      const response = await axios.get(`${BASE_URL}/place/${placeId}`);
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BASE_URL}/place/${placeId}`, { headers });
       return response.data;
     } catch (error) {
-      throw error;
+      if (error.response?.status === 403) {
+        return [];
+      }
+      return [];
     }
   },
 
@@ -55,8 +61,6 @@ export const reviewService = {
       const response = await axios.delete(`${BASE_URL}/${reviewId}`, { headers });
       return response.data;
     } catch (error) {
-      console.log('Error deleting review:', error);
-      
       // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Yorum silinirken bir hata oluştu';
       throw new Error(errorMessage);

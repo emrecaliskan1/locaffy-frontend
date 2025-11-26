@@ -13,12 +13,12 @@ import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import Toast from '../../components/Toast';
-import { userService } from '../../services';
+import { userService, reservationService } from '../../services';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-  const [userStats, setUserStats] = useState({ totalOrders: 0, favoriteRestaurants: 0 });
+  const [userStats, setUserStats] = useState({ totalReservations: 0, favoriteRestaurants: 0 });
   const [isLoading, setIsLoading] = useState(true);
   
   const userInfo = {
@@ -39,10 +39,19 @@ export default function ProfileScreen({ navigation }) {
   const loadUserStats = async () => {
     try {
       setIsLoading(true);
-      const stats = await userService.getStats();
-      setUserStats(stats);
+      // Rezervasyon sayısını al
+      const reservations = await reservationService.getUserReservations();
+      if (reservations) {
+        setUserStats(prev => ({
+          ...prev,
+          totalReservations: reservations.length || 0
+        }));
+      }
     } catch (error) {
-      console.log('Error loading user stats:', error);
+      setUserStats(prev => ({
+        ...prev,
+        totalReservations: 0
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -155,9 +164,9 @@ export default function ProfileScreen({ navigation }) {
             {isLoading ? (
               <ActivityIndicator size="small" color="#667eea" />
             ) : (
-              <Text style={styles.statNumber}>{userInfo.totalOrders}</Text>
+              <Text style={styles.statNumber}>{userInfo.totalReservations}</Text>
             )}
-            <Text style={styles.statLabel}>Toplam Sipariş</Text>
+            <Text style={styles.statLabel}>Toplam Rezervasyon</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>

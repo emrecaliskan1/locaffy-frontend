@@ -29,7 +29,7 @@ export default function MapScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [infoCardVisible, setInfoCardVisible] = useState(true);
+  const [infoCardVisible, setInfoCardVisible] = useState(false);
   const [infoCardAnimation] = useState(new Animated.Value(1));
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
 
