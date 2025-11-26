@@ -50,7 +50,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     loadReviews();
   }, [restaurantData.id]);
 
-  //BACKEND'DEN GELEN RESTAURANT DATASI
+  //BACKEND'DEN GELEN MEKAN DATASI
   const finalRestaurantData = {
     ...restaurantData,
     image: restaurantData.mainImageUrl || null,
@@ -61,7 +61,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     loadingReviews: loadingReviews,
   };
 
-  //RESTORAN DETAY SAYFASINDAKİ TAB SEKMELERİ
+  //MEKAN DETAY SAYFASINDAKİ TAB SEKMELERİ
   const renderTabContent = () => {
     switch (activeTab) {
       case 'menu':
@@ -116,21 +116,21 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
           <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{finalRestaurantData.placeType || 'Restoran'}</Text>
-          <View style={styles.restaurantMeta}>
-            <View style={styles.metaItem}>
-              <FontAwesome name="map-marker" size={14} color="#27AE60" />
-              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
+          <View style={[styles.restaurantMeta, { justifyContent: 'space-between' }]}>
+            <View style={[styles.metaItem, { flex: 1, alignItems: 'flex-start' }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FontAwesome name="map-marker" size={14} color="#27AE60" />
+                <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
+              </View>
             </View>
-            <View style={styles.metaItem}>
-              <FontAwesome name="phone" size={14} color="#3498DB" />
-              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.phoneNumber || 'Telefon yok'}</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <FontAwesome name="clock-o" size={14} color="#E67E22" />
-              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.openingHours || 'Çalışma saatleri belirtilmemiş'}</Text>
+            <View style={[styles.metaItem, { flex: 1, alignItems: 'flex-end', justifyContent: 'flex-end' }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FontAwesome name="phone" size={14} color="#3498DB" />
+                <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.phoneNumber || 'Telefon yok'}</Text>
+              </View>
             </View>
           </View>
-          <View style={styles.restaurantMeta}>
+          <View style={[styles.restaurantMeta, { justifyContent: 'center', marginTop: 10 }]}>
             <View style={styles.metaItem}>
               <FontAwesome name="star" size={14} color="#F1C40F" />
               <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
@@ -139,14 +139,14 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         </View>
 
         <TouchableOpacity 
-          style={styles.reservationButton}
+          style={[styles.reservationButton, { marginTop: 10 }]}
           onPress={() => navigation.navigate('Reservation', { restaurant: finalRestaurantData })}
         >
           <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
         </TouchableOpacity>
 
-        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background }]}>
+        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background, marginTop: 10 }]}>
           <TouchableOpacity
             style={[
               styles.tab, 

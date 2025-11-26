@@ -6,7 +6,12 @@ import {
   ScrollView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { dayNames, monthNames } from '../../static-data';
+
+const dayNames = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+const monthNames = [
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+];
 
 export const DateSelector = ({ 
   availableDates, 

@@ -73,6 +73,7 @@ export const businessService = {
   }
 };
 
+
 // İŞLETME BAŞVURU SERVİSLERİ
 
 export const businessApplicationService = {

@@ -75,7 +75,7 @@ export default function MapScreen({ navigation }) {
   const loadPlaces = async () => {
     setPlacesLoading(true);
     try {
-      // Kullanıcının mevcut konumunu kullan, yoksa varsayılan koordinatlar
+      // Kullanıcının mevcut konumunu kullan, yoksa varsayılan koordinatlar(Edirne merkez)
       const lat = userLocation ? userLocation.latitude : 41.6771;
       const lng = userLocation ? userLocation.longitude : 26.5557;
       const result = await placeService.getNearbyPlaces(lat, lng, 10000);
@@ -89,7 +89,6 @@ export default function MapScreen({ navigation }) {
   };
 
   useEffect(() => {
-    // Places will be loaded after getting user location
   }, []);
 
   useEffect(() => {

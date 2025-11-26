@@ -4,9 +4,9 @@ import { Text, View, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
-import HomeScreen from '../screens/HomeScreen';
-import MapScreen from '../screens/MapScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import HomeScreen from '../screens/HomeScreen/HomeScreen';
+import MapScreen from '../screens/MapScreen/MapScreen';
+import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 

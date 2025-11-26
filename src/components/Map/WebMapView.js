@@ -99,18 +99,6 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
       restaurantMarkers.length = 0;
 
       restaurants.forEach((restaurant) => {
-
-        const getRestaurantMarkerColor = (type) => {
-          const colorMap = {
-            'CAFE': '#DC143C',
-            'RESTAURANT': '#DC143C', 
-            'BAR': '#DC143C',
-            'BISTRO': '#DC143C',
-            'default': '#DC143C'
-          };
-          return colorMap[type] || colorMap.default;
-        };
-
         const restaurantIcon = window.L.divIcon({
           className: 'restaurant-marker',
           html: `

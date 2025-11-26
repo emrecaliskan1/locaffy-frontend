@@ -10,10 +10,24 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { categories, ratingOptions } from '../../static-data';
 import { styles } from './styles';
 import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../context/ThemeContext';
+
+const categories = [
+  { id: 'all', name: 'Tümü', icon: 'th-large' },
+  { id: 'restaurant', name: 'Restoran', icon: 'cutlery' },
+  { id: 'cafe', name: 'Kafe', icon: 'coffee' },
+  { id: 'bar', name: 'Bar', icon: 'glass' },
+  { id: 'bistro', name: 'Bistro', icon: 'cutlery' }
+];
+
+const ratingOptions = [
+  { value: 'all', label: 'Tüm Puanlar', showStar: false },
+  { value: '4+', label: '4+', showStar: true },
+  { value: '3+', label: '3+', showStar: true },
+  { value: '2+', label: '2+', showStar: true }
+];
 
 const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const { theme } = useTheme();
@@ -96,7 +110,7 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
                   ]}
                   onPress={() => handleRatingChange(option.value)}
                 >
-                  <View style={styles.ratingOptionContainer}>
+                  <View style={[styles.ratingOptionContainer, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
                     <Text style={[
                       styles.optionText,
                       { color: filters.rating === option.value ? "#FFFFFF" : theme.colors.primary },
@@ -104,12 +118,12 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
                     ]}>
                       {option.label}
                     </Text>
-                    {option.icon && (
-                      <FontAwesome 
-                        name={option.icon} 
-                        size={14} 
-                        color={filters.rating === option.value ? "#FFFFFF" : "#F39C12"} 
-                        style={styles.ratingIcon}
+                    {option.showStar && (
+                      <FontAwesome
+                        name="star"
+                        size={14}
+                        color="#F1C40F"
+                        style={{ marginLeft: 5 }}
                       />
                     )}
                   </View>
@@ -126,33 +140,21 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
                   key={category.id}
                   style={[
                     styles.categoryButton,
-                    { borderColor: filters.category === category.value ? theme.colors.primary : theme.colors.border, borderWidth: filters.category === category.value ? 3 : 1 },
-                    filters.category === category.value && styles.activeCategoryButton
+                    { borderColor: filters.category === category.id ? theme.colors.primary : theme.colors.border, borderWidth: filters.category === category.id ? 3 : 1 },
+                    filters.category === category.id && styles.activeCategoryButton
                   ]}
-                  onPress={() => handleCategoryChange(category.value)}
+                  onPress={() => handleCategoryChange(category.id)}
                 >
-                  {(() => {
-                    const iconColor = filters.category === category.value ? "#667eea" : "#667eea";
-                    
-                    // Eğer iconType yoksa (emoji ise), direkt emoji olarak göster
-                    if (!category.iconType) {
-                      return <Text style={[styles.categoryIcon, { fontSize: 16 }]}>{category.icon}</Text>;
-                    }
-                    
-                    switch (category.iconType) {
-                      case 'MaterialIcons':
-                        return <MaterialIcons name={category.icon} size={16} color={iconColor} style={styles.categoryIcon} />;
-                      case 'MaterialCommunityIcons':
-                        return <MaterialCommunityIcons name={category.icon} size={16} color={iconColor} style={styles.categoryIcon} />;
-                      case 'FontAwesome':
-                      default:
-                        return <FontAwesome name={category.icon} size={16} color={iconColor} style={styles.categoryIcon} />;
-                    }
-                  })()}
+                  <FontAwesome 
+                    name={category.icon} 
+                    size={16} 
+                    color={theme.colors.primary}
+                    style={styles.categoryIcon} 
+                  />
                   <Text style={[
                     styles.categoryText,
-                    { color: filters.category === category.value ? "#FFFFFF" : theme.colors.primary },
-                    filters.category === category.value && styles.activeCategoryText
+                    { color: filters.category === category.id ? "#FFFFFF" : theme.colors.primary },
+                    filters.category === category.id && styles.activeCategoryText
                   ]}>
                     {category.name}
                   </Text>

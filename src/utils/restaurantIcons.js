@@ -6,14 +6,7 @@ export const getRestaurantIcon = (type) => {
     'CAFE': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
     'RESTAURANT': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
     'BAR': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
-    'BISTRO': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
-    // 'fast-food': { name: 'fastfood', iconType: 'MaterialIcons', color: '#ffffffff' },
-    // 'asian-food': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
-    // 'kebab': { name: 'food-steak', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
-    // 'dessert': { name: 'cupcake', iconType: 'MaterialCommunityIcons', color: '#ffffffff' },
-    // 'pub': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
-    // 'cafe': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
-    // 'default': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' }
+    'BISTRO': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' }
   };
   return iconMap[type] || iconMap.default;
 };

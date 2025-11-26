@@ -52,7 +52,9 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   restaurantInfo: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   restaurantImage: {
     width: '100%',

@@ -12,11 +12,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
-import { dayNames, monthNames, availableTimes, maxPeople } from '../../../static-data';
 import { reservationService } from '../../../services';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
+
+const dayNames = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+const monthNames = [
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+];
+const availableTimes = ['12:00', '12:30', '13:00', '13:30', '14:00', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00'];
+const maxPeople = 8;
 
 export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;
@@ -191,7 +198,11 @@ export default function ReservationScreen({ route, navigation }) {
         style={[styles.timeSlot, isSelected && styles.selectedTimeSlot, isDisabled && styles.disabledTimeSlot]}
         onPress={() => !isDisabled && handleTimeSelect(time)}
       >
-        <Text style={[styles.timeText, isSelected && styles.selectedTimeText]}>
+        <Text style={[
+          styles.timeText, 
+          isSelected && styles.selectedTimeText,
+          isDisabled && { color: '#666666' }
+        ]}>
           {time}
         </Text>
       </TouchableOpacity>
@@ -541,8 +552,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   disabledTimeSlot: {
-    backgroundColor: '#ECEFF1',
-    borderColor: '#CBD5DB',
+    backgroundColor: '#9E9E9E',
+    borderColor: '#757575',
+    opacity: 0.6,
   },
   buttonContainer: {
     paddingHorizontal: 20,

@@ -16,7 +16,7 @@ const saveToken = async (token) => {
   try {
     await AsyncStorage.setItem('authToken', token);
   } catch (error) {
-    // Token kaydetme hatası
+    console.log(error);
   }
 };
 
@@ -24,7 +24,7 @@ const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('authToken');
   } catch (error) {
-    // Token silme hatası
+    console.log(error);
   }
 };
 
@@ -32,7 +32,7 @@ const saveUserInfo = async (userInfo) => {
   try {
     await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
   } catch (error) {
-    // User info kaydetme hatası
+    console.log(error);
   }
 };
 
@@ -49,7 +49,7 @@ const removeUserInfo = async () => {
   try {
     await AsyncStorage.removeItem('userInfo');
   } catch (error) {
-    // User info silme hatası
+    console.log(error);
   }
 };
 

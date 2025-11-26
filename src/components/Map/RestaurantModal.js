@@ -13,6 +13,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
 import { useTheme } from '../../context/ThemeContext';
 import { reviewService } from '../../services/reviewService';
+import { ReviewItemModal } from './ReviewItemModal';
 
 export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, styles }) => {
   const { theme } = useTheme();
@@ -35,7 +36,6 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
       const reviewsData = await reviewService.getPlaceReviews(restaurant.id);
       setReviews(reviewsData || []);
     } catch (error) {
-      console.error('Reviews loading error:', error);
       setReviews([]);
     } finally {
       setReviewsLoading(false);
@@ -73,18 +73,6 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
     }
   };
 
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <FontAwesome
-        key={index}
-        name={index < rating ? "star" : "star-o"}
-        size={12}
-        color={"#F1C40F"}
-        style={{ marginRight: 2 }}
-      />
-    ));
-  };
-
   return (
     <Modal
       animationType="slide"
@@ -105,12 +93,12 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
           borderRadius: 15,
           maxHeight: '75%'
         }]}>
-          {/* Header with close button */}
+
           <View style={[styles.modalHeader, {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: 15,
+            padding: 8,
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.border
           }]}>
@@ -182,7 +170,15 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
                 marginBottom: 15
               }}>
                 <View style={{ flexDirection: 'row', marginRight: 8 }}>
-                  {renderStars(Math.round(restaurant.averageRating || 0))}
+                  {[...Array(5)].map((_, index) => (
+                    <FontAwesome
+                      key={index}
+                      name={index < Math.round(restaurant.averageRating || 0) ? "star" : "star-o"}
+                      size={14}
+                      color={index < Math.round(restaurant.averageRating || 0) ? "#F1C40F" : "#BDC3C7"}
+                      style={{ marginRight: 2 }}
+                    />
+                  ))}
                 </View>
                 <Text style={{
                   fontSize: 16,
@@ -245,37 +241,7 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
                     </View>
                   ) : reviews.length > 0 ? (
                     reviews.map((review) => (
-                      <View key={review.id} style={{
-                        paddingVertical: 12,
-                        borderBottomWidth: 1,
-                        borderBottomColor: theme.colors.border + '40'
-                      }}>
-                        <View style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: 5
-                        }}>
-                          <Text style={{
-                            fontSize: 14,
-                            fontWeight: '600',
-                            color: theme.colors.text
-                          }}>{review.user?.username || review.user?.firstName || 'Anonim'}</Text>
-                          <View style={{ flexDirection: 'row' }}>
-                            {renderStars(review.rating)}
-                          </View>
-                        </View>
-                        <Text style={{
-                          fontSize: 14,
-                          color: theme.colors.text,
-                          marginBottom: 5,
-                          lineHeight: 20
-                        }}>{review.comment}</Text>
-                        <Text style={{
-                          fontSize: 12,
-                          color: theme.colors.textSecondary
-                        }}>{new Date(review.createdAt).toLocaleDateString('tr-TR')}</Text>
-                      </View>
+                      <ReviewItemModal key={review.id} review={review} />
                     ))
                   ) : (
                     <View style={{

@@ -1,7 +1,3 @@
-// ================================
-// TÜM SERVİSLERİ BURADAN İMPORT EDEBİLİRSİNİZ
-// ================================
-
 export { default as authService } from './authService';
 export { default as placeService } from './placeService';
 export { default as menuService } from './menuService';

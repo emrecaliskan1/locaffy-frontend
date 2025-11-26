@@ -27,15 +27,6 @@ export default function AccountInfoScreen({ navigation, route }) {
   const loadUserProfile = async () => {
     try {
       setLoading(true);
-      const profile = await userService.getProfile();
-      setUserInfo({
-        name: profile.name || user?.username || '',
-        email: profile.email || user?.email || '',
-        username: profile.username || user?.username || profile.name || '',
-        phone: profile.phone || '',
-      });
-    } catch (error) {
-      console.log('Error loading profile:', error);
       setUserInfo({
         name: user?.username || '',
         email: user?.email || '',
@@ -54,12 +45,6 @@ export default function AccountInfoScreen({ navigation, route }) {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await userService.updateProfile({
-        name: userInfo.name,
-        email: userInfo.email,
-        phone: userInfo.phone,
-      });
-      Alert.alert('Başarılı', 'Profil bilgileri güncellendi');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Hata', 'Profil güncellenirken bir hata oluştu');

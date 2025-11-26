@@ -2,17 +2,14 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import OnboardingScreen from '../screens/OnboardingScreen';
+import OnboardingScreen from '../screens/OnboardingScreen/OnboardingScreen';
 import AuthScreen from '../screens/AuthScreen/AuthScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RestaurantDetailScreen from '../screens/RestaurantSceen/RestaurantDetailsScreen/RestaurantDetailScreen';
-import ReservationScreen from '../screens/ReservationsScreen/ReservationScreen';
+import ReservationScreen from '../screens/ReservationsScreen/ReservationScreen/ReservationScreen';
 import ReservationDetailsScreen from '../screens/ReservationsScreen/ReservationDetailsScreen/ReservationDetailsScreen';
 import MenuScreen from '../screens/MenuScreen/MenuScreen';
-import CartScreen from '../screens/CartScreen/CartScreen';
-import OrdersScreen from '../screens/OrdersScreen';
 import ReservationsScreen from '../screens/ReservationsScreen';
-import OrderConfirmationScreen from '../screens/OrdersScreen/OrderConfirmationScreen/OrderConfirmationScreen';
 import AccountInfoScreen from '../screens/ProfileScreen/AccountInfoScreen';
 import FavoriteRestaurantsScreen from '../screens/ProfileScreen/FavoriteRestaurantsScreen';
 import NotificationSettingsScreen from '../screens/ProfileScreen/NotificationSettingsScreen';
@@ -36,9 +33,6 @@ export default function AppNavigator() {
             <Stack.Screen name="Reservation" component={ReservationScreen} />
             <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
-            <Stack.Screen name="Cart" component={CartScreen} />
-            <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
-            <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
             <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
             <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />

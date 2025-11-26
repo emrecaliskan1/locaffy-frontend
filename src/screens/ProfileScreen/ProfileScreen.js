@@ -39,6 +39,7 @@ export default function ProfileScreen({ navigation }) {
     setToast({ visible: false, message: '', type: 'success' });
   };
 
+  //Avatar altındaki istatistikler
   const loadUserStats = async () => {
     try {
       setIsLoading(true);
