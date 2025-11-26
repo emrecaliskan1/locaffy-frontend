@@ -5,13 +5,15 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { dayNames, monthNames } from '../../static-data';
 
 export const DateSelector = ({ 
   availableDates, 
   selectedDate, 
   onDateSelect, 
-  styles 
+  styles,
+  theme
 }) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -48,7 +50,10 @@ export const DateSelector = ({
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>📅 Tarih Seçin</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+        <FontAwesome name="calendar" size={20} color={theme?.colors?.primary || '#667eea'} style={{ marginRight: 8 }} />
+        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Tarih Seçin</Text>
+      </View>
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}

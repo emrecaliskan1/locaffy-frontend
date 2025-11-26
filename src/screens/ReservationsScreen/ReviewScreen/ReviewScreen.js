@@ -55,7 +55,7 @@ export default function ReviewScreen({ route, navigation }) {
             <FontAwesome
               name={star <= rating ? 'star' : 'star-o'}
               size={40}
-              color={star <= rating ? '#F39C12' : '#E1E8ED'}
+              color={star <= rating ? '#F1C40F' : '#E1E8ED'}
             />
           </TouchableOpacity>
         ))}

@@ -167,7 +167,7 @@ export default function MapScreen({ navigation }) {
         <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Mevcut Konum</Text>
           <TouchableOpacity 
-            style={[styles.searchButton, { backgroundColor: theme.colors.card }]} 
+            style={[styles.searchButton, { backgroundColor: theme.colors.background }]} 
             onPress={getLocation}>
             <FontAwesome name="map-marker" size={18} color={theme.colors.primary} style={styles.searchIcon} />
           </TouchableOpacity>
@@ -223,7 +223,7 @@ export default function MapScreen({ navigation }) {
               <View style={styles.infoCardContent}>
                 {categoryInfo.map((category, index) => (
                   <View key={index} style={styles.categoryRow}>
-                    <View style={[styles.categoryIcon, { backgroundColor: category.color }]}>
+                    <View style={[styles.categoryIcon, { backgroundColor: theme.colors.primary }]}>
                       {category.iconFamily === 'FontAwesome5' ? (
                         <FontAwesome5 name={category.icon} size={14} color="#fff" />
                       ) : (

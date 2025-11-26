@@ -132,7 +132,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           </View>
           <View style={styles.restaurantMeta}>
             <View style={styles.metaItem}>
-              <FontAwesome name="star" size={14} color="#F39C12" />
+              <FontAwesome name="star" size={14} color="#F1C40F" />
               <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
             </View>
           </View>

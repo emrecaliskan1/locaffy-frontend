@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { reservationService, placeService, reviewService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -95,16 +96,25 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
       {/* Rezervasyon Detayları */}
       <View style={[styles.reservationDetails, { backgroundColor: theme.colors.card }]}>
         <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>📅 Tarih & Saat:</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <FontAwesome name="calendar" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>Tarih & Saat:</Text>
+          </View>
           <Text style={[styles.detailValue, { color: theme.colors.text }]}>{formatDate(item.reservationTime)}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>👥 Kişi:</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <FontAwesome name="users" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>Kişi:</Text>
+          </View>
           <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.numberOfPeople} kişi</Text>
         </View>
         {item.note && (
           <View style={styles.detailRow}>
-            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>💬 Not:</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <FontAwesome name="sticky-note" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>Not:</Text>
+            </View>
             <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.note}</Text>
           </View>
         )}

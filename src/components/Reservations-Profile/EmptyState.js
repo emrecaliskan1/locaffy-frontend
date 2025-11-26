@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 
 const EmptyState = ({ activeTab, styles }) => {
@@ -7,7 +8,7 @@ const EmptyState = ({ activeTab, styles }) => {
   
   return (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>📅</Text>
+      <FontAwesome name="calendar" size={50} color={theme.colors.textSecondary} style={styles.emptyIcon} />
       <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
         {activeTab === 'active' ? 'Aktif rezervasyonunuz yok' : 'Geçmiş rezervasyonunuz yok'}
       </Text>

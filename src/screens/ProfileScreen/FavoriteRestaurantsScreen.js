@@ -90,7 +90,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
               <Text style={[styles.restaurantCuisine, { color: theme.colors.textSecondary }]}>{restaurant.category || restaurant.type}</Text>
               <View style={styles.restaurantFooter}>
                 <View style={styles.ratingContainer}>
-                  <FontAwesome name="star" size={14} color="#F39C12" />
+                  <FontAwesome name="star" size={14} color="#F1C40F" />
                   <Text style={[styles.ratingText, { color: theme.colors.text }]}>{restaurant.rating > 0 ? restaurant.rating : 'Yeni'}</Text>
                 </View>
                 <View style={styles.distanceContainer}>

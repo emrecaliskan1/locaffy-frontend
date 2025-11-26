@@ -244,7 +244,10 @@ export default function ReservationScreen({ route, navigation }) {
 
         {/* Tarih Seçimi */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>📅 Tarih Seçin</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+            <FontAwesome name="calendar" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Tarih Seçin</Text>
+          </View>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -257,7 +260,10 @@ export default function ReservationScreen({ route, navigation }) {
 
         {/* Kişi Sayısı Seçimi */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>👥 Kişi Sayısı</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+            <FontAwesome name="users" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Kişi Sayısı</Text>
+          </View>
           <View style={styles.peopleContainer}>
             {Array.from({ length: (reservationData ? reservationData.maxPeople : mockReservationData.maxPeople) }, (_, i) => i + 1).map(renderPeopleOption)}
           </View>
@@ -265,7 +271,10 @@ export default function ReservationScreen({ route, navigation }) {
 
         {/* Saat Seçimi */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>🕐 Saat Seçin</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+            <FontAwesome name="clock-o" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Saat Seçin</Text>
+          </View>
           <View style={styles.timesContainer}>
             {(reservationData ? reservationData.availableTimes : mockReservationData.availableTimes).map(renderTimeSlot)}
           </View>
@@ -273,7 +282,10 @@ export default function ReservationScreen({ route, navigation }) {
 
         {/* Not Bölümü */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>💬 Notunuz (İsteğe Bağlı)</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+            <FontAwesome name="sticky-note" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Notunuz (İsteğe Bağlı)</Text>
+          </View>
           <TextInput
             style={[styles.noteInput, { backgroundColor: theme.colors.background, borderColor: theme.colors.border, color: theme.colors.text }]}
             placeholder="Özel istekleriniz, alerji durumu vs..."

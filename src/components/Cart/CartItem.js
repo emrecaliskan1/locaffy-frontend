@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 export const CartItem = ({ 
   item, 
@@ -44,7 +45,7 @@ export const CartItem = ({
     <Text style={styles.itemTotal}>₺{(item.price * item.quantity).toFixed(2)}</Text>
 
     <TouchableOpacity style={styles.removeButton} onPress={() => onRemove(item.id)}>
-      <Text style={styles.removeButtonText}>🗑️</Text>
+      <FontAwesome name="trash-o" size={16} color="#fff" />
     </TouchableOpacity>
     
   </TouchableOpacity>

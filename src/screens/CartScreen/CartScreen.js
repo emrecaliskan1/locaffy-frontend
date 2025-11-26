@@ -94,7 +94,7 @@ export default function CartScreen({ route, navigation }) {
       </View>
       <Text style={styles.itemTotal}>₺{(item.price * item.quantity).toFixed(2)}</Text>
       <TouchableOpacity style={styles.removeButton} onPress={() => removeItem(item.id)}>
-        <Text style={styles.removeButtonText}>🗑️</Text>
+        <FontAwesome name="trash-o" size={16} color="#fff" />
       </TouchableOpacity>
     </TouchableOpacity>
   );

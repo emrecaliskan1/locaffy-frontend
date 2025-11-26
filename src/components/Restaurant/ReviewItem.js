@@ -64,7 +64,7 @@ export const ReviewItem = ({ item, index, styles }) => {
                 key={starIndex}
                 name={starIndex < item.rating ? 'star' : 'star-o'}
                 size={16}
-                color={starIndex < item.rating ? '#F39C12' : '#BDC3C7'}
+                color={starIndex < item.rating ? '#F1C40F' : '#BDC3C7'}
                 style={styles.starIcon}
               />
             ))}

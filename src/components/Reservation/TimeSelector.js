@@ -4,13 +4,15 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 export const TimeSelector = ({ 
   availableTimes, 
   selectedTime, 
   selectedDate,
   onTimeSelect, 
-  styles 
+  styles,
+  theme
 }) => {
   const renderTimeSlot = (time) => {
     const isSelected = selectedTime === time;
@@ -43,7 +45,10 @@ export const TimeSelector = ({
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>🕐 Saat Seçin</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+        <FontAwesome name="clock-o" size={20} color={theme?.colors?.primary || '#667eea'} style={{ marginRight: 8 }} />
+        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Saat Seçin</Text>
+      </View>
       <View style={styles.timesContainer}>
         {availableTimes.map(renderTimeSlot)}
       </View>
