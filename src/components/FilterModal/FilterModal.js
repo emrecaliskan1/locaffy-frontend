@@ -10,14 +10,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { categories, distanceOptions, priceRanges, ratingOptions } from '../../static-data';
+import { categories, ratingOptions } from '../../static-data';
 import { styles } from './styles';
 import { COLORS } from '../../constants/colors';
 
 const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const [filters, setFilters] = useState({
-    distance: '5',
-    priceRange: 'all',
     rating: 'all',
     category: 'all',
     features: {
@@ -27,14 +25,6 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
       cash: false
     }
   });
-
-  const handleDistanceChange = (value) => {
-    setFilters(prev => ({ ...prev, distance: value }));
-  };
-
-  const handlePriceChange = (value) => {
-    setFilters(prev => ({ ...prev, priceRange: value }));
-  };
 
   const handleRatingChange = (value) => {
     setFilters(prev => ({ ...prev, rating: value }));
@@ -61,8 +51,6 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
 
   const handleResetFilters = () => {
     setFilters({
-      distance: '5',
-      priceRange: 'all',
       rating: 'all',
       category: 'all',
       features: {
@@ -92,52 +80,6 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-   
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Mesafe</Text>
-            <View style={styles.optionsContainer}>
-              {distanceOptions.map((option) => (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.optionButton,
-                    filters.distance === option.value && styles.activeOptionButton
-                  ]}
-                  onPress={() => handleDistanceChange(option.value)}
-                >
-                  <Text style={[
-                    styles.optionText,
-                    filters.distance === option.value && styles.activeOptionText
-                  ]}>
-                    {option.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Fiyat Aralığı</Text>
-            <View style={styles.optionsContainer}>
-              {priceRanges.map((option) => (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.optionButton,
-                    filters.priceRange === option.value && styles.activeOptionButton
-                  ]}
-                  onPress={() => handlePriceChange(option.value)}
-                >
-                  <Text style={[
-                    styles.optionText,
-                    filters.priceRange === option.value && styles.activeOptionText
-                  ]}>
-                    {option.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Minimum Puan</Text>

@@ -24,12 +24,11 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [appliedFilters, setAppliedFilters] = useState({
     category: 'all',
-    distance: '5',
-    priceRange: 'all',
     rating: 'all',
     features: {}
   });
 
+  // Restoranları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
     const matchesSearch = place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
     const matchesCategory = appliedFilters.category === 'all' || 
@@ -38,6 +37,7 @@ export default function HomeScreen({ navigation }) {
     return matchesSearch && matchesCategory;
   });
 
+  // Filtreler değiştiğinde mekanları yeniden yükle
   useEffect(() => {
     loadPlaces();
   }, [appliedFilters]);
@@ -46,19 +46,17 @@ export default function HomeScreen({ navigation }) {
     try {
       setLoading(true);
       let result;
-      
       if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
         const minRating = appliedFilters.rating !== 'all' ? parseFloat(appliedFilters.rating) : undefined;
         const placeType = appliedFilters.category !== 'all' ? appliedFilters.category.toUpperCase() : undefined;
         result = await placeService.getFilteredPlaces(placeType, minRating);
       } else {
-        // Use default Edirne coordinates
+        // Varsayılan Edirne koordinatlarını kullan
         result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000);
       }
-      
       setPlaces(result || []);
     } catch (error) {
-      console.error('Error loading places:', error);
+      console.error('Mekanlar yüklenirken hata oluştu:', error);
       setPlaces([]);
     } finally {
       setLoading(false);
@@ -96,6 +94,7 @@ export default function HomeScreen({ navigation }) {
         </View>
       </SafeAreaView>
 
+      {/* Restoran Listesi */}
       <FlatList
         data={filteredRestaurants}
         keyExtractor={(item) => item.id.toString()}
@@ -105,7 +104,6 @@ export default function HomeScreen({ navigation }) {
             onPress={handleRestaurantPress}
             styles={styles} />
         )}
-
         ListHeaderComponent={
           <SearchHeader
             searchText={searchText}
@@ -137,6 +135,7 @@ export default function HomeScreen({ navigation }) {
         updateCellsBatchingPeriod={50}
         initialNumToRender={8} />
 
+      {/* Filtre Modalı */}
       <FilterModal
         visible={showFilterModal}
         onClose={() => setShowFilterModal(false)}

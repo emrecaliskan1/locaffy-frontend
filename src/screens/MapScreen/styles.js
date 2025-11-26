@@ -32,9 +32,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 15, // Biraz daha fazla padding
+    paddingVertical: 15, 
     backgroundColor: '#fff',
-    minHeight: 60, // Minimum yükseklik garantisi
+    minHeight: 60, 
     ...createShadowStyle(2),
     zIndex: 1,
   },
@@ -349,7 +349,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabSpacer: {
-    height: 70, // Bottom tab navigator için uygun mesafe
+    height: 70,
   },
   // Modal Styles
   modalOverlay: {
@@ -794,11 +794,11 @@ export const styles = StyleSheet.create({
   },
   nearbyRestaurants: {
     backgroundColor: '#fff',
-    paddingVertical: 20, // 15'den 20'ye artırıldı
-    paddingHorizontal: 15, // 10'dan 15'e artırıldı
+    paddingVertical: 20, 
+    paddingHorizontal: 15, 
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    minHeight: 120, // Minimum yükseklik eklendi
+    minHeight: 120, 
   },
   nearbyTitle: {
     fontSize: 16,

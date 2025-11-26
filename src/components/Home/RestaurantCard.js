@@ -8,7 +8,6 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 export const RestaurantCard = ({ item, onPress, styles }) => (
-
   <TouchableOpacity 
     style={styles.restaurantCard}
     onPress={() => onPress(item)}>
@@ -27,6 +26,7 @@ export const RestaurantCard = ({ item, onPress, styles }) => (
       </View>
     </View>
     
+    {/*Kartların Üzerindeki Mekan Bilgileri */}
     <View style={styles.cardContent}>
       <View style={styles.cardHeader}>
         <Text style={styles.restaurantName}>{item.name}</Text>
@@ -42,7 +42,7 @@ export const RestaurantCard = ({ item, onPress, styles }) => (
       <View style={styles.cardFooter}>
         <View style={styles.infoItem}>
           <FontAwesome name="map-marker" size={12} color="#95A5A6" style={styles.infoIcon} />
-          <Text style={styles.infoText}>{item.distance ? `${(item.distance / 1000).toFixed(1)} km` : item.address}</Text>
+          <Text style={styles.infoText}>{item.address}</Text>
         </View>
         <View style={styles.infoItem}>
           <FontAwesome name="clock-o" size={12} color="#95A5A6" style={styles.infoIcon} />

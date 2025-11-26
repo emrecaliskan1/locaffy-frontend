@@ -18,11 +18,9 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
 
-
-
+  // Alt sayfa açma/kapatma fonksiyonu
   const toggleSheet = () => {
     const toValue = isExpanded ? BOTTOM_SHEET_MIN_HEIGHT : BOTTOM_SHEET_MAX_HEIGHT;
-    
     Animated.spring(animatedHeight, {
       toValue,
       damping: 15,
@@ -30,7 +28,6 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
       stiffness: 150,
       useNativeDriver: false,
     }).start();
-    
     const newExpandedState = !isExpanded;
     setIsExpanded(newExpandedState);
     if (onToggle) {

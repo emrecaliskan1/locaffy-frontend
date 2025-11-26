@@ -81,7 +81,6 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Kayıt olurken bir hata oluştu';
       throw new Error(errorMessage);
     }
@@ -111,7 +110,6 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Giriş yapılırken bir hata oluştu';
       throw new Error(errorMessage);
     }
@@ -133,7 +131,6 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Oturum yenilenirken hata oluştu';
       throw new Error(errorMessage);
     }
@@ -177,7 +174,6 @@ export const authService = {
       const response = await axios.get(`${BASE_URL}/validate`, { headers });
       return response.status === 200;
     } catch (error) {
-      console.log('Token validation failed:', error);
       // Token geçersizse temizle
       await removeToken();
       await removeUserInfo();

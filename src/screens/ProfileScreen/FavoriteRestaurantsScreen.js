@@ -26,7 +26,6 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
   }, []);
 
   const handleRestaurantPress = (restaurant) => {
-    // Restoran detay sayfasına git
     navigation.navigate('RestaurantDetail', { restaurant });
   };
 
@@ -43,6 +42,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
   };
 
   return (
+    
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>

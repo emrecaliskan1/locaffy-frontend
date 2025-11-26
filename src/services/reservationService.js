@@ -22,7 +22,7 @@ const buildHeaders = async (extra = {}) => {
 };
 
 export const reservationService = {
-  // USER - Create new reservation
+  // USER
   createReservation: async (reservationData) => {
     try {
       const token = await getToken();
@@ -50,20 +50,19 @@ export const reservationService = {
     }
   },
 
-  // USER - Get user's own reservations  
+  // USER 
   getUserReservations: async () => {
     try {
       const headers = await buildHeaders();
       const response = await axios.get(`${BASE_URL}/my-reservations`, { headers });
       return response.data;
     } catch (error) {
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Rezervasyonlar yüklenirken bir hata oluştu';
       throw new Error(errorMessage);
     }
   },
 
-  // BUSINESS OWNER - Update reservation status
+  // BUSINESS OWNER
   updateReservationStatus: async (reservationId, status, rejectionReason = null) => {
     try {
       const headers = await buildHeaders();
@@ -77,7 +76,7 @@ export const reservationService = {
     }
   },
 
-  // BUSINESS OWNER - Get place reservations
+  // BUSINESS OWNER 
   getPlaceReservations: async (placeId) => {
     try {
       const headers = await buildHeaders();
@@ -88,9 +87,9 @@ export const reservationService = {
     }
   },
 
-  // Helper function to check if reservation is in the past
+
+  //Geçmiş rezervasyonlar için kontrol
   isReservationPast: (reservationTime) => {
-    // Backend'den gelen format: "2025-11-25T15:00:00"
     let dateToCheck;
     
     if (reservationTime.includes('T')) {
@@ -107,13 +106,14 @@ export const reservationService = {
     return dateToCheck < now;
   },
 
-  // Helper function to format reservation time for display
+
+
+  //DATE FORMATLAMA İŞLERİ
   formatReservationTime: (reservationTime) => {
     // Backend'den gelen format: "2025-11-25T15:00:00" 
     // Direkt parse et ve göster
     let dateStr = reservationTime;
     
-    // ISO string ise T'yi böl
     if (dateStr.includes('T')) {
       const [datePart, timePart] = dateStr.split('T');
       const [year, month, day] = datePart.split('-');
@@ -122,7 +122,6 @@ export const reservationService = {
       return `${day}.${month}.${year} ${hour}:${minute}`;
     }
     
-    // Fallback - normal Date parse
     const date = new Date(reservationTime);
     return date.toLocaleString('tr-TR', {
       day: '2-digit',
@@ -133,24 +132,54 @@ export const reservationService = {
     });
   },
 
-  // Helper function to get reservation status text in Turkish
   getReservationStatusText: (status) => {
     const statusMap = {
       PENDING: 'Beklemede',
       APPROVED: 'Rezervasyon Onaylandı',
-      REJECTED: 'Reddedildi',
-      CANCELLED: 'İptal Edildi',
+      REJECTED: 'Reddedildi'
     };
     return statusMap[status] || status;
   },
 
-  // Helper function to get reservation status color
+
+  
+  //REZERVASYONLAR İÇİN STATUS DURUMLARI
+  //Geçmiş rezervasyonlar için status text
+  getPastReservationStatusText: (status, reservationTime) => {
+    // Eğer rezervasyon zamanı geçmişse
+    if (reservationService.isReservationPast(reservationTime)) {
+      if (status === 'PENDING') {
+        return 'İptal Edildi'; 
+      }
+      if (status === 'APPROVED') {
+        return 'Tamamlandı'; 
+      }
+    }
+    // Diğer durumlar için normal status text'i döndür 
+    return reservationService.getReservationStatusText(status);
+  },
+
+  //Geçmiş rezervasyonlar için status color
+  getPastReservationStatusColor: (status, reservationTime) => {
+    if (reservationService.isReservationPast(reservationTime)) {
+      if (status === 'PENDING') {
+        return '#9E9E9E'; 
+      }
+      if (status === 'APPROVED') {
+        return '#4CAF50'; 
+      }
+    }
+    // Diğer durumlar için normal status color'ı döndür
+    return reservationService.getReservationStatusColor(status);
+  },
+
+  //Normal durumlar için status color
   getReservationStatusColor: (status) => {
     const colorMap = {
-      PENDING: '#FFA500', // Orange/Yellow
-      APPROVED: '#4CAF50', // Green  
-      REJECTED: '#F44336', // Red
-      CANCELLED: '#9E9E9E', // Gray
+      PENDING: '#FFA500',
+      APPROVED: '#4CAF50', 
+      REJECTED: '#F44336', 
+      CANCELLED: '#9E9E9E',
     };
     return colorMap[status] || '#9E9E9E';
   }

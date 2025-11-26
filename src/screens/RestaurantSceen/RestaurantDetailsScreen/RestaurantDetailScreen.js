@@ -25,18 +25,17 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     totalRatings: 0,
   };
 
-  // Menu ve review'ler şu an için boş - backend'den gelince eklenecek
+  //BACKEND'DEN GELEN RESTAURANT DATASI
   const finalRestaurantData = {
     ...restaurantData,
-    menu: [],
-    reviews: [], 
-    reviewCount: restaurantData.totalRatings || 0,
     image: restaurantData.mainImageUrl || null,
     rating: restaurantData.averageRating || 0,
-    distance: '1.2 km', // Şimdilik sabit
-    time: '25-30 dk', // Şimdilik sabit
+    reviewCount: restaurantData.totalRatings || 0,
+    menu: restaurantData.menuItems || [],
+    reviews: restaurantData.reviews || [],
   };
 
+  //RESTORAN DETAY SAYFASINDAKİ TAB SEKMELERİ
   const renderTabContent = () => {
     switch (activeTab) {
       case 'menu':

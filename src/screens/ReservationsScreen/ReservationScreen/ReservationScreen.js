@@ -24,14 +24,11 @@ export default function ReservationScreen({ route, navigation }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedPeople, setSelectedPeople] = useState(2);
   const [note, setNote] = useState('');
-
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [reservationData, setReservationData] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Mock data - Backend'den gelecek
-  // generate next N dates as ISO strings (yyyy-mm-dd)
   const generateNextDates = (n) => {
     const dates = [];
     const today = new Date();
@@ -68,7 +65,6 @@ export default function ReservationScreen({ route, navigation }) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    
     return {
       day: date.getDate(),
       dayName: dayNames[date.getDay()],
@@ -79,7 +75,7 @@ export default function ReservationScreen({ route, navigation }) {
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-    setSelectedTime(null); // Reset time when date changes
+    setSelectedTime(null);
   };
 
   const handleTimeSelect = (time) => {
@@ -95,19 +91,15 @@ export default function ReservationScreen({ route, navigation }) {
       Alert.alert('Eksik bilgi', 'Lütfen tarih ve saat seçin.');
       return;
     }
-
     // User kontrolü
     if (!user) {
       Alert.alert('Giriş Gerekli', 'Rezervasyon yapmak için giriş yapmanız gerekiyor.');
       navigation.navigate('Auth');
       return;
     }
-
     try {
       setSubmitting(true);
-
       const [hours, minutes] = selectedTime.split(':');
-      
       const reservationDateTimeString = `${selectedDate}T${selectedTime}:00`;
 
       const reservationData = {
@@ -118,9 +110,8 @@ export default function ReservationScreen({ route, navigation }) {
       };
       
       const response = await reservationService.createReservation(reservationData);
-      
       setShowSuccessModal(true);
-      
+    
       setTimeout(() => {
         setShowSuccessModal(false);
         setSelectedDate(null);
@@ -131,7 +122,6 @@ export default function ReservationScreen({ route, navigation }) {
       }, 2500);
     } catch (error) {
       setShowSuccessModal(false);
-      
       // Auth hatası varsa login screen'e yönlendir
       if (error.message.includes('Oturumunuzun süresi dolmuş') || 
           error.response?.status === 401 || 
@@ -154,6 +144,7 @@ export default function ReservationScreen({ route, navigation }) {
     }
   };
 
+  //Tarih renderlama
   const renderDateItem = (dateString) => {
     const date = formatDate(dateString);
     const isSelected = selectedDate === dateString;
@@ -176,15 +167,14 @@ export default function ReservationScreen({ route, navigation }) {
     );
   };
 
+  //Saat dilimi renderlama
   const renderTimeSlot = (time) => {
     const isSelected = selectedTime === time;
-    // If selected date is today, disable times that are in the past
     let isDisabled = false;
     if (selectedDate) {
       const today = new Date();
       const sel = new Date(selectedDate);
       if (sel.toDateString() === today.toDateString()) {
-        // compare hours and minutes
         const [h, m] = time.split(':').map(Number);
         const slot = new Date();
         slot.setHours(h, m, 0, 0);
@@ -193,7 +183,6 @@ export default function ReservationScreen({ route, navigation }) {
         }
       }
     }
-    
     return (
       <TouchableOpacity
         key={time}
@@ -207,15 +196,14 @@ export default function ReservationScreen({ route, navigation }) {
     );
   };
 
+  //Kişi sayısı renderlama
   const renderPeopleOption = (people) => {
     const isSelected = selectedPeople === people;
-    
     return (
       <TouchableOpacity
         key={people}
         style={[styles.peopleOption, isSelected && styles.selectedPeopleOption]}
-        onPress={() => handlePeopleSelect(people)}
-      >
+        onPress={() => handlePeopleSelect(people)}>
         <Text style={[styles.peopleText, isSelected && styles.selectedPeopleText]}>
           {people}
         </Text>
@@ -228,8 +216,11 @@ export default function ReservationScreen({ route, navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#fff' }}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <FontAwesome name="arrow-left" size={18} color="#2C3E50" style={styles.backIcon} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Rezervasyon</Text>
           <View style={styles.placeholder} />
@@ -243,13 +234,13 @@ export default function ReservationScreen({ route, navigation }) {
             <Text style={styles.loadingText}>Tarihler yükleniyor...</Text>
           </View>
         )}
-        {/* Restaurant Info */}
+        {/* Restoran Bilgileri */}
         <View style={styles.restaurantInfo}>
           <Text style={styles.restaurantName}>{restaurant.name}</Text>
           <Text style={styles.restaurantType}>{restaurant.type}</Text>
         </View>
 
-        {/* Date Selection */}
+        {/* Tarih Seçimi */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>📅 Tarih Seçin</Text>
           <ScrollView 
@@ -262,7 +253,7 @@ export default function ReservationScreen({ route, navigation }) {
           </ScrollView>
         </View>
 
-        {/* People Selection */}
+        {/* Kişi Sayısı Seçimi */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>👥 Kişi Sayısı</Text>
           <View style={styles.peopleContainer}>
@@ -270,7 +261,7 @@ export default function ReservationScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* Time Selection */}
+        {/* Saat Seçimi */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🕐 Saat Seçin</Text>
           <View style={styles.timesContainer}>
@@ -278,7 +269,7 @@ export default function ReservationScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* Note Section */}
+        {/* Not Bölümü */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>💬 Notunuz (İsteğe Bağlı)</Text>
           <TextInput
@@ -294,7 +285,7 @@ export default function ReservationScreen({ route, navigation }) {
           <Text style={styles.charCount}>{note.length}/200</Text>
         </View>
 
-        {/* Selection summary + Clear button */}
+        {/* Seçim özeti + Temizle butonu */}
         <View style={[styles.section, styles.summarySection]}>
           <Text style={styles.sectionTitle}>Rezervasyon Bilgileri</Text>
           <View style={styles.summaryRow}>
@@ -320,6 +311,7 @@ export default function ReservationScreen({ route, navigation }) {
             </TouchableOpacity>
           </View>
         </View>
+        
         {/* Continue Button */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
@@ -339,7 +331,7 @@ export default function ReservationScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
-      {/* Success Modal */}
+      {/* Success Modal Gösterimi*/}
       <Modal
         visible={showSuccessModal}
         transparent

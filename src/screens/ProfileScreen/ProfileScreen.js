@@ -105,7 +105,6 @@ export default function ProfileScreen({ navigation }) {
       icon: 'question-circle',
       iconColor: '#667eea',
       onPress: () => {
-        // Yardım merkezi yakında eklenecek
       },
     },
     {
@@ -115,7 +114,6 @@ export default function ProfileScreen({ navigation }) {
       icon: 'info-circle',
       iconColor: '#667eea',
       onPress: () => {
-        // Uygulama bilgileri
       },
     },
   ];
@@ -130,7 +128,7 @@ export default function ProfileScreen({ navigation }) {
       </SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-
+        {/* Kullanıcı Kartı */}
         <View style={styles.userCard}>
           <View style={styles.avatarContainer}>
             {userInfo.avatar ? (
@@ -144,12 +142,14 @@ export default function ProfileScreen({ navigation }) {
             )}
           </View>
           
+          {/* Kullanıcı Bilgileri */}
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{userInfo.username}</Text>
             <Text style={styles.userEmail}>{userInfo.email}</Text>
           </View>
         </View>
 
+        {/* Kullanıcı İstatistikleri */}
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             {isLoading ? (
@@ -170,6 +170,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
 
+        {/* Menü Seçenekleri */}
         <View style={styles.menuContainer}>
           {menuItems.map((item, index) => (
             <TouchableOpacity

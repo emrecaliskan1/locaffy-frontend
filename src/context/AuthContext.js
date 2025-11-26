@@ -3,6 +3,7 @@ import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
+// Özel hook kullanımı için
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  // Kimlik doğrulama durumunu kontrol et
   const checkAuthStatus = async () => {
     try {
       const token = await authService.isLoggedIn();
@@ -51,13 +53,12 @@ export const AuthProvider = ({ children }) => {
       if (!email || !password) {
         return { success: false, message: 'E-posta ve şifre gereklidir' };
       }
-      
       if (!validateEmail(email)) {
         return { success: false, message: 'Geçerli bir e-posta adresi giriniz' };
       }
 
       const response = await authService.login(email, password);
-      
+    
       if (response && response.accessToken) {
 
         const userInfo = {
@@ -65,12 +66,10 @@ export const AuthProvider = ({ children }) => {
           email: response.email,
           userId: response.userId
         };
-        
         setUser(userInfo);
         setIsLoggedIn(true);
         return { success: true, data: response };
       }
-      
       return { success: false, message: 'Giriş başarısız' };
     } catch (error) {
       return { 
@@ -136,11 +135,9 @@ export const AuthProvider = ({ children }) => {
   //ÇIKIŞ
   const logout = async () => {
     try {
-      // Backend logout endpoint'ini çağır
       if (user?.userId) {
         await authService.logout(user.userId);
       } else {
-        // UserId yoksa sadece local temizlik yap
         await authService.clearToken();
       }
       

@@ -46,8 +46,8 @@ export default function AuthScreen({ navigation }) {
     }
   }, [loading, activeTab]);
 
+  // Animasyonları başlat
   useEffect(() => {
-  
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -98,7 +98,6 @@ export default function AuthScreen({ navigation }) {
         ])
       ).start();
     };
-
     startFloatAnimation();
   }, []);
 
@@ -118,6 +117,7 @@ export default function AuthScreen({ navigation }) {
     setToast({ visible: false, message: '', type: 'success' });
   };
 
+  // Giriş işlemini gerçekleştir
   const handleLogin = async () => {
     try {
       const result = await login(formData.email, formData.password);
@@ -131,6 +131,7 @@ export default function AuthScreen({ navigation }) {
     }
   };
 
+  // Kayıt işlemini gerçekleştir
   const handleRegister = async () => {
     try {
       const result = await register(
@@ -145,7 +146,6 @@ export default function AuthScreen({ navigation }) {
         showToast(result.message || 'Kayıt başarısız', 'error');
       }
     } catch (error) {
-      // AuthContext'ten gelen error message'ı kullan
       showToast(error.message || 'Kayıt yapılırken bir hata oluştu', 'error');
     }
   };

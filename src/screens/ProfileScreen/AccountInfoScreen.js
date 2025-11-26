@@ -80,7 +80,8 @@ export default function AccountInfoScreen({ navigation, route }) {
       </SafeAreaView>
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Avatar Section */}
+
+        {/* Avatar Bölümü */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarPlaceholder}>
             <Text style={styles.avatarText}>
@@ -94,7 +95,7 @@ export default function AccountInfoScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-        {/* Personal Info Section */}
+        {/* Kişisel Bilgiler Bölümü */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Kişisel Bilgiler</Text>
           
@@ -111,7 +112,8 @@ export default function AccountInfoScreen({ navigation, route }) {
               />
             </View>
           </View>
-
+          
+          {/* E-posta Bölümü */}
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>E-posta Adresi</Text>
             <View style={styles.inputWrapper}>
@@ -128,6 +130,7 @@ export default function AccountInfoScreen({ navigation, route }) {
             </View>
           </View>
 
+          {/* Telefon Numarası Bölümü */}
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Telefon Numarası</Text>
             <View style={styles.inputWrapper}>
@@ -144,7 +147,7 @@ export default function AccountInfoScreen({ navigation, route }) {
           </View>
         </View>
 
-        {/* Password Section */}
+        {/* Şifre Bölümü */}
         <View style={styles.section}>
           <TouchableOpacity 
             style={styles.passwordHeader}
@@ -205,7 +208,7 @@ export default function AccountInfoScreen({ navigation, route }) {
           )}
         </View>
 
-        {/* Save Button */}
+        {/* Kaydet Butonu */}
         <TouchableOpacity 
           style={[styles.saveButton, saving && styles.saveButtonDisabled]} 
           onPress={handleSave}

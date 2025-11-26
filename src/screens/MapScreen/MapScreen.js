@@ -206,6 +206,7 @@ export default function MapScreen({ navigation }) {
                 }
               ]}
             >
+              {/* Bilgilendirme Kartı */}
               <View style={styles.infoCardHeader}>
                 <Text style={styles.infoCardTitle}>Marker Kategorileri</Text>
                 <TouchableOpacity 
@@ -216,6 +217,7 @@ export default function MapScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
               
+              {/* Bilgilendirme Kartı İçeriği */}
               <View style={styles.infoCardContent}>
                 {categoryInfo.map((category, index) => (
                   <View key={index} style={styles.categoryRow}>
@@ -247,6 +249,7 @@ export default function MapScreen({ navigation }) {
         </>
       )}
 
+      {/* Restoran Modalı */}
       <RestaurantModal
         visible={modalVisible}  
         restaurant={selectedRestaurant}
