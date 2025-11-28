@@ -7,6 +7,7 @@ import COLORS from '../../constants/colors';
 import { userService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
+import { RestaurantCard } from '../../components/Home';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
   const { theme } = useTheme();
@@ -26,25 +27,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
     try {
       setLoading(true);
       const favorites = await userService.getFavorites();
-      // Backend'den gelen PlaceResponse'ları frontend formatına dönüştür
-      const formattedFavorites = favorites.map(place => ({
-        id: place.id,
-        name: place.name,
-        address: place.address,
-        category: place.placeType || 'Restoran',
-        type: place.placeType || 'Restoran',
-        rating: place.averageRating || 0,
-        distance: place.distance ? `${(place.distance / 1000).toFixed(1)} km` : 'Yakınınızda',
-        image: place.mainImageUrl ? { uri: place.mainImageUrl } : null,
-        phoneNumber: place.phoneNumber,
-        description: place.description,
-        openingHours: place.openingHours,
-        workingDays: place.workingDays,
-        latitude: place.latitude,
-        longitude: place.longitude,
-        totalRatings: place.totalRatings
-      }));
-      setFavoriteRestaurants(formattedFavorites);
+      setFavoriteRestaurants(favorites || []);
     } catch (error) {
       setFavoriteRestaurants([]);
     } finally {
@@ -62,16 +45,9 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
     navigation.navigate('RestaurantDetail', { restaurant });
   };
 
-  const handleRemoveFavorite = async (placeId) => {
-    try {
-      await userService.removeFromFavorites(placeId);
-      // Favorilerden çıkarıldıktan sonra listeyi güncelle
-      setFavoriteRestaurants(prev => prev.filter(restaurant => restaurant.id !== placeId));
-      showToast('Restoran favorilerden çıkarıldı', 'success');
-    } catch (error) {
-      console.log('Error removing favorite:', error);
-      showToast('Favorilerden çıkarılırken bir hata oluştu', 'error');
-    }
+  const handleFavoriteChange = () => {
+    // Favoriler değiştiğinde listeyi yeniden yükle
+    loadFavorites();
   };
 
   return (
@@ -104,47 +80,16 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
               </View>
             ) : (
               favoriteRestaurants.map((restaurant) => (
-          <TouchableOpacity
-            key={restaurant.id}
-            style={[styles.restaurantCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
-            onPress={() => handleRestaurantPress(restaurant)}
-            activeOpacity={0.9}
-          >
-            {restaurant.image ? (
-              <Image
-                source={restaurant.image}
-                style={styles.restaurantImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <View style={[styles.restaurantImage, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
-                <FontAwesome name="image" size={40} color="#ccc" />
-                <Text style={{ color: '#999', fontSize: 12, marginTop: 8 }}>Resim yok</Text>
-              </View>
-            )}
-            <View style={styles.restaurantInfo}>
-              <View style={styles.restaurantHeader}>
-                <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
-                <TouchableOpacity
-                  style={styles.favoriteButton}
-                  onPress={() => handleRemoveFavorite(restaurant.id)}
-                >
-                  <FontAwesome name="heart" size={20} color="#E74C3C" />
-                </TouchableOpacity>
-              </View>
-              <Text style={[styles.restaurantCuisine, { color: theme.colors.textSecondary }]}>{restaurant.category || restaurant.type}</Text>
-              <View style={styles.restaurantFooter}>
-                <View style={styles.ratingContainer}>
-                  <FontAwesome name="star" size={14} color="#F1C40F" />
-                  <Text style={[styles.ratingText, { color: theme.colors.text }]}>{restaurant.rating > 0 ? restaurant.rating : 'Yeni'}</Text>
+                <View key={restaurant.id} style={styles.cardWrapper}>
+                  <RestaurantCard
+                    item={restaurant}
+                    onPress={handleRestaurantPress}
+                    favoritesList={favoriteRestaurants}
+                    onFavoriteChange={handleFavoriteChange}
+                    onShowToast={showToast}
+                    styles={cardStyles}
+                  />
                 </View>
-                <View style={styles.distanceContainer}>
-                  <FontAwesome name="map-marker" size={14} color={theme.colors.textSecondary} />
-                  <Text style={[styles.distanceText, { color: theme.colors.textSecondary }]}>{restaurant.distance || 'Yakınınızda'}</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
               ))
             )}
 
@@ -223,17 +168,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 40,
   },
-  subtitle: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    marginTop: 16,
-    marginBottom: 16,
+  cardWrapper: {
+    marginVertical: 8,
   },
+});
+
+// RestaurantCard için stil
+const cardStyles = StyleSheet.create({
   restaurantCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    marginTop: 20,
-    marginBottom: 16,
     overflow: 'hidden',
     elevation: 3,
     shadowColor: '#000',
@@ -243,19 +187,53 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 8,
+    borderWidth: 1,
   },
-  restaurantImage: {
-    width: '100%',
+  cardImageContainer: {
+    position: 'relative',
     height: 180,
   },
-  restaurantInfo: {
+  cardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  favoriteIcon: {
+    textAlign: 'center',
+  },
+  statusBadge: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: 'rgba(46, 204, 113, 0.9)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  cardContent: {
     padding: 16,
   },
-  restaurantHeader: {
+  cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   restaurantName: {
     flex: 1,
@@ -264,36 +242,41 @@ const styles = StyleSheet.create({
     color: '#2C3E50',
     marginRight: 8,
   },
-  favoriteButton: {
-    padding: 4,
-  },
-  restaurantCuisine: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    marginBottom: 12,
-  },
-  restaurantFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 16,
   },
-  ratingText: {
+  ratingIcon: {
+    marginRight: 4,
+  },
+  rating: {
     fontSize: 14,
-    color: '#2C3E50',
     fontWeight: '600',
-    marginLeft: 4,
+    color: '#2C3E50',
+    marginRight: 2,
   },
-  distanceContainer: {
+  reviews: {
+    fontSize: 12,
+    color: '#7F8C8D',
+  },
+  restaurantType: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginBottom: 8,
+  },
+  cardFooter: {
+    gap: 4,
+  },
+  infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  distanceText: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    marginLeft: 4,
+  infoIcon: {
+    marginRight: 6,
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#95A5A6',
+    flex: 1,
   },
 });
