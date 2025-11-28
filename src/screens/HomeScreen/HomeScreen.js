@@ -9,11 +9,13 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { useState, useCallback, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import FilterModal from '../../components/FilterModal';
+import Toast from '../../components/Toast';
 import { RestaurantCard, SearchHeader } from '../../components/Home';
-import { placeService } from '../../services';
+import { placeService, userService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
 import { styles } from './styles';
 
@@ -23,12 +25,22 @@ export default function HomeScreen({ navigation }) {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [places, setPlaces] = useState([]);
+  const [favoritesList, setFavoritesList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [appliedFilters, setAppliedFilters] = useState({
     category: 'all',
     rating: 'all',
     features: {}
   });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
 
   // Restoranları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
@@ -43,6 +55,13 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     loadPlaces();
   }, [appliedFilters]);
+
+  // Sayfa odaklanıldığında favorileri yükle
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
 
   const loadPlaces = async () => {
     try {
@@ -62,6 +81,16 @@ export default function HomeScreen({ navigation }) {
       setPlaces([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadFavorites = async () => {
+    try {
+      const favorites = await userService.getFavorites();
+      setFavoritesList(favorites || []);
+    } catch (error) {
+      console.log('Favoriler yüklenirken hata:', error);
+      setFavoritesList([]);
     }
   };
 
@@ -104,6 +133,9 @@ export default function HomeScreen({ navigation }) {
           <RestaurantCard 
             item={item} 
             onPress={handleRestaurantPress}
+            favoritesList={favoritesList}
+            onFavoriteChange={loadFavorites}
+            onShowToast={showToast}
             styles={styles} />
         )}
         ListHeaderComponent={
@@ -145,6 +177,15 @@ export default function HomeScreen({ navigation }) {
           setAppliedFilters(filters);
           setShowFilterModal(false);
         }}
+      />
+
+      {/* Toast */}
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
       />
     </View>
   );

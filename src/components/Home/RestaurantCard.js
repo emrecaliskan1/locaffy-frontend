@@ -1,15 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { userService } from '../../services';
 
-export const RestaurantCard = ({ item, onPress, styles }) => {
+export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, styles }) => {
   const { theme } = useTheme();
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  
+  const isFavorite = favoritesList.some(fav => fav.id === item.id);
+
+  // Favori toggle fonksiyonu
+  const handleFavoriteToggle = async (e) => {
+    e.stopPropagation(); 
+    
+    if (favoriteLoading) return;
+    
+    try {
+      setFavoriteLoading(true);
+      
+      if (isFavorite) {
+        await userService.removeFromFavorites(item.id);
+        if (onShowToast) {
+          onShowToast('Restoran favorilerden çıkarıldı', 'success');
+        }
+      } else {
+        await userService.addToFavorites(item.id);
+        if (onShowToast) {
+          onShowToast('Restoran favorilere eklendi', 'success');
+        }
+      }
+      
+      if (onFavoriteChange) {
+        onFavoriteChange();
+      }
+    } catch (error) {
+      console.log('Error toggling favorite:', error);
+      if (onShowToast) {
+        onShowToast(error.message || 'Favori işlemi gerçekleştirilemedi', 'error');
+      }
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
   
   return (
     <TouchableOpacity 
@@ -21,8 +60,21 @@ export const RestaurantCard = ({ item, onPress, styles }) => {
           source={item.mainImageUrl ? { uri: item.mainImageUrl } : require('../../../assets/icon.png')} 
           style={styles.cardImage} 
         />
-        <TouchableOpacity style={styles.favoriteButton}>
-          <FontAwesome name="heart-o" size={16} color="#95A5A6" style={styles.favoriteIcon} />
+        <TouchableOpacity 
+          style={styles.favoriteButton}
+          onPress={handleFavoriteToggle}
+          disabled={favoriteLoading}
+        >
+          {favoriteLoading ? (
+            <ActivityIndicator size="small" color="#E74C3C" />
+          ) : (
+            <FontAwesome 
+              name={isFavorite ? "heart" : "heart-o"} 
+              size={16} 
+              color={isFavorite ? "#E74C3C" : "#95A5A6"} 
+              style={styles.favoriteIcon} 
+            />
+          )}
         </TouchableOpacity>
 
         <View style={styles.statusBadge}>

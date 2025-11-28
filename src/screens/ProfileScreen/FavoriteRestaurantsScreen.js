@@ -1,24 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, StatusBar, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
 import { userService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
+import Toast from '../../components/Toast';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
   const { theme } = useTheme();
   const [favoriteRestaurants, setFavoriteRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
-  const loadFavorites = async () => {
-    //Favorilere ekleme kısmı henüz yok gelecek.
-    setLoading(false);
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
   };
 
-  useEffect(() => {
-    loadFavorites();
-  }, []);
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      const favorites = await userService.getFavorites();
+      // Backend'den gelen PlaceResponse'ları frontend formatına dönüştür
+      const formattedFavorites = favorites.map(place => ({
+        id: place.id,
+        name: place.name,
+        address: place.address,
+        category: place.placeType || 'Restoran',
+        type: place.placeType || 'Restoran',
+        rating: place.averageRating || 0,
+        distance: place.distance ? `${(place.distance / 1000).toFixed(1)} km` : 'Yakınınızda',
+        image: place.mainImageUrl ? { uri: place.mainImageUrl } : null,
+        phoneNumber: place.phoneNumber,
+        description: place.description,
+        openingHours: place.openingHours,
+        workingDays: place.workingDays,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        totalRatings: place.totalRatings
+      }));
+      setFavoriteRestaurants(formattedFavorites);
+    } catch (error) {
+      setFavoriteRestaurants([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
 
   const handleRestaurantPress = (restaurant) => {
     navigation.navigate('RestaurantDetail', { restaurant });
@@ -29,10 +67,10 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
       await userService.removeFromFavorites(placeId);
       // Favorilerden çıkarıldıktan sonra listeyi güncelle
       setFavoriteRestaurants(prev => prev.filter(restaurant => restaurant.id !== placeId));
-      Alert.alert('Başarılı', 'Restoran favorilerden çıkarıldı');
+      showToast('Restoran favorilerden çıkarıldı', 'success');
     } catch (error) {
       console.log('Error removing favorite:', error);
-      Alert.alert('Hata', 'Favorilerden çıkarılırken bir hata oluştu');
+      showToast('Favorilerden çıkarılırken bir hata oluştu', 'error');
     }
   };
 
@@ -72,11 +110,18 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
             onPress={() => handleRestaurantPress(restaurant)}
             activeOpacity={0.9}
           >
-            <Image
-              source={restaurant.image}
-              style={styles.restaurantImage}
-              resizeMode="cover"
-            />
+            {restaurant.image ? (
+              <Image
+                source={restaurant.image}
+                style={styles.restaurantImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.restaurantImage, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
+                <FontAwesome name="image" size={40} color="#ccc" />
+                <Text style={{ color: '#999', fontSize: 12, marginTop: 8 }}>Resim yok</Text>
+              </View>
+            )}
             <View style={styles.restaurantInfo}>
               <View style={styles.restaurantHeader}>
                 <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
@@ -107,6 +152,14 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
           </>
         )}
       </ScrollView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
+      />
     </View>
   );
 }
@@ -179,6 +232,7 @@ const styles = StyleSheet.create({
   restaurantCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
+    marginTop: 20,
     marginBottom: 16,
     overflow: 'hidden',
     elevation: 3,

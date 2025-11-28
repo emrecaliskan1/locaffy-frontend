@@ -48,7 +48,7 @@ export const userService = {
   addToFavorites: async (placeId) => {
     try {
       const headers = await buildHeaders();
-      const response = await axios.post(`${BASE_URL}/favorites/${placeId}`, {}, { headers });
+      const response = await axios.post(`${API_BASE_URL}/favorites/${placeId}`, {}, { headers });
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Favorilere eklenirken bir hata oluştu';
@@ -59,10 +59,21 @@ export const userService = {
   removeFromFavorites: async (placeId) => {
     try {
       const headers = await buildHeaders();
-      const response = await axios.delete(`${BASE_URL}/favorites/${placeId}`, { headers });
+      const response = await axios.delete(`${API_BASE_URL}/favorites/${placeId}`, { headers });
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Favorilerden çıkarılırken bir hata oluştu';
+      throw new Error(errorMessage);
+    }
+  },
+
+  getFavorites: async () => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.get(`${API_BASE_URL}/favorites`, { headers });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Favori restoranlar alınırken bir hata oluştu';
       throw new Error(errorMessage);
     }
   }

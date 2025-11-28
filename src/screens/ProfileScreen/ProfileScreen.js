@@ -10,6 +10,7 @@ import {
   Switch
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
@@ -45,25 +46,29 @@ export default function ProfileScreen({ navigation }) {
       setIsLoading(true);
       // Rezervasyon sayısını al
       const reservations = await reservationService.getUserReservations();
-      if (reservations) {
-        setUserStats(prev => ({
-          ...prev,
-          totalReservations: reservations.length || 0
-        }));
-      }
+      // Favori sayısını al
+      const favorites = await userService.getFavorites();
+      
+      setUserStats({
+        totalReservations: reservations ? reservations.length || 0 : 0,
+        favoriteRestaurants: favorites ? favorites.length || 0 : 0
+      });
     } catch (error) {
-      setUserStats(prev => ({
-        ...prev,
-        totalReservations: 0
-      }));
+      console.log('Kullanıcı istatistikleri yüklenirken hata:', error);
+      setUserStats({
+        totalReservations: 0,
+        favoriteRestaurants: 0
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadUserStats();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadUserStats();
+    }, [])
+  );
 
   const handleLogout = async () => {
     try {

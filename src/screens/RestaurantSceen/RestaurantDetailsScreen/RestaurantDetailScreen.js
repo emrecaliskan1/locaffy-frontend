@@ -7,14 +7,17 @@ import {
   Image,
   StatusBar,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { styles } from './styles';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
-import { reviewService } from '../../../services';
+import { reviewService, userService } from '../../../services';
 import { useTheme } from '../../../context/ThemeContext';
+import Toast from '../../../components/Toast';
 
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
@@ -22,6 +25,9 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const [activeTab, setActiveTab] = useState('menu');
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
   const restaurantData = restaurant || {
     id: 1,
@@ -29,6 +35,14 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     address: 'Adres bilgisi yok',
     averageRating: 0,
     totalRatings: 0,
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
   };
 
   //MEKAN YORUMLARINI YÜKLE
@@ -46,9 +60,51 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     }
   };
 
+  //FAVORİ DURUMUNU KONTROL ET
+  const checkFavoriteStatus = async () => {
+    if (!restaurantData.id) return;
+  
+    try {
+      const favorites = await userService.getFavorites();
+      const isRestaurantFavorite = favorites.some(fav => fav.id === restaurantData.id);
+      setIsFavorite(isRestaurantFavorite);
+    } catch (error) {
+      console.log('Error checking favorite status:', error);
+      setIsFavorite(false);
+    }
+  };
+
+  //FAVORİ TOGGLE
+  const handleFavoriteToggle = async () => {
+    if (!restaurantData.id || favoriteLoading) return;
+    
+    try {
+      setFavoriteLoading(true);
+      if (isFavorite) {
+        await userService.removeFromFavorites(restaurantData.id);
+        setIsFavorite(false);
+        showToast('Restoran favorilerden çıkarıldı', 'success');
+      } else {
+        await userService.addToFavorites(restaurantData.id);
+        setIsFavorite(true);
+        showToast('Restoran favorilere eklendi', 'success');
+      }
+    } catch (error) {
+      showToast(error.message || 'Favori işlemi gerçekleştirilemedi', 'error');
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadReviews();
   }, [restaurantData.id]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      checkFavoriteStatus();
+    }, [restaurantData.id])
+  );
 
   //BACKEND'DEN GELEN MEKAN DATASI
   const finalRestaurantData = {
@@ -87,12 +143,25 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
-          <TouchableOpacity style={[
-            styles.shareButton, 
-            { backgroundColor: theme.colors.background },
-            theme.dark && { borderWidth: 1, borderColor: '#FFFFFF' }
-          ]}>
-            <FontAwesome name="heart-o" size={18} color={theme.dark ? "#FFFFFF" : "#000000"} style={styles.shareIcon} />
+          <TouchableOpacity 
+            style={[
+              styles.shareButton, 
+              { backgroundColor: theme.colors.background },
+              theme.dark && { borderWidth: 1, borderColor: '#FFFFFF' }
+            ]}
+            onPress={handleFavoriteToggle}
+            disabled={favoriteLoading}
+          >
+            {favoriteLoading ? (
+              <ActivityIndicator size="small" color={theme.dark ? "#FFFFFF" : "#000000"} />
+            ) : (
+              <FontAwesome 
+                name={isFavorite ? "heart" : "heart-o"} 
+                size={18} 
+                color={isFavorite ? "#E74C3C" : "#000000"} 
+                style={styles.shareIcon} 
+              />
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -195,6 +264,14 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           {renderTabContent()}
         </View>
       </ScrollView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
+      />
     </View>
   );
 }

@@ -449,7 +449,6 @@ export const styles = StyleSheet.create({
   },
   shareIcon: {
     fontSize: 24,
-    color: '#2C3E50',
   },
   imageContainer: {
     position: 'relative',
