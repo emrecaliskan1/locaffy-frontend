@@ -15,7 +15,7 @@ import { styles } from './styles';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
-import { reviewService, userService } from '../../../services';
+import { reviewService, userService, menuService } from '../../../services';
 import { useTheme } from '../../../context/ThemeContext';
 import Toast from '../../../components/Toast';
 
@@ -25,6 +25,8 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const [activeTab, setActiveTab] = useState('menu');
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [menu, setMenu] = useState([]);
+  const [loadingMenu, setLoadingMenu] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -115,6 +117,22 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     }
   };
 
+  //MEKAN MENÜSÜNÜ YÜKLE
+  const loadMenu = async () => {
+    if (!restaurantData.id) return;
+
+    try {
+      setLoadingMenu(true);
+      const fetchedMenu = await menuService.getPlaceMenu(restaurantData.id);
+      setMenu(fetchedMenu || []);
+    } catch (error) {
+      console.log('Error loading menu:', error);
+      setMenu([]);
+    } finally {
+      setLoadingMenu(false);
+    }
+  };
+
   //FAVORİ DURUMUNU KONTROL ET
   const checkFavoriteStatus = async () => {
     if (!restaurantData.id) return;
@@ -153,6 +171,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
 
   useEffect(() => {
     loadReviews();
+    loadMenu();
   }, [restaurantData.id]);
 
   useFocusEffect(
@@ -167,7 +186,8 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     image: restaurantData.mainImageUrl || null,
     rating: reviews.length > 0 ? (restaurantData.averageRating || 0) : 0,
     reviewCount: reviews.length || 0,
-    menu: restaurantData.menuItems || [],
+    menu: menu,
+    loadingMenu: loadingMenu,
     reviews: reviews,
     loadingReviews: loadingReviews,
   };

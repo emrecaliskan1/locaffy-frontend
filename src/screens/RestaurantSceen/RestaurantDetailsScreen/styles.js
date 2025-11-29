@@ -328,8 +328,8 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   menuItemImage: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     borderRadius: 8,
     marginRight: 15,
   },
@@ -523,14 +523,15 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     borderRadius: 12,
     padding: 15,
-    marginBottom: 15,
+    marginBottom: 20,
     alignItems: 'center',
   },
   menuItemImage: {
     width: 80,
     height: 80,
     borderRadius: 8,
-    marginRight: 15,
+    marginRight: 20,
+    marginLeft:-5
   },
   menuItemInfo: {
     flex: 1,
