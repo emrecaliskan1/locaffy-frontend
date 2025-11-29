@@ -185,12 +185,13 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    gap: 4,
   },
   infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   infoIcon: {
     fontSize: 16,

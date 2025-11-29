@@ -64,7 +64,8 @@ export const AuthProvider = ({ children }) => {
         const userInfo = {
           username: response.username,
           email: response.email,
-          userId: response.userId
+          userId: response.userId,
+          profileImageUrl: response.profileImageUrl
         };
         setUser(userInfo);
         setIsLoggedIn(true);
@@ -112,7 +113,8 @@ export const AuthProvider = ({ children }) => {
         const userInfo = {
           username: response.username,
           email: response.email,
-          userId: response.userId
+          userId: response.userId,
+          profileImageUrl: response.profileImageUrl
         };
         
         setUser(userInfo);
@@ -155,6 +157,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // PROFIL FOTOĞRAFI GÜNCELLEME
+  const updateProfileImage = (imageUrl) => {
+    if (user) {
+      setUser(prev => ({
+        ...prev,
+        profileImageUrl: imageUrl
+      }));
+    }
+  };
+
   const value = {
     user,
     isLoggedIn,
@@ -163,7 +175,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    checkAuthStatus
+    checkAuthStatus,
+    updateProfileImage
   };
 
   return (

@@ -241,15 +241,16 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
           <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{finalRestaurantData.placeType || 'Restoran'}</Text>
           <View style={[styles.restaurantMeta, { justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', maxWidth: '100%' }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', maxWidth: '100%', flexWrap: 'wrap' }}>
                 <FontAwesome name="map-marker" size={14} color="#27AE60" style={{ marginTop: 2, marginRight: 5 }} />
                 <Text
                   style={[styles.metaText, {
                     color: theme.colors.textSecondary,
                     textAlign: 'center',
                     flex: 1,
-                    lineHeight: 20
+                    lineHeight: 20,
+                    flexShrink: 1
                   }]}
                 >{finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
               </View>
@@ -287,7 +288,9 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         >
           <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
-        </TouchableOpacity>        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background, marginTop: 10 }]}>
+        </TouchableOpacity>
+        
+        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background, marginTop: 10 }]}>
           <TouchableOpacity
             style={[
               styles.tab,

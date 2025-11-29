@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, StatusBar, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, StatusBar, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
-import { userService } from '../../services';
+import { userService, imageService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import Toast from '../../components/Toast';
 
 export default function AccountInfoScreen({ navigation, route }) {
-  const { user } = useAuth();
+  const { user, updateProfileImage } = useAuth();
   const { theme } = useTheme();
   const [userInfo, setUserInfo] = useState({
     name: '',
@@ -19,6 +20,17 @@ export default function AccountInfoScreen({ navigation, route }) {
   const [passwordExpanded, setPasswordExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
 
   const handleInputChange = (field, value) => {
     setUserInfo(prev => ({ ...prev, [field]: value }));
@@ -45,11 +57,40 @@ export default function AccountInfoScreen({ navigation, route }) {
   const handleSave = async () => {
     try {
       setSaving(true);
-      navigation.goBack();
+      showToast('Değişiklikler kaydedildi', 'success');
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
     } catch (error) {
-      Alert.alert('Hata', 'Profil güncellenirken bir hata oluştu');
+      showToast('Profil güncellenirken bir hata oluştu', 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Profil fotoğrafı yükleme
+  const handleUploadProfileImage = async () => {
+    if (uploadingImage) return;
+    
+    try {
+      setUploadingImage(true);
+      
+      const result = await imageService.selectAndUploadProfileImage();
+      
+      if (result.success) {
+        showToast('Profil fotoğrafı başarıyla yüklendi', 'success');
+        if (result.data && result.data.imageUrl) {
+          setProfileImageUrl(result.data.imageUrl);
+          updateProfileImage(result.data.imageUrl);
+        }
+      } else {
+        showToast(result.message || 'Fotoğraf yüklenemedi', 'error');
+      }
+    } catch (error) {
+      console.error('Profil fotoğrafı yükleme hatası:', error);
+      showToast(`Fotoğraf yüklenirken hata oluştu: ${error.message}`, 'error');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -70,15 +111,36 @@ export default function AccountInfoScreen({ navigation, route }) {
 
         {/* Avatar Bölümü */}
         <View style={[styles.avatarSection, { backgroundColor: theme.colors.card }]}>
-          <View style={[styles.avatarPlaceholder, { backgroundColor: theme.colors.primary }]}>
-            <Text style={styles.avatarText}>
-              {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : 
-               userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase() : '--'}
-            </Text>
-          </View>
-          <TouchableOpacity style={[styles.changePhotoButton, { backgroundColor: theme.colors.background }]}>
-            <FontAwesome name="camera" size={14} color={theme.colors.primary} />
-            <Text style={[styles.changePhotoText, { color: theme.colors.primary }]}>Fotoğraf Değiştir</Text>
+          {profileImageUrl || user?.profileImageUrl ? (
+            <Image 
+              source={{ uri: profileImageUrl || user?.profileImageUrl }} 
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={[styles.avatarPlaceholder, { backgroundColor: theme.colors.primary }]}>
+              <Text style={styles.avatarText}>
+                {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : 
+                 userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase() : '--'}
+              </Text>
+            </View>
+          )}
+          
+          <TouchableOpacity 
+            style={[styles.changePhotoButton, { backgroundColor: theme.colors.background }]}
+            onPress={handleUploadProfileImage}
+            disabled={uploadingImage}
+          >
+            {uploadingImage ? (
+              <>
+                <ActivityIndicator size="small" color={theme.colors.primary} />
+                <Text style={[styles.changePhotoText, { color: theme.colors.primary }]}>Yükleniyor...</Text>
+              </>
+            ) : (
+              <>
+                <FontAwesome name="camera" size={14} color={theme.colors.primary} />
+                <Text style={[styles.changePhotoText, { color: theme.colors.primary }]}>Fotoğraf Değiştir</Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -208,6 +270,14 @@ export default function AccountInfoScreen({ navigation, route }) {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
+      />
     </View>
   );
 }
@@ -259,6 +329,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.4,
     shadowRadius: 12,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 12,
   },
   avatarText: {
     fontSize: 42,

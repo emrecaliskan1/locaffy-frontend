@@ -76,7 +76,8 @@ export const authService = {
         await saveUserInfo({
           username: response.data.username,
           email: response.data.email,
-          userId: response.data.userId
+          userId: response.data.userId,
+          profileImageUrl: response.data.profileImageUrl
         });
       }
       return response.data;
@@ -105,7 +106,8 @@ export const authService = {
         await saveUserInfo({
           username: response.data.username,
           email: response.data.email,
-          userId: response.data.userId
+          userId: response.data.userId,
+          profileImageUrl: response.data.profileImageUrl
         });
       }
       return response.data;

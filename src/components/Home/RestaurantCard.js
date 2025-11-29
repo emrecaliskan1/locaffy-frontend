@@ -156,7 +156,13 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
         <View style={styles.cardFooter}>
           <View style={styles.infoItem}>
             <FontAwesome name="map-marker" size={12} color="#95A5A6" style={styles.infoIcon} />
-            <Text style={[styles.infoText, { color: theme.colors.textTertiary }]}>{item.address}</Text>
+            <Text 
+              style={[styles.infoText, { color: theme.colors.textTertiary, flex: 1 }]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.address}
+            </Text>
           </View>
           <View style={styles.infoItem}>
             <FontAwesome name="clock-o" size={12} color="#95A5A6" style={styles.infoIcon} />

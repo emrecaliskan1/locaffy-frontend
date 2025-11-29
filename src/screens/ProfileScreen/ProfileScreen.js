@@ -16,7 +16,7 @@ import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
-import { userService, reservationService } from '../../services';
+import { userService, reservationService, imageService } from '../../services';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
@@ -28,7 +28,8 @@ export default function ProfileScreen({ navigation }) {
   const userInfo = {
     username: user?.username || '',
     email: user?.email || '',
-    avatar: null,
+    userId: user?.userId || null,
+    avatar: user?.profileImageUrl || null,
     ...userStats
   };
 
@@ -44,17 +45,29 @@ export default function ProfileScreen({ navigation }) {
   const loadUserStats = async () => {
     try {
       setIsLoading(true);
-      // Rezervasyon sayısını al
-      const reservations = await reservationService.getUserReservations();
-      // Favori sayısını al
-      const favorites = await userService.getFavorites();
       
-      setUserStats({
-        totalReservations: reservations ? reservations.length || 0 : 0,
-        favoriteRestaurants: favorites ? favorites.length || 0 : 0
-      });
+      // Rezervasyon sayısını al
+      try {
+        const reservations = await reservationService.getUserReservations();
+        const reservationCount = reservations ? (Array.isArray(reservations) ? reservations.length : 0) : 0;
+        
+        // Favori sayısını al
+        const favorites = await userService.getFavorites();
+        const favoriteCount = favorites ? (Array.isArray(favorites) ? favorites.length : 0) : 0;
+        
+        setUserStats({
+          totalReservations: reservationCount,
+          favoriteRestaurants: favoriteCount
+        });
+      } catch (statsError) {
+        console.log('Kullanıcı istatistikleri yüklenirken hata:', statsError);
+        setUserStats({
+          totalReservations: 0,
+          favoriteRestaurants: 0
+        });
+      }
     } catch (error) {
-      console.log('Kullanıcı istatistikleri yüklenirken hata:', error);
+      console.log('Genel yükleme hatası:', error);
       setUserStats({
         totalReservations: 0,
         favoriteRestaurants: 0
@@ -160,7 +173,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={[styles.userCard, { backgroundColor: theme.colors.card }]}>
           <View style={styles.avatarContainer}>
             {userInfo.avatar ? (
-              <Image source={userInfo.avatar} style={styles.avatar} />
+              <Image source={{ uri: userInfo.avatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarText}>
