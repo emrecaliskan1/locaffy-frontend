@@ -16,6 +16,62 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
   
   const isFavorite = favoritesList.some(fav => fav.id === item.id);
 
+  // Mekanın şu an açık/kapalı olup olmadığını kontrol et
+  const getRestaurantStatus = () => {
+    if (!item.workingDays || !item.openingHours) {
+      return { isOpen: false, text: 'Bilgi Yok' };
+    }
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+
+    const dayMap = {
+      'Pazar': 0, 'Pazartesi': 1, 'Salı': 2, 'Çarşamba': 3, 
+      'Perşembe': 4, 'Cuma': 5, 'Cumartesi': 6
+    };
+
+    let workingDayNumbers = [];
+    const workingDays = item.workingDays.trim();
+    
+    if (workingDays.includes('-')) {
+      const [startDay, endDay] = workingDays.split('-').map(day => day.trim());
+      const startDayNum = dayMap[startDay];
+      const endDayNum = dayMap[endDay];
+      
+      if (startDayNum !== undefined && endDayNum !== undefined) {
+        // Pazartesi-Cuma gibi aralık varsa
+        if (startDayNum <= endDayNum) {
+          for (let i = startDayNum; i <= endDayNum; i++) {
+            workingDayNumbers.push(i);
+          }
+        } else {
+          for (let i = startDayNum; i <= 6; i++) {
+            workingDayNumbers.push(i);
+          }
+          for (let i = 0; i <= endDayNum; i++) {
+            workingDayNumbers.push(i);
+          }
+        }
+      }
+    } else if (workingDays.includes(',')) {
+      const days = workingDays.split(',').map(day => day.trim());
+      workingDayNumbers = days.map(day => dayMap[day]).filter(num => num !== undefined);
+    } else if (workingDays === 'Pazartesi-Pazar' || workingDays === 'Hergün') {
+      workingDayNumbers = [0, 1, 2, 3, 4, 5, 6];
+    } else {
+      const dayNum = dayMap[workingDays];
+      if (dayNum !== undefined) {
+        workingDayNumbers = [dayNum];
+      }
+    }
+    if (!workingDayNumbers.includes(currentDay)) {
+      return { isOpen: false, text: 'Kapalı' };
+    }
+    return { isOpen: true, text: 'Açık' };
+  };
+
+  const restaurantStatus = getRestaurantStatus();
+
   // Favori toggle fonksiyonu
   const handleFavoriteToggle = async (e) => {
     e.stopPropagation(); 
@@ -77,8 +133,10 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
           )}
         </TouchableOpacity>
 
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{item.active ? 'Açık' : 'Kapalı'}</Text>
+        <View style={[styles.statusBadge, { 
+          backgroundColor: restaurantStatus.isOpen ? '#27AE60' : '#E74C3C' 
+        }]}>
+          <Text style={styles.statusText}>{restaurantStatus.text}</Text>
         </View>
       </View>
       

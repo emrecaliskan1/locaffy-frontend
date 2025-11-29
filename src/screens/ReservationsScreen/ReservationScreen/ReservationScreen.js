@@ -22,7 +22,7 @@ const monthNames = [
   'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
   'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
 ];
-const availableTimes = ['12:00', '12:30', '13:00', '13:30', '14:00','14:30','15:00', '15:30', '16:00', '16:30', '17:00', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00'];
+const availableTimes = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
 const maxPeople = 8;
 
 export default function ReservationScreen({ route, navigation }) {
@@ -37,6 +37,66 @@ export default function ReservationScreen({ route, navigation }) {
   const [submitting, setSubmitting] = useState(false);
   const [reservationData, setReservationData] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Mekanın çalışma günlerini kontrol et
+  const getWorkingDays = () => {
+    if (!restaurant.workingDays) return [];
+
+    const dayMap = {
+      'Pazar': 0, 'Pazartesi': 1, 'Salı': 2, 'Çarşamba': 3,
+      'Perşembe': 4, 'Cuma': 5, 'Cumartesi': 6
+    };
+
+    let workingDayNumbers = [];
+    const workingDays = restaurant.workingDays.trim();
+    
+    if (workingDays.includes('-')) {
+      const [startDay, endDay] = workingDays.split('-').map(day => day.trim());
+      const startDayNum = dayMap[startDay];
+      const endDayNum = dayMap[endDay];
+      
+      if (startDayNum !== undefined && endDayNum !== undefined) {
+        if (startDayNum <= endDayNum) {
+          for (let i = startDayNum; i <= endDayNum; i++) {
+            workingDayNumbers.push(i);
+          }
+        } else {
+          for (let i = startDayNum; i <= 6; i++) {
+            workingDayNumbers.push(i);
+          }
+          for (let i = 0; i <= endDayNum; i++) {
+            workingDayNumbers.push(i);
+          }
+        }
+      }
+    } else if (workingDays.includes(',')) {
+      const days = workingDays.split(',').map(day => day.trim());
+      workingDayNumbers = days.map(day => dayMap[day]).filter(num => num !== undefined);
+    } else if (workingDays === 'Pazartesi-Pazar' || workingDays === 'Hergün') {
+      workingDayNumbers = [0, 1, 2, 3, 4, 5, 6];
+    } else {
+      const dayNum = dayMap[workingDays];
+      if (dayNum !== undefined) {
+        workingDayNumbers = [dayNum];
+      }
+    }
+    return workingDayNumbers;
+  };
+
+  // Mekanın çalışma saatlerini al
+  const getWorkingHours = () => {
+    if (!restaurant.openingHours || !restaurant.openingHours.includes('-')) {
+      return { startHour: 9, startMinute: 0, endHour: 18, endMinute: 0 };
+    }
+    const [startTime, endTime] = restaurant.openingHours.split('-');
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+
+    return { startHour, startMinute, endHour, endMinute };
+  };
+
+  const workingDays = getWorkingDays();
+  const workingHours = getWorkingHours();
 
   const generateNextDates = (n) => {
     const dates = [];
@@ -159,19 +219,48 @@ export default function ReservationScreen({ route, navigation }) {
     const isSelected = selectedDate === dateString;
     const today = new Date();
     const isToday = (new Date(dateString).toDateString() === today.toDateString());
+    
+    // Seçilen tarihin çalışma günü olup olmadığını kontrol et
+    const selectedDateObj = new Date(dateString);
+    const dayOfWeek = selectedDateObj.getDay();
+    const isWorkingDay = workingDays.includes(dayOfWeek);
 
     return (
       <TouchableOpacity
         key={dateString}
-        style={[styles.dateItem, isSelected && styles.selectedDateItem, isToday && styles.todayDateItem]}
-        onPress={() => handleDateSelect(dateString)}
+        style={[
+          styles.dateItem, 
+          isSelected && styles.selectedDateItem, 
+          isToday && styles.todayDateItem,
+          !isWorkingDay && { backgroundColor: '#F5F5F5', opacity: 0.6 }
+        ]}
+        onPress={() => isWorkingDay && handleDateSelect(dateString)}
+        disabled={!isWorkingDay}
       >
-        <Text style={[styles.dateDay, isSelected && styles.selectedDateText]}>
+        <Text style={[
+          styles.dateDay, 
+          isSelected && styles.selectedDateText,
+          !isWorkingDay && { color: '#999', opacity: 0.5 }
+        ]}>
           {date.day}
         </Text>
-        <Text style={[styles.dateMonth, isSelected && styles.selectedDateText]}>
+        <Text style={[
+          styles.dateMonth, 
+          isSelected && styles.selectedDateText,
+          !isWorkingDay && { color: '#999', opacity: 0.5 }
+        ]}>
           {date.dayName} · {date.month}
         </Text>
+        {!isWorkingDay && (
+          <Text style={{
+            fontSize: 8,
+            color: '#999',
+            textAlign: 'center',
+            marginTop: 2
+          }}>
+            Kapalı
+          </Text>
+        )}
       </TouchableOpacity>
     );
   };
@@ -180,23 +269,40 @@ export default function ReservationScreen({ route, navigation }) {
   const renderTimeSlot = (time) => {
     const isSelected = selectedTime === time;
     let isDisabled = false;
+    let disableReason = '';
+    
     if (selectedDate) {
+      const [timeHour, timeMinute] = time.split(':').map(Number);
+      const timeInMinutes = timeHour * 60 + timeMinute;
+      
+      // Mekanın çalışma saatleri kontrolü
+      const restaurantStartTime = workingHours.startHour * 60 + workingHours.startMinute;
+      const restaurantEndTime = workingHours.endHour * 60 + workingHours.endMinute;
+      
+      if (timeInMinutes < restaurantStartTime || timeInMinutes > restaurantEndTime) {
+        isDisabled = true;
+        disableReason = 'Mekan kapalı';
+      }
+      
+      // Bugün için geçmiş saat kontrolü
       const today = new Date();
       const sel = new Date(selectedDate);
       if (sel.toDateString() === today.toDateString()) {
-        const [h, m] = time.split(':').map(Number);
-        const slot = new Date();
-        slot.setHours(h, m, 0, 0);
-        if (slot.getTime() <= Date.now()) {
+        const currentTime = today.getHours() * 60 + today.getMinutes();
+        // Geçmiş saatleri devre dışı bırak
+        if (timeInMinutes <= currentTime) {
           isDisabled = true;
+          disableReason = 'Geçmiş saat';
         }
       }
     }
+    
     return (
       <TouchableOpacity
         key={time}
         style={[styles.timeSlot, isSelected && styles.selectedTimeSlot, isDisabled && styles.disabledTimeSlot]}
         onPress={() => !isDisabled && handleTimeSelect(time)}
+        disabled={isDisabled}
       >
         <Text style={[
           styles.timeText, 
