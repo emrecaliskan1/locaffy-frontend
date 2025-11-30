@@ -61,7 +61,6 @@ export const reviewService = {
       const response = await axios.delete(`${BASE_URL}/${reviewId}`, { headers });
       return response.data;
     } catch (error) {
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Yorum silinirken bir hata oluştu';
       throw new Error(errorMessage);
     }

@@ -8,7 +8,8 @@ import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import Toast from '../../../components/Toast';
 import { RestaurantCard } from '../../../components/Home/RestaurantCard';
-import { styles, cardStyles } from './styles';
+import { styles } from './styles';
+import { styles as homeStyles } from '../../HomeScreen/styles';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
   const { theme } = useTheme();
@@ -81,16 +82,15 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
               </View>
             ) : (
               favoriteRestaurants.map((restaurant) => (
-                <View key={restaurant.id} style={styles.cardWrapper}>
-                  <RestaurantCard
-                    item={restaurant}
-                    onPress={handleRestaurantPress}
-                    favoritesList={favoriteRestaurants}
-                    onFavoriteChange={handleFavoriteChange}
-                    onShowToast={showToast}
-                    styles={cardStyles}
-                  />
-                </View>
+                <RestaurantCard
+                  key={restaurant.id}
+                  item={restaurant}
+                  onPress={handleRestaurantPress}
+                  favoritesList={favoriteRestaurants}
+                  onFavoriteChange={handleFavoriteChange}
+                  onShowToast={showToast}
+                  styles={homeStyles}
+                />
               ))
             )}
 

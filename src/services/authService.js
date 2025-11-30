@@ -155,7 +155,6 @@ export const authService = {
       // Hata olsa bile local token'ları temizle
       await removeToken();
       await removeUserInfo();
-      // Backend ErrorResponse formatını handle et
       const errorMessage = error.response?.data?.message || 'Çıkış yapılırken bir hata oluştu';
       throw new Error(errorMessage);
     }

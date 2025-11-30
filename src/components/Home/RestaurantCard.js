@@ -28,9 +28,6 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
     const dayMap = {
       'PAZAR': 0, 'PAZARTESİ': 1, 'SALI': 2, 'ÇARŞAMBA': 3, 
       'PERŞEMBE': 4, 'CUMA': 5, 'CUMARTESİ': 6,
-      // Eski format (geriye dönük uyumluluk)
-      'Pazar': 0, 'Pazartesi': 1, 'Salı': 2, 'Çarşamba': 3, 
-      'Perşembe': 4, 'Cuma': 5, 'Cumartesi': 6
     };
 
     let workingDayNumbers = [];

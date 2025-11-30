@@ -14,7 +14,6 @@ export default function ReservationDetailsScreen({ route, navigation }) {
 
   useEffect(() => {
     if (showSuccessModal) {
-      // Modal açıldığında animasyonları başlat
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: 1,
@@ -28,8 +27,6 @@ export default function ReservationDetailsScreen({ route, navigation }) {
           useNativeDriver: true,
         }),
       ]).start();
-
-      // 2.5 saniye sonra rezervasyonlar sayfasına git
       setTimeout(() => {
         setShowSuccessModal(false);
         navigation.navigate('Reservations', { fromRestaurant: true });
@@ -38,10 +35,6 @@ export default function ReservationDetailsScreen({ route, navigation }) {
   }, [showSuccessModal]);
 
   const handleConfirm = () => {
-    // TODO: Backend'e rezervasyon kaydedilecek
-    // POST /api/reservations
-    // Body: { restaurantId, date, time, people }
-    
     console.log('Reservation confirmed:', {
       restaurant: restaurant?.name,
       date: reservation?.date,
