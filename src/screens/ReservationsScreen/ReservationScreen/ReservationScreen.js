@@ -43,6 +43,10 @@ export default function ReservationScreen({ route, navigation }) {
     if (!restaurant.workingDays) return [];
 
     const dayMap = {
+      // Yeni format
+      'PAZAR': 0, 'PAZARTESİ': 1, 'SALI': 2, 'ÇARŞAMBA': 3,
+      'PERŞEMBE': 4, 'CUMA': 5, 'CUMARTESİ': 6,
+      // Eski format (geriye dönük uyumluluk)
       'Pazar': 0, 'Pazartesi': 1, 'Salı': 2, 'Çarşamba': 3,
       'Perşembe': 4, 'Cuma': 5, 'Cumartesi': 6
     };
@@ -72,7 +76,9 @@ export default function ReservationScreen({ route, navigation }) {
     } else if (workingDays.includes(',')) {
       const days = workingDays.split(',').map(day => day.trim());
       workingDayNumbers = days.map(day => dayMap[day]).filter(num => num !== undefined);
-    } else if (workingDays === 'Pazartesi-Pazar' || workingDays === 'Hergün') {
+    } else if (workingDays === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR' || 
+               workingDays === 'Pazartesi-Pazar' || 
+               workingDays === 'Hergün') {
       workingDayNumbers = [0, 1, 2, 3, 4, 5, 6];
     } else {
       const dayNum = dayMap[workingDays];
