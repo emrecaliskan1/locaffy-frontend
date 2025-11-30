@@ -46,7 +46,7 @@ export const InfoTab = ({ restaurant, styles }) => {
   return (
     <View style={[styles.tabContent, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Restoran Bilgileri</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Mekan Bilgileri</Text>
         
         <View style={[styles.infoRow, { backgroundColor: theme.colors.background }]}>
           <FontAwesome name="map-marker" size={16} color="#27AE60" style={styles.infoIcon} />

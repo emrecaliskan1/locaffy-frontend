@@ -73,7 +73,7 @@ export const userService = {
       const response = await axios.get(`${API_BASE_URL}/favorites`, { headers });
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Favori restoranlar alınırken bir hata oluştu';
+      const errorMessage = error.response?.data?.message || 'Favori mekanlar alınırken bir hata oluştu';
       throw new Error(errorMessage);
     }
   }

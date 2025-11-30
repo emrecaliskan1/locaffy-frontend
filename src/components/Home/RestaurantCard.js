@@ -89,12 +89,12 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
       if (isFavorite) {
         await userService.removeFromFavorites(item.id);
         if (onShowToast) {
-          onShowToast('Restoran favorilerden çıkarıldı', 'success');
+          onShowToast('Mekan favorilerden çıkarıldı', 'success');
         }
       } else {
         await userService.addToFavorites(item.id);
         if (onShowToast) {
-          onShowToast('Restoran favorilere eklendi', 'success');
+          onShowToast('Mekan favorilere eklendi', 'success');
         }
       }
       

@@ -59,7 +59,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Favori Restoranlar</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Favori Mekanlar</Text>
           <View style={{ width: 40 }} />
         </View>
       </SafeAreaView>
@@ -68,7 +68,7 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Favori restoranlarınız yükleniyor...</Text>
+            <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Favori mekanlarınız yükleniyor...</Text>
           </View>
         ) : (
           <>

@@ -162,11 +162,11 @@ export default function RestaurantDetailScreen({ route, navigation }) {
       if (isFavorite) {
         await userService.removeFromFavorites(restaurantData.id);
         setIsFavorite(false);
-        showToast('Restoran favorilerden çıkarıldı', 'success');
+        showToast('Mekan favorilerden çıkarıldı', 'success');
       } else {
         await userService.addToFavorites(restaurantData.id);
         setIsFavorite(true);
-        showToast('Restoran favorilere eklendi', 'success');
+        showToast('Mekan favorilere eklendi', 'success');
       }
     } catch (error) {
       showToast(error.message || 'Favori işlemi gerçekleştirilemedi', 'error');

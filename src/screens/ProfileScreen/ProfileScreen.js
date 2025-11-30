@@ -115,7 +115,7 @@ export default function ProfileScreen({ navigation }) {
     },
     {
       id: 2,
-      title: 'Favori Restoranlar',
+      title: 'Favori Mekanlar',
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
       iconColor: '#E74C3C', 
