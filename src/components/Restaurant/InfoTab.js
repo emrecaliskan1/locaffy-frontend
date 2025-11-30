@@ -10,6 +10,39 @@ import { useTheme } from '../../context/ThemeContext';
 export const InfoTab = ({ restaurant, styles }) => {
   const { theme } = useTheme();
   
+  // Çalışma günlerini formatla
+  const formatWorkingDays = (workingDays) => {
+    if (!workingDays) return 'Belirtilmemiş';
+
+    const dayMap = {
+      'PAZAR': 'Pazar', 'PAZARTESİ': 'Pazartesi', 'SALI': 'Salı', 'ÇARŞAMBA': 'Çarşamba',
+      'PERŞEMBE': 'Perşembe', 'CUMA': 'Cuma', 'CUMARTESİ': 'Cumartesi'
+    };
+
+    const workingDaysStr = workingDays.trim();
+    
+    if (workingDaysStr.includes(',')) {
+      const days = workingDaysStr.split(',').map(day => dayMap[day.trim()]).filter(Boolean);
+      return days.join(', ');
+    }
+    
+    if (workingDaysStr.includes('-')) {
+      const [startDay, endDay] = workingDaysStr.split('-').map(day => day.trim());
+      const formattedStart = dayMap[startDay];
+      const formattedEnd = dayMap[endDay];
+      if (formattedStart && formattedEnd) {
+        return `${formattedStart} - ${formattedEnd}`;
+      }
+    }
+
+    if (workingDaysStr === 'Hergün' || workingDaysStr === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR') {
+      return 'Her gün';
+    }
+    
+    // Tek gün
+    return dayMap[workingDaysStr] || workingDaysStr;
+  };
+  
   return (
     <View style={[styles.tabContent, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
@@ -31,6 +64,13 @@ export const InfoTab = ({ restaurant, styles }) => {
         </View>
 
         <View style={[styles.infoRow, { backgroundColor: theme.colors.background }]}>
+          <FontAwesome name="calendar" size={16} color="#8E44AD" style={styles.infoIcon} />
+          <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
+            <Text style={{ fontWeight: 'bold' }}>Çalışma Günleri:</Text> {formatWorkingDays(restaurant.workingDays)}
+          </Text>
+        </View>
+
+        <View style={[styles.infoRow, { backgroundColor: theme.colors.background }]}>
           <FontAwesome name="file-text-o" size={16} color="#9B59B6" style={styles.infoIcon} />
           <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>{restaurant.description || 'Açıklama bulunmuyor'}</Text>
         </View>
@@ -38,7 +78,7 @@ export const InfoTab = ({ restaurant, styles }) => {
         <View style={[styles.infoRow, { backgroundColor: theme.colors.background }]}>
           <FontAwesome name="star" size={16} color="#F1C40F" style={styles.infoIcon} />
           <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-            Ortalama Puan: {restaurant.rating ? restaurant.rating.toFixed(1) : 0}/5 
+            <Text style={{ fontWeight: 'bold' }}>Ortalama Puan:</Text> {restaurant.rating ? restaurant.rating.toFixed(1) : 0}/5 
             ({restaurant.reviewCount || 0} {restaurant.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})
           </Text>
         </View>
