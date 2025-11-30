@@ -59,11 +59,12 @@ export default function HomeScreen({ navigation }) {
     loadPlaces();
   }, [appliedFilters]);
 
-  // Sayfa odaklanıldığında favorileri yükle
+  // Sayfa odaklanıldığında favorileri ve mekanları yükle
   useFocusEffect(
     useCallback(() => {
       loadFavorites();
-    }, [])
+      loadPlaces(); 
+    }, [appliedFilters]) 
   );
 
   const loadPlaces = async () => {
