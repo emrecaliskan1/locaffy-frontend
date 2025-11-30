@@ -101,21 +101,17 @@ export const imageService = {
         return { success: false, message: 'İzinler reddedildi' };
       }
       
-      // Resim seçme seçeneklerini göster
       const selectedImage = await imageService.showImagePickerOptions();
       if (!selectedImage) {
         return { success: false, message: 'Resim seçilmedi' };
       }
 
-      // Dosya boyutu kontrolü (5MB)
       if (selectedImage.fileSize && selectedImage.fileSize > 5 * 1024 * 1024) {
         return { 
           success: false, 
           message: 'Dosya boyutu çok büyük. Maksimum 5MB olmalıdır.' 
         };
       }
-
-      // Platform specific file object oluştur
       let fileData;
       
       if (Platform.OS === 'web') {
@@ -133,19 +129,15 @@ export const imageService = {
           name: selectedImage.fileName || `profile_${Date.now()}.jpg`
         };
       }
-
-      // Sunucuya yükle
       const response = await imageService.uploadProfileImage(fileData);
       
       return {
         success: true,
         data: response,
-        localUri: selectedImage.uri // Yerel önizleme için
+        localUri: selectedImage.uri
       };
-
     } catch (error) {
       console.error('Profil fotoğrafı yükleme hatası:', error);
-      
       return {
         success: false,
         message: error.response?.data?.error || error.message || 'Bir hata oluştu'

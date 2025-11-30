@@ -3,7 +3,6 @@ import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
-// Özel hook kullanımı için
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -211,8 +210,7 @@ const getErrorMessage = (error) => {
   if (error.response?.status === 404) {
     return 'Kullanıcı bulunamadı';
   }
-  
-  // Genel hata mesajı
+
   return 'Bir hata oluştu. Lütfen tekrar deneyin.';
 };
 

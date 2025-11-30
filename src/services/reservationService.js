@@ -146,7 +146,6 @@ export const reservationService = {
   //REZERVASYONLAR İÇİN STATUS DURUMLARI
   //Geçmiş rezervasyonlar için status text
   getPastReservationStatusText: (status, reservationTime) => {
-    // Eğer rezervasyon zamanı geçmişse
     if (reservationService.isReservationPast(reservationTime)) {
       if (status === 'PENDING') {
         return 'İptal Edildi'; 
@@ -169,11 +168,9 @@ export const reservationService = {
         return '#4CAF50'; 
       }
     }
-    // Diğer durumlar için normal status color'ı döndür
     return reservationService.getReservationStatusColor(status);
   },
 
-  //Normal durumlar için status color
   getReservationStatusColor: (status) => {
     const colorMap = {
       PENDING: '#FFA500',
