@@ -278,27 +278,34 @@ export default function ReservationScreen({ route, navigation }) {
     let disableReason = '';
     
     if (selectedDate) {
-      const [timeHour, timeMinute] = time.split(':').map(Number);
-      const timeInMinutes = timeHour * 60 + timeMinute;
+      // Seçilen tarihin çalışma günü olup olmadığını kontrol et
+      const selectedDateObj = new Date(selectedDate);
+      const dayOfWeek = selectedDateObj.getDay();
+      const isWorkingDay = workingDays.includes(dayOfWeek);
       
-      // Mekanın çalışma saatleri kontrolü
-      const restaurantStartTime = workingHours.startHour * 60 + workingHours.startMinute;
-      const restaurantEndTime = workingHours.endHour * 60 + workingHours.endMinute;
-      
-      if (timeInMinutes < restaurantStartTime || timeInMinutes > restaurantEndTime) {
+      if (!isWorkingDay) {
         isDisabled = true;
-        disableReason = 'Mekan kapalı';
-      }
-      
-      // Bugün için geçmiş saat kontrolü
-      const today = new Date();
-      const sel = new Date(selectedDate);
-      if (sel.toDateString() === today.toDateString()) {
-        const currentTime = today.getHours() * 60 + today.getMinutes();
-        // Geçmiş saatleri devre dışı bırak
-        if (timeInMinutes <= currentTime) {
+        disableReason = 'Mekan bugün kapalı';
+      } else {
+        const [timeHour, timeMinute] = time.split(':').map(Number);
+        const timeInMinutes = timeHour * 60 + timeMinute;
+        
+        const restaurantStartTime = workingHours.startHour * 60 + workingHours.startMinute;
+        const restaurantEndTime = workingHours.endHour * 60 + workingHours.endMinute;
+        
+        if (timeInMinutes < restaurantStartTime || timeInMinutes > restaurantEndTime) {
           isDisabled = true;
-          disableReason = 'Geçmiş saat';
+          disableReason = 'Mekan kapalı';
+        }
+        
+        const today = new Date();
+        const sel = new Date(selectedDate);
+        if (sel.toDateString() === today.toDateString()) {
+          const currentTime = today.getHours() * 60 + today.getMinutes();
+          if (timeInMinutes <= currentTime) {
+            isDisabled = true;
+            disableReason = 'Geçmiş saat';
+          }
         }
       }
     }
@@ -317,6 +324,16 @@ export default function ReservationScreen({ route, navigation }) {
         ]}>
           {time}
         </Text>
+        {isDisabled && disableReason && (
+          <Text style={{
+            fontSize: 8,
+            color: '#999',
+            textAlign: 'center',
+            marginTop: 2
+          }}>
+            {disableReason}
+          </Text>
+        )}
       </TouchableOpacity>
     );
   };
@@ -645,10 +662,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     borderRadius: 12,
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderWidth: 2,
     borderColor: 'transparent',
-    minWidth: 80,
+    width: 95,
     alignItems: 'center',
   },
   selectedTimeSlot: {
@@ -664,8 +681,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   disabledTimeSlot: {
-    backgroundColor: '#9E9E9E',
-    borderColor: '#757575',
+    backgroundColor: '#E0E0E0',
+    borderColor: '#BDBDBD',
     opacity: 0.6,
   },
   buttonContainer: {
