@@ -84,7 +84,7 @@ export default function BottomTabNavigator() {
         headerShown: false,
         tabBarStyle: {
           ...styles.tabBar,
-          backgroundColor: theme.colors.card,
+          backgroundColor: theme.isDarkMode ? theme.colors.background : theme.colors.card,
           borderTopColor: theme.colors.border,
         },
         tabBarActiveTintColor: theme.colors.primary,

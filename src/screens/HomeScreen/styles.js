@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 5,
     backgroundColor: '#FFFFFF',
     elevation: 2,
     shadowColor: '#000',
@@ -55,8 +55,8 @@ export const styles = StyleSheet.create({
     color: '#2C3E50',
   },
   searchContainer: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
@@ -95,7 +95,7 @@ export const styles = StyleSheet.create({
     color: '#6C757D',
   },
   listContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingBottom: 60,
   },
   restaurantCard: {
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
   },
   cardImageContainer: {
     position: 'relative',
-    height: 180,
+    height: 210,
   },
   cardImage: {
     width: '100%',
@@ -147,16 +147,16 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardContent: {
-    padding: 16,
+    padding: 8,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   restaurantName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#2C3E50',
     flex: 1,
@@ -182,7 +182,7 @@ export const styles = StyleSheet.create({
   restaurantType: {
     fontSize: 14,
     color: '#7F8C8D',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   cardFooter: {
     flexDirection: 'column',

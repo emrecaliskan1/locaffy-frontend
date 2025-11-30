@@ -24,7 +24,7 @@ export const SearchHeader = ({
         <Text style={[styles.searchIcon, { color: '#999999' }]}><FontAwesome name="search"/></Text>
         <TextInput
           style={[styles.searchInput, { backgroundColor: '#FFFFFF', color: '#000000' }]}
-          placeholder="Mekan veya dilediğin yemeği ara..."
+          placeholder="Dilediğin mekanı ara..."
           value={searchText}
           onChangeText={onSearchChange}
           onFocus={onFocus}

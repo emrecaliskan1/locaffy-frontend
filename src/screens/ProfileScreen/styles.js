@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 4,
     backgroundColor: '#FFFFFF',
   },
   headerTitle: {
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 20,
-    padding: 28,
+    padding: 10,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: {
@@ -33,17 +33,17 @@ export const styles = StyleSheet.create({
   },
   avatarContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: COLORS.PRIMARY,
     justifyContent: 'center',
     alignItems: 'center',
@@ -66,10 +66,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   userName: {
-    fontSize: 26,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#2C3E50',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   userEmail: {
     fontSize: 15,
@@ -81,7 +81,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 12,
     borderRadius: 16,
-    paddingVertical: 20,
+    paddingVertical: 10,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: {
@@ -96,10 +96,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.PRIMARY,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statLabel: {
     fontSize: 14,

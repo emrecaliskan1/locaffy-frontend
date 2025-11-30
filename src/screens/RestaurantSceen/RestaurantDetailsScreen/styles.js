@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
   },
   restaurantImage: {
     width: '100%',
-    height: 200,
+    height: 280,
     borderRadius: 16,
     marginBottom: 15,
   },
@@ -274,7 +274,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     marginHorizontal: 20,
     borderRadius: 12,
-    padding: 4,
+    padding: 3,
     marginBottom: 20,
   },
   tab: {
@@ -282,7 +282,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     borderRadius: 8,
   },
   activeTab: {
@@ -304,11 +304,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
     paddingBottom: 20,
   },
   tabContentContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
     paddingBottom: 20,
   },
   menuCategory: {
@@ -452,12 +452,12 @@ export const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
-    marginHorizontal: 20,
+    marginHorizontal: 5,
     marginBottom: 20,
   },
   restaurantImage: {
     width: '100%',
-    height: 200,
+    height: 280,
     borderRadius: 16,
   },
   imageOverlay: {
@@ -521,17 +521,18 @@ export const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: 25,
+    padding: 18,
+    marginBottom: 15,
     alignItems: 'center',
+    marginHorizontal: 0,
   },
   menuItemImage: {
-    width: 80,
-    height: 80,
+    width: 85,
+    height: 85,
     borderRadius: 8,
-    marginRight: 20,
-    marginLeft:-5
+    marginRight: 18,
+    marginLeft: -5
   },
   menuItemInfo: {
     flex: 1,
@@ -543,7 +544,7 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   menuItemName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#2C3E50',
     flex: 1,
@@ -561,9 +562,10 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   menuItemDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#7F8C8D',
-    marginBottom: 8,
+    marginBottom: 6,
+    lineHeight: 18,
   },
   menuItemPrice: {
     fontSize: 16,
@@ -671,7 +673,7 @@ export const styles = StyleSheet.create({
   },
   reservationButton: {
     backgroundColor: COLORS.PRIMARY,
-    marginHorizontal: 60,
+    marginHorizontal: 80,
     marginVertical: 15,
     paddingVertical: 12,
     borderRadius: 20,
