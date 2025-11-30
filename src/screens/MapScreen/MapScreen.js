@@ -78,8 +78,10 @@ export default function MapScreen({ navigation }) {
       // Kullanıcının mevcut konumunu kullan, yoksa varsayılan koordinatlar(Edirne merkez)
       const lat = userLocation ? userLocation.latitude : 41.6771;
       const lng = userLocation ? userLocation.longitude : 26.5557;
-      const result = await placeService.getNearbyPlaces(lat, lng, 10000);
-      setPlaces(result || []);
+      const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
+      // Ek güvenlik için frontend'de de isAvailable kontrolü yap
+      const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      setPlaces(availablePlaces);
     } catch (error) {
       console.error('Places loading error:', error);
       setPlaces([]);

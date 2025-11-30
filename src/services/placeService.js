@@ -23,13 +23,14 @@ const buildHeaders = async (extra = {}) => {
 
 export const placeService = {
   // PUBLIC 
-  getNearbyPlaces: async (latitude, longitude, radius = 1000) => {
+  getNearbyPlaces: async (latitude, longitude, radius = 1000, onlyAvailable = true) => {
     try {
       const response = await axios.get(`${BASE_URL}/nearby`, {
         params: {
           latitude,
           longitude, 
-          radius
+          radius,
+          ...(onlyAvailable && { onlyAvailable: true })
         }
       });
       return response.data;
@@ -39,12 +40,13 @@ export const placeService = {
   },
 
   // PUBLIC 
-  getFilteredPlaces: async (placeType, minRating) => {
+  getFilteredPlaces: async (placeType, minRating, onlyAvailable = true) => {
     try {
       const response = await axios.get(`${BASE_URL}/filter`, {
         params: {
           placeType,
-          minRating
+          minRating,
+          ...(onlyAvailable && { onlyAvailable: true })
         }
       });
       return response.data;

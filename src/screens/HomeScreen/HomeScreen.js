@@ -44,6 +44,9 @@ export default function HomeScreen({ navigation }) {
 
   // Restoranları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
+    // isAvailable kontrolü - sadece aktif mekanları göster
+    if (place.isAvailable === false) return false;
+    
     const matchesSearch = place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
     const matchesCategory = appliedFilters.category === 'all' || 
                            place.placeType?.toLowerCase() === appliedFilters.category.toLowerCase() ||
@@ -70,12 +73,14 @@ export default function HomeScreen({ navigation }) {
       if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
         const minRating = appliedFilters.rating !== 'all' ? parseFloat(appliedFilters.rating) : undefined;
         const placeType = appliedFilters.category !== 'all' ? appliedFilters.category.toUpperCase() : undefined;
-        result = await placeService.getFilteredPlaces(placeType, minRating);
+        result = await placeService.getFilteredPlaces(placeType, minRating, true);
       } else {
         // Varsayılan Edirne koordinatlarını kullan
-        result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000);
+        result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000, true);
       }
-      setPlaces(result || []);
+      // Ek güvenlik için frontend'de de isAvailable kontrolü yap
+      const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      setPlaces(availablePlaces);
     } catch (error) {
       console.error('Mekanlar yüklenirken hata oluştu:', error);
       setPlaces([]);
