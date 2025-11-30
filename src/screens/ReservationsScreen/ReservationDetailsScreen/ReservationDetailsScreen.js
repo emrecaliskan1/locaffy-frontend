@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Modal, Animated } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StatusBar, Modal, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import { FontAwesome } from '@expo/vector-icons';
 

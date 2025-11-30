@@ -26,8 +26,6 @@ export default function ReservationsScreen({ navigation, route }) {
   const [activeReservations, setActiveReservations] = useState([]);
   const [pastReservations, setPastReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Modal için state
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
 
@@ -35,7 +33,6 @@ export default function ReservationsScreen({ navigation, route }) {
     try {
       setLoading(true);
       const reservations = await reservationService.getUserReservations();
-      
       // Rezervasyonları tarih ve durumuna göre ayır
       const now = new Date();
       const active = reservations.filter(res => {
@@ -61,7 +58,6 @@ export default function ReservationsScreen({ navigation, route }) {
           const [datePart, timePart] = res.reservationTime.split('T');
           const [year, month, day] = datePart.split('-');
           const [hour, minute] = timePart.split(':');
-          
           resTime = new Date(year, month - 1, day, hour, minute);
         } else {
           resTime = new Date(res.reservationTime);
@@ -92,7 +88,6 @@ export default function ReservationsScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation]);
 
-  // Geri tuşu davranışı
   const handleBackPress = () => {
     if (fromRestaurant) {
       navigation.navigate('Main', { screen: 'Home' });
@@ -103,13 +98,11 @@ export default function ReservationsScreen({ navigation, route }) {
     }
   };
 
-  // İptal Et butonu fonksiyonu (modal açar)
   const handleCancelReservation = (reservation) => {
     setSelectedReservation(reservation);
     setShowCancelModal(true);
   };
 
-  // Modal onay fonksiyonu
   const confirmCancelReservation = () => {
     if (selectedReservation) {
       setActiveReservations(prev => prev.filter(r => r.id !== selectedReservation.id));
@@ -126,13 +119,11 @@ export default function ReservationsScreen({ navigation, route }) {
     }
   };
 
-  // Modal vazgeç fonksiyonu
   const cancelModal = () => {
     setSelectedReservation(null);
     setShowCancelModal(false);
   };
 
-  // FlatList için render fonksiyonları
   const renderActiveReservation = ({ item }) => (
     <ReservationCard
       item={item}
@@ -203,7 +194,6 @@ export default function ReservationsScreen({ navigation, route }) {
         />
       )}
 
-      {/* Custom Modal (web ve mobilde çalışır) */}
       <Modal
         visible={showCancelModal}
         transparent
