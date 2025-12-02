@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
   ActivityIndicator,
   ScrollView,
   StyleSheet,
@@ -27,13 +26,21 @@ const ReviewModal = ({
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
+  const showToast = (message, type = 'error') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
+
   const handleStarPress = (selectedRating) => {
     setRating(selectedRating);
   };
 
   const handleSubmitReview = async () => {
     if (rating === 0) {
-      Alert.alert('Puan Gerekli', 'Lütfen bir puan verin (1-5 yıldız).');
+      showToast('Lütfen bir puan verin (1-5 yıldız).', 'error');
       return;
     }
     try {

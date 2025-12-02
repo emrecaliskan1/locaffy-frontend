@@ -3,11 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
   StatusBar,
   Animated,
 } from 'react-native';
+import Toast from '../../components/Toast';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -34,6 +34,15 @@ export default function MapScreen({ navigation }) {
   const [infoCardVisible, setInfoCardVisible] = useState(false);
   const [infoCardAnimation] = useState(new Animated.Value(1));
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'error') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
 
   useEffect(() => {
     getLocation();
@@ -44,7 +53,7 @@ export default function MapScreen({ navigation }) {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Konum İzni', 'Konum izni verilmedi. Varsayılan konum gösterilecek.');
+        showToast('Konum izni verilmedi. Varsayılan konum gösterilecek.', 'info');
         setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
         setLoading(false);
         return;
@@ -259,6 +268,14 @@ export default function MapScreen({ navigation }) {
         onClose={closeModal}
         onViewDetails={handleViewDetails}
         styles={styles}
+      />
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
       />
     </View>
   );

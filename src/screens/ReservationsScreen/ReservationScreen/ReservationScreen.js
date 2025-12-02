@@ -5,11 +5,11 @@ import {
   TouchableOpacity, 
   ScrollView, 
   ActivityIndicator,
-  Alert,
   StatusBar,
   TextInput,
   Modal
 } from 'react-native';
+import Toast from '../../../components/Toast';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { reservationService } from '../../../services';
@@ -38,6 +38,15 @@ export default function ReservationScreen({ route, navigation }) {
   const [submitting, setSubmitting] = useState(false);
   const [reservationData, setReservationData] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'error') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
 
   // Mekanın çalışma günlerini kontrol et
   const getWorkingDays = () => {
@@ -157,12 +166,12 @@ export default function ReservationScreen({ route, navigation }) {
 
   const handleContinue = async () => {
     if (!selectedDate || !selectedTime) {
-      Alert.alert('Eksik bilgi', 'Lütfen tarih ve saat seçin.');
+      showToast('Lütfen tarih ve saat seçin.', 'error');
       return;
     }
     // User kontrolü
     if (!user) {
-      Alert.alert('Giriş Gerekli', 'Rezervasyon yapmak için giriş yapmanız gerekiyor.');
+      showToast('Rezervasyon yapmak için giriş yapmanız gerekiyor.', 'error');
       navigation.navigate('Auth');
       return;
     }
@@ -195,18 +204,10 @@ export default function ReservationScreen({ route, navigation }) {
       if (error.message.includes('Oturumunuzun süresi dolmuş') || 
           error.response?.status === 401 || 
           error.response?.status === 403) {
-        Alert.alert(
-          'Giriş Gerekli',
-          'Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.',
-          [
-            {
-              text: 'Giriş Yap',
-              onPress: () => navigation.navigate('Auth')
-            }
-          ]
-        );
+        showToast('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        setTimeout(() => navigation.navigate('Auth'), 1500);
       } else {
-        Alert.alert('Hata', error.message || 'Rezervasyon oluşturulurken bir hata oluştu');
+        showToast(error.message || 'Rezervasyon oluşturulurken bir hata oluştu', 'error');
       }
     } finally {
       setSubmitting(false);
@@ -499,6 +500,14 @@ export default function ReservationScreen({ route, navigation }) {
           </View>
         </View>
       </Modal>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
+      />
     </View>
   );
 }

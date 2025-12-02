@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 const BASE_URL = `${API_BASE_URL}/images`;
@@ -32,11 +32,6 @@ export const imageService = {
         // Sadece medya kütüphanesi izni
         const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (mediaLibraryStatus !== 'granted') {
-          Alert.alert(
-            'İzin Gerekli',
-            'Profil fotoğrafı yüklemek için galeri iznine ihtiyacımız var.',
-            [{ text: 'Tamam' }]
-          );
           return false;
         }
       }

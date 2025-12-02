@@ -14,7 +14,7 @@ import { styles } from './styles';
 import { useTheme } from '../../context/ThemeContext';
 
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
-import { Alert } from 'react-native';
+import Toast from '../../components/Toast';
 import { reservationService } from '../../services';
 
 
@@ -28,6 +28,15 @@ export default function ReservationsScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'error') => {
+    setToast({ visible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ visible: false, message: '', type: 'success' });
+  };
 
   const loadReservations = async () => {
     try {
@@ -70,7 +79,7 @@ export default function ReservationsScreen({ navigation, route }) {
       setPastReservations(past);
     } catch (error) {
       console.log('Error loading reservations:', error);
-      Alert.alert('Hata', 'Rezervasyonlar yüklenirken bir hata oluştu');
+      showToast('Rezervasyonlar yüklenirken bir hata oluştu', 'error');
     } finally {
       setLoading(false);
     }
@@ -220,6 +229,14 @@ export default function ReservationsScreen({ navigation, route }) {
           </View>
         </View>
       </Modal>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={3000}
+        onHide={hideToast}
+      />
     </View>
   );
 }
