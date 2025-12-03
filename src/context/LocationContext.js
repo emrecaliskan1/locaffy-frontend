@@ -213,6 +213,10 @@ export const LocationProvider = ({ children }) => {
 
       setCurrentLocation(locationData);
       
+      // GPS konumu kullanıldığında manuel seçimi temizle
+      setSelectedCity(null);
+      await AsyncStorage.removeItem('selectedCity');
+      
       // Mevcut konumu kaydet
       await AsyncStorage.setItem('currentLocation', JSON.stringify(locationData));
       
@@ -260,10 +264,17 @@ export const LocationProvider = ({ children }) => {
 
   const getLocationText = () => {
     if (currentLocation) {
+      // Eğer GPS izni varsa ve mevcut konum GPS'ten alınmışsa, onu öncele
       if (hasLocationPermission && !selectedCity) {
         return currentLocation.cityName;
-      } else if (selectedCity) {
+      }
+      // Manuel seçilmiş şehir varsa onu göster
+      else if (selectedCity) {
         return selectedCity.name;
+      }
+      // Diğer durumlarda mevcut konumu göster
+      else {
+        return currentLocation.cityName;
       }
     }
     return 'Konum Seçilmedi';
