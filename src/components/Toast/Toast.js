@@ -58,6 +58,11 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
           backgroundColor: '#fff',
           borderLeftColor: '#f44336',
         };
+      case 'warning':
+        return {
+          backgroundColor: '#fff',
+          borderLeftColor: '#FF9800',
+        };
       case 'info':
         return {
           backgroundColor: '#fff',
@@ -77,6 +82,8 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
         return { name: 'check-circle', color: '#4CAF50' };
       case 'error':
         return { name: 'times-circle', color: '#f44336' };
+      case 'warning':
+        return { name: 'exclamation-triangle', color: '#FF9800' };
       case 'info':
         return { name: 'info-circle', color: '#2196F3' };
       default:

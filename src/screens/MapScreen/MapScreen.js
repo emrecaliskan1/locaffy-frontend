@@ -15,9 +15,11 @@ import { styles } from './styles';
 import { placeService } from '../../services/placeService';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
 import { useTheme } from '../../context/ThemeContext';
+import { useLocation } from '../../context/LocationContext';
 
 export default function MapScreen({ navigation }) {
   const { theme } = useTheme();
+  const { currentLocation, hasLocationPermission, getLocationText } = useLocation();
   const [region, setRegion] = useState({
     latitude: 41.6771,
     longitude: 26.5557,
@@ -45,16 +47,62 @@ export default function MapScreen({ navigation }) {
   };
 
   useEffect(() => {
-    getLocation();
-  }, []);
+    initializeMap();
+  }, [currentLocation]);
+
+  const initializeMap = async () => {
+    setLoading(true);
+    try {
+      if (currentLocation) {
+        // LocationContext'ten gelen konum var (seçilen şehir veya mevcut konum)
+        setUserLocation({ 
+          latitude: currentLocation.latitude, 
+          longitude: currentLocation.longitude 
+        });
+        
+        setRegion({
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+      } else {
+        // Konum bilgisi yoksa varsayılan Edirne koordinatları
+        setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+        setRegion({
+          latitude: 41.6771,
+          longitude: 26.5557,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+      }
+    } catch (error) {
+      console.error('Map initialization error:', error);
+      setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getLocation = async () => {
     setLoading(true);
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        showToast('Konum izni verilmedi. Varsayılan konum gösterilecek.', 'info');
-        setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+        showToast('Konum izni verilmedi. Seçilen şehir gösterilecek.', 'info');
+        // LocationContext'ten gelen konum kullanılacak (seçilen şehir)
+        if (currentLocation) {
+          setUserLocation({ 
+            latitude: currentLocation.latitude, 
+            longitude: currentLocation.longitude 
+          });
+          setRegion({
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+        }
         setLoading(false);
         return;
       }
@@ -75,7 +123,15 @@ export default function MapScreen({ navigation }) {
         longitudeDelta: 0.01,
       });
     } catch (error) {
-      setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+      // Hata durumunda LocationContext'ten gelen konum kullanılacak
+      if (currentLocation) {
+        setUserLocation({ 
+          latitude: currentLocation.latitude, 
+          longitude: currentLocation.longitude 
+        });
+      } else {
+        setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+      }
     } finally {
       setLoading(false);
     }
@@ -84,9 +140,9 @@ export default function MapScreen({ navigation }) {
   const loadPlaces = async () => {
     setPlacesLoading(true);
     try {
-      // Kullanıcının mevcut konumunu kullan, yoksa varsayılan koordinatlar(Edirne merkez)
-      const lat = userLocation ? userLocation.latitude : 41.6771;
-      const lng = userLocation ? userLocation.longitude : 26.5557;
+      // LocationContext'ten gelen konum kullan, yoksa varsayılan koordinatlar(Edirne merkez)
+      const lat = userLocation ? userLocation.latitude : (currentLocation?.latitude || 41.6771);
+      const lng = userLocation ? userLocation.longitude : (currentLocation?.longitude || 26.5557);
       const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
       // Ek güvenlik için frontend'de de isAvailable kontrolü yap
       const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
@@ -98,15 +154,6 @@ export default function MapScreen({ navigation }) {
       setPlacesLoading(false);
     }
   };
-
-  useEffect(() => {
-  }, []);
-
-  useEffect(() => {
-    if (userLocation) {
-      loadPlaces();
-    }
-  }, [userLocation]);
 
   useEffect(() => {
     if (userLocation) {
@@ -175,7 +222,9 @@ export default function MapScreen({ navigation }) {
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
         <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Mevcut Konum</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            {getLocationText()}
+          </Text>
           <TouchableOpacity 
             style={[styles.searchButton, { backgroundColor: theme.colors.background }]} 
             onPress={getLocation}>

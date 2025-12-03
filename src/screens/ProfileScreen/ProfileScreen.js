@@ -15,12 +15,14 @@ import { styles } from './styles';
 import {FontAwesome} from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLocation } from '../../context/LocationContext';
 import Toast from '../../components/Toast';
 import { userService, reservationService, imageService } from '../../services';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const { isDarkMode, theme, toggleTheme } = useTheme();
+  const { setOnCitySelectedCallback } = useLocation();
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [userStats, setUserStats] = useState({ totalReservations: 0, favoriteRestaurants: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -141,6 +143,20 @@ export default function ProfileScreen({ navigation }) {
     },
     {
       id: 5,
+      title: 'Şehir Seç',
+      subtitle: 'Konumunuzu değiştirin',
+      icon: 'map-marker',
+      iconColor: '#667eea',
+      onPress: () => {
+        // Şehir seçimi sonrası Map tab'ına git
+        setOnCitySelectedCallback(() => {
+          navigation.navigate('Map');
+        });
+        navigation.navigate('CitySelectionModal', { isModal: true });
+      },
+    },
+    {
+      id: 6,
       title: 'Yardım ve Destek',
       subtitle: 'SSS ve iletişim',
       icon: 'question-circle',
@@ -149,7 +165,7 @@ export default function ProfileScreen({ navigation }) {
       },
     },
     {
-      id: 6,
+      id: 7,
       title: 'Hakkında',
       subtitle: 'Uygulama bilgileri',
       icon: 'info-circle',

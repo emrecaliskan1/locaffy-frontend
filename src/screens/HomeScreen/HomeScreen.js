@@ -17,10 +17,12 @@ import Toast from '../../components/Toast';
 import { RestaurantCard, SearchHeader } from '../../components/Home';
 import { placeService, userService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
+import { useLocation } from '../../context/LocationContext';
 import { styles } from './styles';
 
 export default function HomeScreen({ navigation }) {
   const { theme } = useTheme();
+  const { currentLocation, hasLocationPermission, getLocationText } = useLocation();
   const [searchText, setSearchText] = useState('');
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -64,7 +66,7 @@ export default function HomeScreen({ navigation }) {
     useCallback(() => {
       loadFavorites();
       loadPlaces(); 
-    }, [appliedFilters]) 
+    }, [appliedFilters, currentLocation]) 
   );
 
   const loadPlaces = async () => {
@@ -76,8 +78,10 @@ export default function HomeScreen({ navigation }) {
         const placeType = appliedFilters.category !== 'all' ? appliedFilters.category.toUpperCase() : undefined;
         result = await placeService.getFilteredPlaces(placeType, minRating, true);
       } else {
-        // Varsayılan Edirne koordinatlarını kullan
-        result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000, true);
+        // Mevcut konumu kullan veya varsayılan Edirne koordinatları
+        const latitude = currentLocation?.latitude || 41.6771;
+        const longitude = currentLocation?.longitude || 26.5557;
+        result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
       }
       // Ek güvenlik için frontend'de de isAvailable kontrolü yap
       const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
@@ -125,7 +129,7 @@ export default function HomeScreen({ navigation }) {
             <Text style={[styles.locationLabel, { color: theme.colors.textSecondary }]}>Konum</Text>
             <View style={styles.locationTextContainer}>
               <FontAwesome name="map-marker" size={14} color="#667eea" />
-              <Text style={[styles.locationText, { color: theme.colors.text }]}> Merkez, Edirne</Text>
+              <Text style={[styles.locationText, { color: theme.colors.text }]}> {getLocationText()}</Text>
             </View>
           </View>
         </View>
