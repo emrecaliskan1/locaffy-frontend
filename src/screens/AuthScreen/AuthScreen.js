@@ -16,10 +16,12 @@ import { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
 
 export default function AuthScreen({ navigation }) {
   const { login, register, loading } = useAuth();
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -151,8 +153,8 @@ export default function AuthScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <View style={[styles.container, { backgroundColor: theme.colors.primary }]}>
+      <StatusBar barStyle={theme.colors.statusBar} backgroundColor={theme.colors.primary} />
       
       <Animated.View 
         style={[
@@ -196,26 +198,26 @@ export default function AuthScreen({ navigation }) {
               </Text>
             </View>
 
-            <View style={styles.card}>
+            <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
  
-            <View style={styles.tabContainer}>
+            <View style={[styles.tabContainer, { backgroundColor: theme.colors.surface }]}>
               <TouchableOpacity 
-                style={[styles.tab, activeTab === 'login' && styles.activeTab]}
+                style={[styles.tab, activeTab === 'login' && { backgroundColor: theme.colors.primary }]}
                 onPress={() => {
                   setActiveTab('login');
                 }}
               >
-                <Text style={[styles.tabText, activeTab === 'login' && styles.activeTabText]}>
+                <Text style={[styles.tabText, { color: theme.colors.textSecondary }, activeTab === 'login' && { color: '#FFFFFF' }]}>
                   Giriş Yap
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                style={[styles.tab, activeTab === 'register' && styles.activeTab]}
+                style={[styles.tab, activeTab === 'register' && { backgroundColor: theme.colors.primary }]}
                 onPress={() => {
                   setActiveTab('register');
                 }}
               >
-                <Text style={[styles.tabText, activeTab === 'register' && styles.activeTabText]}>
+                <Text style={[styles.tabText, { color: theme.colors.textSecondary }, activeTab === 'register' && { color: '#FFFFFF' }]}>
                   Kayıt Ol
                 </Text>
               </TouchableOpacity>
@@ -228,11 +230,12 @@ export default function AuthScreen({ navigation }) {
   
                 <View>
   
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="envelope" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="envelope" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="E-posta"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.email}
                       onChangeText={(value) => handleInputChange('email', value)}
                       keyboardType="email-address"
@@ -241,26 +244,27 @@ export default function AuthScreen({ navigation }) {
                   </View>
 
   
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="lock" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="Şifre"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.password}
                       onChangeText={(value) => handleInputChange('password', value)}
                       secureTextEntry={!showPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color={theme.colors.textTertiary} style={styles.eyeIcon} />
                     </TouchableOpacity>
                   </View>
 
                   <TouchableOpacity style={styles.forgotPassword}>
-                    <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
+                    <Text style={[styles.forgotPasswordText, { color: theme.colors.primary }]}>Şifremi Unuttum</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity 
-                    style={[styles.primaryButton, loading && styles.disabledButton]} 
+                    style={[styles.primaryButton, { backgroundColor: theme.colors.primary }, loading && styles.disabledButton]} 
                     onPress={handleLogin}
                     disabled={loading}
                   >
@@ -272,9 +276,9 @@ export default function AuthScreen({ navigation }) {
                   </TouchableOpacity>
 
                   <View style={styles.linkContainer}>
-                    <Text style={styles.linkText}>Hesabın yok mu? </Text>
+                    <Text style={[styles.linkText, { color: theme.colors.textSecondary }]}>Hesabın yok mu? </Text>
                     <TouchableOpacity onPress={() => setActiveTab('register')}>
-                      <Text style={styles.linkButton}>Kayıt Ol</Text>
+                      <Text style={[styles.linkButton, { color: theme.colors.primary }]}>Kayıt Ol</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -282,21 +286,23 @@ export default function AuthScreen({ navigation }) {
 
 
                 <View>
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="user" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="user" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="Kullanıcı Adı"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.username}
                       onChangeText={(value) => handleInputChange('username', value)}
                     />
                   </View>
 
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="envelope" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="envelope" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="E-posta"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.email}
                       onChangeText={(value) => handleInputChange('email', value)}
                       keyboardType="email-address"
@@ -304,36 +310,38 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="lock" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="Şifre (en az 6 karakter)"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.password}
                       onChangeText={(value) => handleInputChange('password', value)}
                       secureTextEntry={!showPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color={theme.colors.textTertiary} style={styles.eyeIcon} />
                     </TouchableOpacity>
                   </View>
 
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="lock" size={16} color="#95A5A6" style={styles.inputIcon} />
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="lock" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { color: "#000000" }]}
                       placeholder="Şifre Tekrar"
+                      placeholderTextColor={theme.colors.textTertiary}
                       value={formData.passwordConfirm}
                       onChangeText={(value) => handleInputChange('passwordConfirm', value)}
                       secureTextEntry={!showPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color="#95A5A6" style={styles.eyeIcon} />
+                      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={16} color={theme.colors.textTertiary} style={styles.eyeIcon} />
                     </TouchableOpacity>
                   </View>
 
                   <TouchableOpacity 
-                    style={[styles.primaryButton, loading && styles.disabledButton]} 
+                    style={[styles.primaryButton, { backgroundColor: theme.colors.primary }, loading && styles.disabledButton]} 
                     onPress={handleRegister}
                     disabled={loading}
                   >
@@ -345,9 +353,9 @@ export default function AuthScreen({ navigation }) {
                   </TouchableOpacity>
 
                   <View style={styles.linkContainer}>
-                    <Text style={styles.linkText}>Zaten hesabın var mı? </Text>
+                    <Text style={[styles.linkText, { color: theme.colors.textSecondary }]}>Zaten hesabın var mı? </Text>
                     <TouchableOpacity onPress={() => setActiveTab('login')}>
-                      <Text style={styles.linkButton}>Giriş Yap</Text>
+                      <Text style={[styles.linkButton, { color: theme.colors.primary }]}>Giriş Yap</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
