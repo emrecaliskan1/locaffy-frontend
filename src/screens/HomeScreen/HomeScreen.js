@@ -59,7 +59,7 @@ export default function HomeScreen({ navigation }) {
   // Filtreler ve lokasyon değiştiğinde mekanları yeniden yükle
   useEffect(() => {
     loadPlaces();
-  }, [appliedFilters, currentLocation]);
+  }, [appliedFilters,currentLocation]);
 
   // Sayfa odaklanıldığında favorileri ve mekanları yükle
   useFocusEffect(
