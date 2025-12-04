@@ -66,7 +66,7 @@ export default function HomeScreen({ navigation }) {
     useCallback(() => {
       loadFavorites();
       loadPlaces();
-    }, []) 
+    }, [appliedFilters, currentLocation]) 
   );
 
   const loadPlaces = async () => {
