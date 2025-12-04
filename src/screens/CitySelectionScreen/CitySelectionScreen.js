@@ -26,8 +26,9 @@ export default function CitySelectionScreen({ navigation, route }) {
   // Şehirleri arama metnine göre filtrele
   const filteredCities = useMemo(() => {
     if (!searchText) return cities;
+    const searchLower = searchText.toLocaleLowerCase('tr');
     return cities.filter(city =>
-      city.name.toLowerCase().includes(searchText.toLowerCase())
+      city.name.toLocaleLowerCase('tr').includes(searchLower)
     );
   }, [searchText]);
 

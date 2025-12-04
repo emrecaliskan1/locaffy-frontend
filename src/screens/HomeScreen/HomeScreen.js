@@ -56,17 +56,17 @@ export default function HomeScreen({ navigation }) {
     return matchesSearch && matchesCategory;
   });
 
-  // Filtreler değiştiğinde mekanları yeniden yükle
+  // Filtreler ve lokasyon değiştiğinde mekanları yeniden yükle
   useEffect(() => {
     loadPlaces();
-  }, [appliedFilters]);
+  }, [appliedFilters, currentLocation]);
 
   // Sayfa odaklanıldığında favorileri ve mekanları yükle
   useFocusEffect(
     useCallback(() => {
       loadFavorites();
-      loadPlaces(); 
-    }, [appliedFilters, currentLocation]) 
+      loadPlaces();
+    }, []) 
   );
 
   const loadPlaces = async () => {
