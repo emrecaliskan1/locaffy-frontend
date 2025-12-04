@@ -53,38 +53,30 @@ export default function HomeScreen({ navigation }) {
     const matchesCategory = appliedFilters.category === 'all' || 
                            place.placeType?.toLowerCase() === appliedFilters.category.toLowerCase() ||
                            place.placeType === appliedFilters.category.toUpperCase();
-    return matchesSearch && matchesCategory;
+    const matchesRating = appliedFilters.rating === 'all' || 
+                         (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
+    
+    return matchesSearch && matchesCategory && matchesRating;
   });
 
-  // Filtreler ve lokasyon değiştiğinde mekanları yeniden yükle
-  useEffect(() => {
-    loadPlaces();
-  }, [appliedFilters,currentLocation]);
-
-  // Sayfa odaklanıldığında favorileri ve mekanları yükle
+  // Sayfa odaklanıldığında ve filtreler/lokasyon değiştiğinde yükle
   useFocusEffect(
     useCallback(() => {
       loadFavorites();
       loadPlaces();
-    }, [appliedFilters, currentLocation]) 
+    }, [appliedFilters, currentLocation])
   );
 
   const loadPlaces = async () => {
     try {
       setLoading(true);
-      let result;
-      if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
-        const minRating = appliedFilters.rating !== 'all' ? parseFloat(appliedFilters.rating) : undefined;
-        const placeType = appliedFilters.category !== 'all' ? appliedFilters.category.toUpperCase() : undefined;
-        result = await placeService.getFilteredPlaces(placeType, minRating, true);
-      } else {
-        // Mevcut konumu kullan veya varsayılan Edirne koordinatları
-        const latitude = currentLocation?.latitude || 41.6771;
-        const longitude = currentLocation?.longitude || 26.5557;
-        result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
-      }
-      // Ek güvenlik için frontend'de de isAvailable kontrolü yap
+      setPlaces([]);
+      const latitude = currentLocation?.latitude || 41.6771;
+      const longitude = currentLocation?.longitude || 26.5557;
+      
+      const result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
       const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      
       setPlaces(availablePlaces);
     } catch (error) {
       console.error('Mekanlar yüklenirken hata oluştu:', error);
@@ -173,11 +165,12 @@ export default function HomeScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
-        removeClippedSubviews={true}
-        windowSize={10}
-        maxToRenderPerBatch={5}
-        updateCellsBatchingPeriod={50}
-        initialNumToRender={8} />
+        removeClippedSubviews={false}
+        windowSize={21}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={100}
+        initialNumToRender={20}
+        getItemLayout={undefined} />
 
       {/* Filtre Modalı */}
       <FilterModal
