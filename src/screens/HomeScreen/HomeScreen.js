@@ -79,8 +79,12 @@ export default function HomeScreen({ navigation }) {
         // Varsayılan Edirne koordinatlarını kullan
         result = await placeService.getNearbyPlaces(41.6771, 26.5557, 10000, true);
       }
+      
+      // Güvenli array kontrolü - result null, undefined veya array değilse boş array kullan
+      const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
+      
       // Ek güvenlik için frontend'de de isAvailable kontrolü yap
-      const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {
       console.error('Mekanlar yüklenirken hata oluştu:', error);

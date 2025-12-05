@@ -88,8 +88,12 @@ export default function MapScreen({ navigation }) {
       const lat = userLocation ? userLocation.latitude : 41.6771;
       const lng = userLocation ? userLocation.longitude : 26.5557;
       const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
+      
+      // Güvenli array kontrolü - result null, undefined veya array değilse boş array kullan
+      const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
+      
       // Ek güvenlik için frontend'de de isAvailable kontrolü yap
-      const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {
       console.error('Places loading error:', error);
