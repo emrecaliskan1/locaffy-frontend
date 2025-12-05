@@ -76,6 +76,18 @@ export const reservationService = {
     }
   },
 
+  // BUSINESS OWNER - Rezervasyonu "Gerçekleşti" olarak işaretle
+  completeReservation: async (reservationId) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.post(`${BASE_URL}/${reservationId}/complete`, {}, { headers });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Rezervasyon tamamlanırken bir hata oluştu';
+      throw new Error(errorMessage);
+    }
+  },
+
   // BUSINESS OWNER 
   getPlaceReservations: async (placeId) => {
     try {
@@ -136,7 +148,10 @@ export const reservationService = {
     const statusMap = {
       PENDING: 'Beklemede',
       APPROVED: 'Rezervasyon Onaylandı',
-      REJECTED: 'Reddedildi'
+      COMPLETED: 'Gerçekleşti',
+      NO_SHOW: 'Gelmedi',
+      REJECTED: 'Reddedildi',
+      CANCELLED: 'İptal Edildi'
     };
     return statusMap[status] || status;
   },
@@ -151,7 +166,7 @@ export const reservationService = {
         return 'İptal Edildi'; 
       }
       if (status === 'APPROVED') {
-        return 'Tamamlandı'; 
+        return 'Gerçekleşti'; 
       }
     }
     // Diğer durumlar için normal status text'i döndür 
@@ -174,7 +189,9 @@ export const reservationService = {
   getReservationStatusColor: (status) => {
     const colorMap = {
       PENDING: '#FFA500',
-      APPROVED: '#4CAF50', 
+      APPROVED: '#66BB6A', 
+      COMPLETED: '#2E7D32',
+      NO_SHOW: '#9E9E9E',
       REJECTED: '#F44336', 
       CANCELLED: '#9E9E9E',
     };

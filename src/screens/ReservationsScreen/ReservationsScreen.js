@@ -63,7 +63,7 @@ export default function ReservationsScreen({ navigation, route }) {
           resTime = new Date(res.reservationTime);
         }
         
-        return resTime < now || res.status === 'REJECTED' || res.status === 'CANCELLED';
+        return resTime < now || res.status === 'REJECTED' || res.status === 'CANCELLED' || res.status === 'COMPLETED' || res.status === 'NO_SHOW';
       });
       
       setActiveReservations(active);
