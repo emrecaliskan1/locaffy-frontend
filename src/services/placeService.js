@@ -31,11 +31,13 @@ export const placeService = {
           longitude, 
           radius,
           ...(onlyAvailable && { onlyAvailable: true })
-        }
+        },
+        timeout: 8000
       });
-      return response.data;
+      const data = response?.data;
+      return Array.isArray(data) ? data : (data?.places ? (Array.isArray(data.places) ? data.places : []) : []);
     } catch (error) {
-      throw error;
+      return []; // Hata durumunda boş array döndür
     }
   },
 
@@ -47,21 +49,25 @@ export const placeService = {
           placeType,
           minRating,
           ...(onlyAvailable && { onlyAvailable: true })
-        }
+        },
+        timeout: 8000
       });
-      return response.data;
+      const data = response?.data;
+      return Array.isArray(data) ? data : (data?.places ? (Array.isArray(data.places) ? data.places : []) : []);
     } catch (error) {
-      throw error;
+      return []; // Hata durumunda boş array döndür
     }
   },
 
   // PUBLIC
   getPlaceDetails: async (placeId) => {
     try {
-      const response = await axios.get(`${BASE_URL}/${placeId}`);
-      return response.data;
+      const response = await axios.get(`${BASE_URL}/${placeId}`, {
+        timeout: 5000
+      });
+      return response?.data || null;
     } catch (error) {
-      throw error;
+      return null; // Hata durumunda null döndür
     }
   },
 

@@ -20,12 +20,7 @@ import { useLocation } from '../../context/LocationContext';
 export default function MapScreen({ navigation }) {
   const { theme } = useTheme();
   const { currentLocation, hasLocationPermission, getLocationText } = useLocation();
-  const [region, setRegion] = useState({
-    latitude: 41.6771,
-    longitude: 26.5557,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
+  const [region, setRegion] = useState(null);
 
   const [userLocation, setUserLocation] = useState(null);
   const [places, setPlaces] = useState([]);
@@ -54,7 +49,7 @@ export default function MapScreen({ navigation }) {
     setLoading(true);
     try {
       if (currentLocation) {
-        // LocationContext'ten gelen konum var (seçilen şehir veya mevcut konum)
+        // LocationContext'ten gelen konum var (seçilen şehir)
         setUserLocation({ 
           latitude: currentLocation.latitude, 
           longitude: currentLocation.longitude 
@@ -67,18 +62,13 @@ export default function MapScreen({ navigation }) {
           longitudeDelta: 0.01,
         });
       } else {
-        // Konum bilgisi yoksa varsayılan Edirne koordinatları
-        setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
-        setRegion({
-          latitude: 41.6771,
-          longitude: 26.5557,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
+        // Konum seçilmemişse haritayı başlatma
+        setUserLocation(null);
+        setRegion(null);
       }
     } catch (error) {
       console.error('Map initialization error:', error);
-      setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+      setUserLocation(null);
     } finally {
       setLoading(false);
     }
@@ -130,7 +120,7 @@ export default function MapScreen({ navigation }) {
           longitude: currentLocation.longitude 
         });
       } else {
-        setUserLocation({ latitude: 41.6771, longitude: 26.5557 });
+        setUserLocation(null);
       }
     } finally {
       setLoading(false);
@@ -140,12 +130,22 @@ export default function MapScreen({ navigation }) {
   const loadPlaces = async () => {
     setPlacesLoading(true);
     try {
-      // LocationContext'ten gelen konum kullan, yoksa varsayılan koordinatlar(Edirne merkez)
-      const lat = userLocation ? userLocation.latitude : (currentLocation?.latitude || 41.6771);
-      const lng = userLocation ? userLocation.longitude : (currentLocation?.longitude || 26.5557);
+      // Şehir seçimi yapılmamışsa mekan yükleme
+      if (!userLocation || !currentLocation) {
+        setPlaces([]);
+        setPlacesLoading(false);
+        return;
+      }
+      
+      const lat = userLocation.latitude;
+      const lng = userLocation.longitude;
       const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
+      
+      // Güvenli array kontrolü - result null, undefined veya array değilse boş array kullan
+      const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
+      
       // Ek güvenlik için frontend'de de isAvailable kontrolü yap
-      const availablePlaces = (result || []).filter(place => place.isAvailable !== false);
+      const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {
       console.error('Places loading error:', error);
@@ -160,6 +160,13 @@ export default function MapScreen({ navigation }) {
       loadPlaces();
     }
   }, [userLocation]);
+
+  // Şehir değiştiğinde anında mekanları güncelle
+  useEffect(() => {
+    if (currentLocation) {
+      loadPlaces();
+    }
+  }, [currentLocation?.latitude, currentLocation?.longitude]);
 
   const handleMarkerPress = (restaurant) => {
     setSelectedRestaurant(restaurant);
