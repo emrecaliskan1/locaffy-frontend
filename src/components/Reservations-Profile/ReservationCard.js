@@ -38,7 +38,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
   };
 
   const showCancelButton = (item.status === 'APPROVED' || item.status === 'PENDING') && !isPast;
-  const showReviewButton = isPast && item.status === 'APPROVED' && reservationService.isReservationPast(item.reservationTime) && !isReviewed;
+  const showReviewButton = isPast && item.status === 'COMPLETED' && !isReviewed;
   const showRejectReasonButton = item.status === 'REJECTED' && item.rejectionReason;
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
   // Kullanıcının bu place için yorum yapıp yapmadığını kontrol et
   useEffect(() => {
     const checkUserReview = async () => {
-      if (!isPast || item.status !== 'APPROVED' || !item.placeId || !user?.userId) {
+      if (!isPast || item.status !== 'COMPLETED' || !item.placeId || !user?.userId) {
         setIsReviewed(false);
         return;
       }
