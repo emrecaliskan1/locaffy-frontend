@@ -76,6 +76,18 @@ export const reservationService = {
     }
   },
 
+  // BUSINESS OWNER - Rezervasyonu "Gerçekleşti" olarak işaretle
+  completeReservation: async (reservationId) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.post(`${BASE_URL}/${reservationId}/complete`, {}, { headers });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Rezervasyon tamamlanırken bir hata oluştu';
+      throw new Error(errorMessage);
+    }
+  },
+
   // BUSINESS OWNER 
   getPlaceReservations: async (placeId) => {
     try {
@@ -136,9 +148,9 @@ export const reservationService = {
     const statusMap = {
       PENDING: 'Beklemede',
       APPROVED: 'Rezervasyon Onaylandı',
+      COMPLETED: 'Gerçekleşti',
+      NO_SHOW: 'Gelmedi',
       REJECTED: 'Reddedildi',
-      NO_SHOW: 'Rezervasyon Gerçekleşmedi',
-      COMPLETED: 'Rezervasyon Gerçekleşti',
       CANCELLED: 'İptal Edildi'
     };
     return statusMap[status] || status;
@@ -149,7 +161,7 @@ export const reservationService = {
   //REZERVASYONLAR İÇİN STATUS DURUMLARI
   getPastReservationStatusText: (status, reservationTime) => {
     if (status === 'NO_SHOW') {
-      return 'Rez. Gerçekleşmedi';
+      return 'Gelmedi';
     }
     if (status === 'COMPLETED') {
       return 'Rez. Gerçekleşti';
@@ -160,7 +172,7 @@ export const reservationService = {
         return 'İptal Edildi'; 
       }
       if (status === 'APPROVED') {
-        return 'Tamamlandı'; 
+        return 'Rez. Gerçekleşti'; 
       }
     }
     return reservationService.getReservationStatusText(status);
@@ -169,10 +181,10 @@ export const reservationService = {
   //Geçmiş rezervasyonlar için status color
   getPastReservationStatusColor: (status, reservationTime) => {
     if (status === 'NO_SHOW') {
-      return '#F44336'; 
+      return '#9c0a0aff';
     }
     if (status === 'COMPLETED') {
-      return '#4CAF50'; 
+      return '#09980eff'; 
     }
     
     if (reservationService.isReservationPast(reservationTime)) {
@@ -189,11 +201,11 @@ export const reservationService = {
   getReservationStatusColor: (status) => {
     const colorMap = {
       PENDING: '#FFA500',
-      APPROVED: '#4CAF50', 
+      APPROVED: '#66BB6A', 
+      COMPLETED: '#09980eff',
+      NO_SHOW: '#9c0a0aff', 
       REJECTED: '#F44336', 
-      CANCELLED: '#9E9E9E',
-      NO_SHOW: '#F44336', 
-      COMPLETED: '#4CAF50', 
+      CANCELLED: '#9E9E9E'
     };
     return colorMap[status] || '#9E9E9E';
   }

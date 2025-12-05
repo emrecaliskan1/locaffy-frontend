@@ -47,6 +47,8 @@ export default function MapScreen({ navigation }) {
 
   const initializeMap = async () => {
     setLoading(true);
+    setPlaces([]); 
+    
     try {
       if (currentLocation) {
         // LocationContext'ten gelen konum var (seçilen şehir)
@@ -129,11 +131,10 @@ export default function MapScreen({ navigation }) {
 
   const loadPlaces = async () => {
     setPlacesLoading(true);
+    setPlaces([]);
     try {
       // Şehir seçimi yapılmamışsa mekan yükleme
       if (!userLocation || !currentLocation) {
-        setPlaces([]);
-        setPlacesLoading(false);
         return;
       }
       
@@ -148,25 +149,24 @@ export default function MapScreen({ navigation }) {
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {
-      console.error('Places loading error:', error);
       setPlaces([]);
     } finally {
       setPlacesLoading(false);
     }
   };
 
+  // userLocation ve currentLocation değişikliklerini useEffect ile yönet
   useEffect(() => {
-    if (userLocation) {
-      loadPlaces();
+    if (userLocation && currentLocation) {
+      const timer = setTimeout(() => {
+        loadPlaces();
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setPlaces([]);
     }
-  }, [userLocation]);
-
-  // Şehir değiştiğinde anında mekanları güncelle
-  useEffect(() => {
-    if (currentLocation) {
-      loadPlaces();
-    }
-  }, [currentLocation?.latitude, currentLocation?.longitude]);
+  }, [userLocation, currentLocation?.latitude, currentLocation?.longitude]);
 
   const handleMarkerPress = (restaurant) => {
     setSelectedRestaurant(restaurant);

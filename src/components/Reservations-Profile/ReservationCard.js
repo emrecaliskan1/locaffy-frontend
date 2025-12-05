@@ -38,7 +38,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
   };
 
   const showCancelButton = (item.status === 'APPROVED' || item.status === 'PENDING') && !isPast;
-  const showReviewButton = isPast && item.status === 'COMPLETED' && !isReviewed;
+  const showReviewButton = isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && !isReviewed;
   const showRejectReasonButton = item.status === 'REJECTED' && item.rejectionReason;
 
   useEffect(() => {
@@ -131,7 +131,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
               <Text style={styles.rateButtonText}>Değerlendir</Text>
             </TouchableOpacity>
           )}
-          {(isPast && item.status === 'APPROVED' && reservationService.isReservationPast(item.reservationTime) && isReviewed) && (
+          {(isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && isReviewed) && (
             <View 
               style={[
                 styles.rateButton, 
