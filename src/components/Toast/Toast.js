@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 // TOASTIFY BİLDİRİM COMPONENTİ
@@ -23,26 +23,33 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
         }),
       ]).start();
 
-      const timer = setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(slideAnim, {
-            toValue: -100,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start(() => {
-          onHide && onHide();
-        });
-      }, duration);
+      // duration null veya 0 ise otomatik kapanmayı devre dışı bırak
+      if (duration && duration > 0) {
+        const timer = setTimeout(() => {
+          handleClose();
+        }, duration);
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [visible, duration, fadeAnim, slideAnim, onHide]);
+  }, [visible, duration, fadeAnim, slideAnim]);
+
+  const handleClose = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: -100,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      onHide && onHide();
+    });
+  };
 
   if (!visible) return null;
 
@@ -68,6 +75,13 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
           backgroundColor: '#fff',
           borderLeftColor: '#2196F3',
         };
+      case 'conflict':
+        return {
+          backgroundColor: '#FFF5F5',
+          borderLeftColor: '#EF4444',
+          borderWidth: 1,
+          borderColor: '#FEE2E2',
+        };
       default:
         return {
           backgroundColor: '#fff',
@@ -86,12 +100,17 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
         return { name: 'exclamation-triangle', color: '#FF9800' };
       case 'info':
         return { name: 'info-circle', color: '#2196F3' };
+      case 'conflict':
+        return { name: 'exclamation-circle', color: '#EF4444' };
+      case 'block':
+        return { name: 'ban', color: '#EF4444' };
       default:
         return { name: 'info-circle', color: '#2196F3' };
     }
   };
 
   const iconConfig = getIconConfig();
+  const isDismissible = !duration || duration === 0;
 
   return (
     <Animated.View
@@ -104,8 +123,26 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
         },
       ]}
     >
-      <FontAwesome name={iconConfig.name} size={20} color={iconConfig.color} />
-      <Text style={[styles.message, { color: iconConfig.color }]}>{message}</Text>
+      <View style={styles.contentContainer}>
+        <View style={styles.iconContainer}>
+          <FontAwesome name={iconConfig.name} size={22} color={iconConfig.color} />
+        </View>
+        <Text 
+          style={[styles.message, { color: type === 'conflict' ? '#991B1B' : iconConfig.color }]}
+          numberOfLines={0}
+        >
+          {message}
+        </Text>
+        {isDismissible && (
+          <TouchableOpacity
+            onPress={handleClose}
+            style={styles.closeButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <FontAwesome name="times" size={16} color={type === 'conflict' ? '#991B1B' : '#666'} />
+          </TouchableOpacity>
+        )}
+      </View>
     </Animated.View>
   );
 };
@@ -117,26 +154,37 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
     borderLeftWidth: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
     zIndex: 99999,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 12,
+  },
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  iconContainer: {
+    marginRight: 12,
+    marginTop: 2,
   },
   message: {
     fontSize: 14,
     fontWeight: '500',
-    marginLeft: 12,
     flex: 1,
+    lineHeight: 20,
+  },
+  closeButton: {
+    marginLeft: 8,
+    padding: 4,
+    marginTop: -2,
   },
 });
 

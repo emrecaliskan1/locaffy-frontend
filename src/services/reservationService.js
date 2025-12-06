@@ -37,7 +37,7 @@ export const reservationService = {
       
       return response.data;
     } catch (error) {
-  
+      // Auth hataları
       if (error.response?.status === 401 || error.response?.status === 403) {
         // Token geçersiz, logout yap
         const { authService } = require('./authService');
@@ -45,6 +45,17 @@ export const reservationService = {
         throw new Error('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.');
       }
       
+      // 400 Bad Request - Validation hataları (yeni backend validasyonları)
+      if (error.response?.status === 400) {
+        // Backend'den gelen hata mesajını kullan
+        const errorMessage = error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
+        const validationError = new Error(errorMessage);
+        validationError.status = 400;
+        validationError.response = error.response;
+        throw validationError;
+      }
+      
+      // Diğer hatalar
       const errorMessage = error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
       throw new Error(errorMessage);
     }
@@ -97,6 +108,83 @@ export const reservationService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // PUBLIC - İlk müsait tarihi al
+  getFirstAvailableDate: async (placeId) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BASE_URL}/place/${placeId}/first-available-date`, { headers });
+      return response.data.firstAvailableDate;
+    } catch (error) {
+      // Hata durumunda fallback: yarını döndür
+      console.log('Error fetching first available date:', error);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      return tomorrow.toISOString();
+    }
+  },
+
+  // USER - Rezervasyon iptal etme
+  cancelReservation: async (reservationId, reason) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.put(`${BASE_URL}/${reservationId}/cancel`, {
+        reason
+      }, { headers });
+      return response.data;
+    } catch (error) {
+      // Auth hataları
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        const { authService } = require('./authService');
+        await authService.clearToken();
+        throw new Error('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.');
+      }
+      
+      // 400 Bad Request - Validation hataları
+      if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || 'Rezervasyon iptal edilemedi';
+        const validationError = new Error(errorMessage);
+        validationError.status = 400;
+        validationError.response = error.response;
+        throw validationError;
+      }
+      
+      // 404 Not Found
+      if (error.response?.status === 404) {
+        const errorMessage = error.response?.data?.message || 'Rezervasyon bulunamadı';
+        throw new Error(errorMessage);
+      }
+      
+      // Diğer hatalar
+      const errorMessage = error.response?.data?.message || 'Rezervasyon iptal edilemedi';
+      throw new Error(errorMessage);
+    }
+  },
+
+  // Rezervasyonun iptal edilip edilemeyeceğini kontrol et (client-side)
+  canCancelReservation: (reservation) => {
+    // Statü kontrolü
+    if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
+      return false;
+    }
+    
+    // Zaman kontrolü (60 dakika)
+    let reservationTime;
+    if (reservation.reservationTime.includes('T')) {
+      const [datePart, timePart] = reservation.reservationTime.split('T');
+      const [year, month, day] = datePart.split('-');
+      const [hour, minute] = timePart.split(':');
+      reservationTime = new Date(year, month - 1, day, hour, minute);
+    } else {
+      reservationTime = new Date(reservation.reservationTime);
+    }
+    
+    const now = new Date();
+    const minutesUntilReservation = (reservationTime.getTime() - now.getTime()) / (1000 * 60);
+    
+    return minutesUntilReservation >= 60;
   },
 
 

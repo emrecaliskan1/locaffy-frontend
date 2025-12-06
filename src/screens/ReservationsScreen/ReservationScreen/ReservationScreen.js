@@ -36,16 +36,20 @@ export default function ReservationScreen({ route, navigation }) {
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [reservationData, setReservationData] = useState(null);
+  const [reservationData, setReservationData] = useState({
+    availableDates: [],
+    availableTimes: availableTimes,
+    maxPeople: maxPeople
+  });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', duration: 3000 });
 
-  const showToast = (message, type = 'error') => {
-    setToast({ visible: true, message, type });
+  const showToast = (message, type = 'error', duration = 3000) => {
+    setToast({ visible: true, message, type, duration });
   };
 
   const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
+    setToast({ visible: false, message: '', type: 'success', duration: 3000 });
   };
 
   // Mekanın çalışma günlerini kontrol et
@@ -54,10 +58,55 @@ export default function ReservationScreen({ route, navigation }) {
     const dayMap = {
       'PAZAR': 0, 'PAZARTESİ': 1, 'SALI': 2, 'ÇARŞAMBA': 3,
       'PERŞEMBE': 4, 'CUMA': 5, 'CUMARTESİ': 6,
+      // İngilizce formatlar
+      'SUNDAY': 0, 'MONDAY': 1, 'TUESDAY': 2, 'WEDNESDAY': 3,
+      'THURSDAY': 4, 'FRIDAY': 5, 'SATURDAY': 6,
+      // Türkçe küçük harf
+      'Pazar': 0, 'Pazartesi': 1, 'Salı': 2, 'Çarşamba': 3,
+      'Perşembe': 4, 'Cuma': 5, 'Cumartesi': 6,
     };
     let workingDayNumbers = [];
     const workingDays = restaurant.workingDays.trim();
     
+    // Sayısal format kontrolü (1=Pazartesi, 7=Pazar)
+    const numericPattern = /^[\d,\s-]+$/;
+    if (numericPattern.test(workingDays)) {
+      if (workingDays.includes('-')) {
+        const [startDay, endDay] = workingDays.split('-').map(day => parseInt(day.trim()));
+        if (!isNaN(startDay) && !isNaN(endDay)) {
+          // Sayısal format: 1=Pazartesi, 7=Pazar -> JavaScript: 1=Pazartesi, 0=Pazar
+          const startDayJS = startDay === 7 ? 0 : startDay;
+          const endDayJS = endDay === 7 ? 0 : endDay;
+          
+          if (startDayJS <= endDayJS) {
+            for (let i = startDayJS; i <= endDayJS; i++) {
+              workingDayNumbers.push(i);
+            }
+          } else {
+            for (let i = startDayJS; i <= 6; i++) {
+              workingDayNumbers.push(i);
+            }
+            for (let i = 0; i <= endDayJS; i++) {
+              workingDayNumbers.push(i);
+            }
+          }
+        }
+      } else if (workingDays.includes(',')) {
+        const days = workingDays.split(',').map(day => {
+          const num = parseInt(day.trim());
+          return num === 7 ? 0 : num; // 7=Pazar -> 0
+        }).filter(num => !isNaN(num) && num >= 0 && num <= 6);
+        workingDayNumbers = days;
+      } else {
+        const num = parseInt(workingDays);
+        if (!isNaN(num) && num >= 1 && num <= 7) {
+          workingDayNumbers = [num === 7 ? 0 : num];
+        }
+      }
+      return workingDayNumbers;
+    }
+    
+    // Metin formatı
     if (workingDays.includes('-')) {
       const [startDay, endDay] = workingDays.split('-').map(day => day.trim());
       const startDayNum = dayMap[startDay];
@@ -81,7 +130,7 @@ export default function ReservationScreen({ route, navigation }) {
       const days = workingDays.split(',').map(day => day.trim());
       workingDayNumbers = days.map(day => dayMap[day]).filter(num => num !== undefined);
     } else if (workingDays === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR' ||  
-               workingDays === 'Hergün') {
+               workingDays === 'Hergün' || workingDays === 'Her gün') {
       workingDayNumbers = [0, 1, 2, 3, 4, 5, 6];
     } else {
       const dayNum = dayMap[workingDays];
@@ -97,49 +146,92 @@ export default function ReservationScreen({ route, navigation }) {
     if (!restaurant.openingHours || !restaurant.openingHours.includes('-')) {
       return { startHour: 9, startMinute: 0, endHour: 18, endMinute: 0 };
     }
-    const [startTime, endTime] = restaurant.openingHours.split('-');
+    const [startTime, endTime] = restaurant.openingHours.split('-').map(s => s.trim());
     const [startHour, startMinute] = startTime.split(':').map(Number);
     const [endHour, endMinute] = endTime.split(':').map(Number);
 
     return { startHour, startMinute, endHour, endMinute };
   };
+  
+  // Saatin çalışma saatleri içinde olup olmadığını kontrol et
+  const isTimeWithinWorkingHours = (time, dateString) => {
+    const [timeHour, timeMinute] = time.split(':').map(Number);
+    const timeInMinutes = timeHour * 60 + timeMinute;
+    const restaurantStartTime = workingHours.startHour * 60 + workingHours.startMinute;
+    const restaurantEndTime = workingHours.endHour * 60 + workingHours.endMinute;
+    
+    // Gece yarısını geçen saatler için özel kontrol
+    if (restaurantEndTime < restaurantStartTime) {
+      // Gece yarısını geçen saatler (örn: 22:00-02:00)
+      return timeInMinutes >= restaurantStartTime || timeInMinutes <= restaurantEndTime;
+    } else {
+      // Normal saatler (örn: 09:00-22:00)
+      return timeInMinutes >= restaurantStartTime && timeInMinutes <= restaurantEndTime;
+    }
+  };
 
   const workingDays = getWorkingDays();
   const workingHours = getWorkingHours();
 
-  const generateNextDates = (n) => {
+  const generateNextDates = (n, startDate) => {
     const dates = [];
-    const today = new Date();
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    
+    // Backend'den gelen tarihten başlayarak n gün oluştur
     for (let i = 0; i < n; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const dd = String(d.getDate()).padStart(2, '0');
-      dates.push(`${yyyy}-${mm}-${dd}`);
+      const dateString = `${yyyy}-${mm}-${dd}`;
+      dates.push(dateString);
     }
+    
     return dates;
   };
 
-  const mockReservationData = {
-    availableDates: generateNextDates(14),
-    availableTimes: availableTimes,
-    maxPeople: maxPeople
-  };
+  const [firstAvailableDate, setFirstAvailableDate] = useState(null);
 
   useEffect(() => {
     let mounted = true;
-    const timer = setTimeout(() => {
-      if (!mounted) return;
-      setReservationData(mockReservationData);
-      setLoading(false);
-    }, 500);
+    
+    const fetchFirstAvailableDate = async () => {
+      try {
+        setLoading(true);
+        // Backend'den ilk müsait tarihi al
+        const firstDateStr = await reservationService.getFirstAvailableDate(restaurant.id);
+        
+        if (firstDateStr && mounted) {
+          // ISO formatından Date objesine çevir
+          const firstDate = new Date(firstDateStr);
+          setFirstAvailableDate(firstDate);
+          
+          // Takvimi backend'den gelen tarihten başlat
+          const dates = generateNextDates(14, firstDate);
+          setReservationData({
+            availableDates: dates,
+            availableTimes: availableTimes,
+            maxPeople: maxPeople
+          });
+        }
+      } catch (error) {
+        console.log('Error fetching first available date:', error);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchFirstAvailableDate();
 
     return () => {
       mounted = false;
-      clearTimeout(timer);
     };
-  }, []);
+  }, [restaurant.id]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -165,21 +257,57 @@ export default function ReservationScreen({ route, navigation }) {
   };
 
   const handleContinue = async () => {
+    // Client-side validasyonlar
+    
+    // Tarih ve saat kontrolü
     if (!selectedDate || !selectedTime) {
       showToast('Lütfen tarih ve saat seçin.', 'error');
       return;
     }
-    // User kontrolü
+    
+    // Kullanıcı kontrolü
     if (!user) {
       showToast('Rezervasyon yapmak için giriş yapmanız gerekiyor.', 'error');
       navigation.navigate('Auth');
       return;
     }
+    
+    // Kişi sayısı validasyonu
+    if (!selectedPeople || selectedPeople <= 0) {
+      showToast('Kişi sayısı en az 1 olmalıdır', 'error');
+      return;
+    }
+    
+    // Geçmiş tarih kontrolü
+    const reservationDateTimeString = `${selectedDate}T${selectedTime}:00`;
+    const reservationDateTime = new Date(reservationDateTimeString);
+    const now = new Date();
+    
+    if (reservationDateTime <= now) {
+      showToast(`Geçmiş bir tarih için rezervasyon yapılamaz: ${reservationDateTimeString}`, 'error');
+      return;
+    }
+    
+    // Çalışma günleri kontrolü
+    const selectedDateObj = new Date(selectedDate);
+    const dayOfWeek = selectedDateObj.getDay();
+    if (!workingDays.includes(dayOfWeek)) {
+      const dayNamesFull = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+      const workingDaysText = workingDays.map(d => dayNamesFull[d]).join(', ') || 'Belirtilmemiş';
+      showToast(`Rezervasyon günü mekanın çalışma günleri dışındadır. Çalışma günleri: ${workingDaysText}, Rezervasyon günü: ${dayNamesFull[dayOfWeek]}`, 'error');
+      return;
+    }
+    
+    // Çalışma saatleri kontrolü
+    if (!isTimeWithinWorkingHours(selectedTime, selectedDate)) {
+      const openingHoursText = restaurant.openingHours || `${workingHours.startHour}:${String(workingHours.startMinute).padStart(2, '0')}-${workingHours.endHour}:${String(workingHours.endMinute).padStart(2, '0')}`;
+      showToast(`Rezervasyon zamanı mekanın çalışma saatleri dışındadır. Çalışma saatleri: ${openingHoursText}, Rezervasyon zamanı: ${selectedTime}`, 'error');
+      return;
+    }
+    
     try {
       setSubmitting(true);
-      const [hours, minutes] = selectedTime.split(':');
-      const reservationDateTimeString = `${selectedDate}T${selectedTime}:00`;
-
+      
       const reservationData = {
         placeId: restaurant.id,
         reservationTime: reservationDateTimeString,
@@ -200,14 +328,61 @@ export default function ReservationScreen({ route, navigation }) {
       }, 2500);
     } catch (error) {
       setShowSuccessModal(false);
+      
       // Auth hatası varsa login screen'e yönlendir
       if (error.message.includes('Oturumunuzun süresi dolmuş') || 
           error.response?.status === 401 || 
           error.response?.status === 403) {
-        showToast('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        showToast('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.', 'error', 3000);
         setTimeout(() => navigation.navigate('Auth'), 1500);
+      } else if (error.status === 400 || error.response?.status === 400) {
+        // 400 Bad Request - Backend validasyon hataları
+        const errorMessage = error.message || error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
+        
+        // İptal oranı hatası - Mesajı parse et ve daha kullanıcı dostu göster
+        if (errorMessage.includes('İptal oranınız çok yüksek') || errorMessage.includes('iptal oranınız çok yüksek')) {
+          // Detayları çıkar
+          const detailsMatch = errorMessage.match(/Son \d+ rezervasyonda: (\d+) iptal, (\d+) toplam/);
+          let formattedMessage = 'İptal oranınız çok yüksek. Yeni rezervasyon oluşturamazsınız.';
+          
+          if (errorMessage.includes('Başarılı rezervasyonlar yaparak oranınızı düşürebilirsiniz')) {
+            formattedMessage += ' Başarılı rezervasyonlar yaparak oranınızı düşürebilirsiniz.';
+          }
+          
+          if (detailsMatch) {
+            formattedMessage += `\n\nSon ${detailsMatch[2]} rezervasyonda: ${detailsMatch[1]} iptal, ${detailsMatch[2]} toplam`;
+          }
+          
+          showToast(formattedMessage, 'error', 0); // Manuel kapatma
+        }
+        // Son 24 saatte çok fazla iptal hatası
+        else if (errorMessage.includes('Son 24 saatte')) {
+          // İptal sayısını çıkar
+          const countMatch = errorMessage.match(/Son 24 saatte (\d+)/);
+          let formattedMessage = 'Son 24 saatte çok fazla rezervasyon iptal ettiniz. Yeni rezervasyon oluşturamazsınız.';
+          
+          if (countMatch) {
+            formattedMessage = `Son 24 saatte ${countMatch[1]} rezervasyon iptal ettiniz. Yeni rezervasyon oluşturamazsınız.`;
+          }
+          
+          if (errorMessage.includes('Lütfen daha sonra tekrar deneyin')) {
+            formattedMessage += '\n\nLütfen daha sonra tekrar deneyin.';
+          }
+          
+          showToast(formattedMessage, 'error', 0); // Manuel kapatma
+        }
+        // Çakışma hatalarını tespit et (mekan veya kullanıcı çakışması)
+        else if (errorMessage.includes('zaten bir rezervasyon') || 
+                 errorMessage.includes('zaten başka bir rezervasyonunuz')) {
+          // Çakışma hataları için özel stil ve manuel kapatma
+          showToast(errorMessage, 'conflict', 0);
+        } else {
+          // Diğer validasyon hataları
+          showToast(errorMessage, 'error', 4000);
+        }
       } else {
-        showToast(error.message || 'Rezervasyon oluşturulurken bir hata oluştu', 'error');
+        // Diğer hatalar
+        showToast(error.message || 'Rezervasyon oluşturulurken bir hata oluştu', 'error', 3000);
       }
     } finally {
       setSubmitting(false);
@@ -282,22 +457,25 @@ export default function ReservationScreen({ route, navigation }) {
         isDisabled = true;
         disableReason = 'Mekan bugün kapalı';
       } else {
-        const [timeHour, timeMinute] = time.split(':').map(Number);
-        const timeInMinutes = timeHour * 60 + timeMinute;
-        
-        const restaurantStartTime = workingHours.startHour * 60 + workingHours.startMinute;
-        const restaurantEndTime = workingHours.endHour * 60 + workingHours.endMinute;
-        
-        if (timeInMinutes < restaurantStartTime || timeInMinutes > restaurantEndTime) {
+        // Çalışma saatleri kontrolü
+        if (!isTimeWithinWorkingHours(time, selectedDate)) {
           isDisabled = true;
           disableReason = 'Mekan kapalı';
         }
         
+        // Geçmiş saat kontrolü (bugün için)
         const today = new Date();
-        const sel = new Date(selectedDate);
-        if (sel.toDateString() === today.toDateString()) {
-          const currentTime = today.getHours() * 60 + today.getMinutes();
-          if (timeInMinutes <= currentTime) {
+        const selectedDateOnly = new Date(selectedDate);
+        selectedDateOnly.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDateOnly.getTime() === today.getTime()) {
+          const [timeHour, timeMinute] = time.split(':').map(Number);
+          const reservationDateTime = new Date(selectedDate);
+          reservationDateTime.setHours(timeHour, timeMinute, 0, 0);
+          const now = new Date();
+          
+          if (reservationDateTime <= now) {
             isDisabled = true;
             disableReason = 'Geçmiş saat';
           }
@@ -389,7 +567,7 @@ export default function ReservationScreen({ route, navigation }) {
             style={styles.datesContainer}
             contentContainerStyle={styles.datesContent}
           >
-            {(reservationData ? reservationData.availableDates : mockReservationData.availableDates).map(renderDateItem)}
+            {reservationData.availableDates.map(renderDateItem)}
           </ScrollView>
         </View>
 
@@ -400,7 +578,7 @@ export default function ReservationScreen({ route, navigation }) {
             <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Kişi Sayısı</Text>
           </View>
           <View style={styles.peopleContainer}>
-            {Array.from({ length: (reservationData ? reservationData.maxPeople : mockReservationData.maxPeople) }, (_, i) => i + 1).map(renderPeopleOption)}
+            {Array.from({ length: reservationData.maxPeople }, (_, i) => i + 1).map(renderPeopleOption)}
           </View>
         </View>
 
@@ -411,7 +589,7 @@ export default function ReservationScreen({ route, navigation }) {
             <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Saat Seçin</Text>
           </View>
           <View style={styles.timesContainer}>
-            {(reservationData ? reservationData.availableTimes : mockReservationData.availableTimes).map(renderTimeSlot)}
+            {reservationData.availableTimes.map(renderTimeSlot)}
           </View>
         </View>
 
@@ -505,7 +683,7 @@ export default function ReservationScreen({ route, navigation }) {
         visible={toast.visible}
         message={toast.message}
         type={toast.type}
-        duration={3000}
+        duration={toast.duration}
         onHide={hideToast}
       />
     </View>

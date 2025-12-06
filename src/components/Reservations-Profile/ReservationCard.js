@@ -37,7 +37,8 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
     return reservationService.formatReservationTime(reservationTime);
   };
 
-  const showCancelButton = (item.status === 'APPROVED' || item.status === 'PENDING') && !isPast;
+  // İptal butonu görünürlüğü - Sadece statü kontrolü (60 dakika kontrolü backend'de yapılıyor)
+  const showCancelButton = !isPast && (item.status === 'PENDING' || item.status === 'APPROVED');
   const showReviewButton = isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && !isReviewed;
   const showRejectReasonButton = item.status === 'REJECTED' && item.rejectionReason;
 
@@ -116,6 +117,24 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
               <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>Not:</Text>
             </View>
             <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.note}</Text>
+          </View>
+        )}
+        {item.status === 'CANCELLED' && item.cancellationReason && (
+          <View style={styles.detailRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <FontAwesome name="ban" size={14} color="#EF4444" style={{ marginRight: 6 }} />
+              <Text style={[styles.detailLabel, { color: '#EF4444' }]}>İptal Sebebi:</Text>
+            </View>
+            <Text style={[styles.detailValue, { color: theme.colors.text, fontStyle: 'italic' }]}>{item.cancellationReason}</Text>
+          </View>
+        )}
+        {item.status === 'CANCELLED' && item.cancelledAt && (
+          <View style={styles.detailRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <FontAwesome name="clock-o" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>İptal Tarihi:</Text>
+            </View>
+            <Text style={[styles.detailValue, { color: theme.colors.text }]}>{formatDate(item.cancelledAt)}</Text>
           </View>
         )}
       </View>
