@@ -78,10 +78,16 @@ export default function ReservationsScreen({ navigation, route }) {
         return resTime < now || res.status === 'REJECTED' || res.status === 'CANCELLED' || res.status === 'NO_SHOW' || res.status === 'COMPLETED';
       });
       
-      setActiveReservations(active);
-      setPastReservations(past);
+      // Son eklenenler en üstte olacak şekilde sırala (DESC)
+      const sortByCreatedDate = (a, b) => {
+        const dateA = new Date(a.createdAt || a.reservationTime);
+        const dateB = new Date(b.createdAt || b.reservationTime);
+        return dateB - dateA; 
+      };
+      
+      setActiveReservations(active.sort(sortByCreatedDate));
+      setPastReservations(past.sort(sortByCreatedDate));
     } catch (error) {
-      console.log('Error loading reservations:', error);
       showToast('Rezervasyonlar yüklenirken bir hata oluştu', 'error');
     } finally {
       setLoading(false);
@@ -115,7 +121,7 @@ export default function ReservationsScreen({ navigation, route }) {
     if (!reservationService.canCancelReservation(reservation)) {
       let errorMessage = '';
       
-      // Statü kontrolü
+      // Status kontrolü
       if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
         errorMessage = `Sadece BEKLEYEN (PENDING) veya ONAYLANMIŞ (APPROVED) durumundaki rezervasyonlar iptal edilebilir. Mevcut durum: ${reservation.status}`;
       } else {

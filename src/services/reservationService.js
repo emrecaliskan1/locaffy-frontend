@@ -235,8 +235,8 @@ export const reservationService = {
   getReservationStatusText: (status) => {
     const statusMap = {
       PENDING: 'Beklemede',
-      APPROVED: 'Rezervasyon Onaylandı',
-      COMPLETED: 'Gerçekleşti',
+      APPROVED: 'Onaylandı',
+      COMPLETED: 'Tamamlandı',
       NO_SHOW: 'Gelmedi',
       REJECTED: 'Reddedildi',
       CANCELLED: 'İptal Edildi'
@@ -252,7 +252,7 @@ export const reservationService = {
       return 'Gelmedi';
     }
     if (status === 'COMPLETED') {
-      return 'Rez. Gerçekleşti';
+      return 'Tamamlandı';
     }
 
     if (reservationService.isReservationPast(reservationTime)) {
@@ -260,7 +260,7 @@ export const reservationService = {
         return 'İptal Edildi'; 
       }
       if (status === 'APPROVED') {
-        return 'Rez. Gerçekleşti'; 
+        return 'Onaylandı'; 
       }
     }
     return reservationService.getReservationStatusText(status);
@@ -272,7 +272,7 @@ export const reservationService = {
       return '#9c0a0aff';
     }
     if (status === 'COMPLETED') {
-      return '#09980eff'; 
+      return '#0288d1'; 
     }
     
     if (reservationService.isReservationPast(reservationTime)) {
@@ -289,8 +289,8 @@ export const reservationService = {
   getReservationStatusColor: (status) => {
     const colorMap = {
       PENDING: '#FFA500',
-      APPROVED: '#66BB6A', 
-      COMPLETED: '#09980eff',
+      APPROVED: '#36a83cff', 
+      COMPLETED: '#0288d1',
       NO_SHOW: '#9c0a0aff', 
       REJECTED: '#F44336', 
       CANCELLED: '#9E9E9E'
