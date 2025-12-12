@@ -43,6 +43,33 @@ export const LocationProvider = ({ children }) => {
       
       // Önce kaydedilmiş şehir var mı kontrol et
       const savedCity = await AsyncStorage.getItem('selectedCity');
+      
+      // Lokasyon izni kontrol et
+      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
+      
+      if (existingStatus === 'granted') {
+        setHasLocationPermission(true);
+        // GPS izni varsa, her zaman gerçek konumu al
+        await getCurrentLocation();
+      } else {
+        setHasLocationPermission(false);
+        // GPS izni yoksa ve kaydedilmiş şehir varsa onu kullan
+        if (savedCity) {
+          const cityData = JSON.parse(savedCity);
+          setSelectedCity(cityData);
+          setCurrentLocation({
+            latitude: cityData.coordinates.lat,
+            longitude: cityData.coordinates.lng,
+            cityName: cityData.name
+          });
+        } else {
+          setNeedsCitySelection(true);
+        }
+      }
+    } catch (error) {
+      console.log('Lokasyon başlatma hatası:', error);
+      setHasLocationPermission(false);
+      const savedCity = await AsyncStorage.getItem('selectedCity');
       if (savedCity) {
         const cityData = JSON.parse(savedCity);
         setSelectedCity(cityData);
@@ -51,24 +78,7 @@ export const LocationProvider = ({ children }) => {
           longitude: cityData.coordinates.lng,
           cityName: cityData.name
         });
-      }
-      // Lokasyon izni kontrol et
-      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
-      
-      if (existingStatus === 'granted') {
-        setHasLocationPermission(true);
-        await getCurrentLocation();
       } else {
-        setHasLocationPermission(false);
-        if (!savedCity) {
-          setNeedsCitySelection(true);
-        }
-      }
-    } catch (error) {
-      console.log('Lokasyon başlatma hatası:', error);
-      setHasLocationPermission(false);
-      const savedCity = await AsyncStorage.getItem('selectedCity');
-      if (!savedCity) {
         setNeedsCitySelection(true);
       }
     } finally {
