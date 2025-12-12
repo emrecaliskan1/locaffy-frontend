@@ -29,6 +29,7 @@ export default function AuthScreen({ navigation }) {
     email: '',
     password: '',
     username: '',
+    phoneNumber: '',
     passwordConfirm: ''
   });
 
@@ -138,7 +139,8 @@ export default function AuthScreen({ navigation }) {
     try {
       const result = await register(
         formData.username,
-        formData.email, 
+        formData.email,
+        formData.phoneNumber,
         formData.password, 
         formData.passwordConfirm
       );
@@ -307,6 +309,18 @@ export default function AuthScreen({ navigation }) {
                       onChangeText={(value) => handleInputChange('email', value)}
                       keyboardType="email-address"
                       autoCapitalize="none"
+                    />
+                  </View>
+
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="phone" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
+                    <TextInput
+                      style={[styles.input, { color: "#000000" }]}
+                      placeholder="Telefon Numarası"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      value={formData.phoneNumber}
+                      onChangeText={(value) => handleInputChange('phoneNumber', value)}
+                      keyboardType="phone-pad"
                     />
                   </View>
 

@@ -90,10 +90,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   //KAYIT OL
-  const register = async (username, email, password, passwordConfirm) => {
+  const register = async (username, email, phoneNumber, password, passwordConfirm) => {
     setLoading(true);
     try {
-      if (!username || !email || !password || !passwordConfirm) {
+      if (!username || !email || !phoneNumber || !password || !passwordConfirm) {
         return { success: false, message: 'Tüm alanları doldurunuz' };
       }
       
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: 'Kullanıcı adı en az 3 karakter olmalıdır' };
       }
 
-      const response = await authService.register(username, email, password, passwordConfirm);
+      const response = await authService.register(username, email, phoneNumber, password, passwordConfirm);
       
       if (response && response.accessToken) {
         const userInfo = {

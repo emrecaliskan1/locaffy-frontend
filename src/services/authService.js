@@ -55,11 +55,12 @@ const removeUserInfo = async () => {
 
 export const authService = {
 
-  register: async (username, email, password, passwordConfirm) => {
+  register: async (username, email, phoneNumber, password, passwordConfirm) => {
     try {
       const requestBody = {
         username,
         email,
+        phoneNumber,
         password,
         passwordConfirm
       };
