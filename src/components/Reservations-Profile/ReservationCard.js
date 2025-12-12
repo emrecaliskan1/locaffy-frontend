@@ -37,7 +37,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
     return reservationService.formatReservationTime(reservationTime);
   };
 
-  // İptal butonu görünürlüğü - Sadece statü kontrolü (60 dakika kontrolü backend'de yapılıyor)
+  // İptal butonu görünürlüğü
   const showCancelButton = !isPast && (item.status === 'PENDING' || item.status === 'APPROVED');
   const showReviewButton = isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && !isReviewed;
   const showRejectReasonButton = item.status === 'REJECTED' && item.rejectionReason;

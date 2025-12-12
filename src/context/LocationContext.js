@@ -52,7 +52,6 @@ export const LocationProvider = ({ children }) => {
           cityName: cityData.name
         });
       }
-
       // Lokasyon izni kontrol et
       const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
       
@@ -61,7 +60,6 @@ export const LocationProvider = ({ children }) => {
         await getCurrentLocation();
       } else {
         setHasLocationPermission(false);
-        // Eğer kaydedilmiş şehir yoksa, şehir seçimi gerekli
         if (!savedCity) {
           setNeedsCitySelection(true);
         }
@@ -83,7 +81,6 @@ export const LocationProvider = ({ children }) => {
     try {
       setIsLoading(true);
       
-      // Kaydedilmiş şehir var mı kontrol et
       const savedCity = await AsyncStorage.getItem('selectedCity');
       
       // Lokasyon izni kontrol et
@@ -159,9 +156,9 @@ export const LocationProvider = ({ children }) => {
     return nearestCity?.name || 'Bilinmeyen Konum';
   };
 
-  // İki koordinat arasındaki mesafeyi hesaplama (Haversine formülü)
+  // İki koordinat arasındaki mesafeyi hesaplama
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Dünya'nın yarıçapı (km)
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -220,7 +217,6 @@ export const LocationProvider = ({ children }) => {
       // Mevcut konumu kaydet
       await AsyncStorage.setItem('currentLocation', JSON.stringify(locationData));
       
-      // Başarılı konum alımı toast'ı göster
       showSuccessToast(`Konumunuz ${cityName} olarak ayarlandı`);
       
     } catch (error) {
@@ -240,19 +236,16 @@ export const LocationProvider = ({ children }) => {
       setCurrentLocation(locationData);
       setNeedsCitySelection(false);
 
-      // Seçilen şehri kaydet
       await AsyncStorage.setItem('selectedCity', JSON.stringify(city));
       await AsyncStorage.setItem('currentLocation', JSON.stringify(locationData));
       
-      // Başarılı şehir seçimi toast'ı göster
       showSuccessToast(`Konumunuz ${city.name} olarak ayarlandı`);
       
-      // Eğer callback varsa çağır
       if (onCitySelectedCallback) {
         setTimeout(() => {
           onCitySelectedCallback();
-          setOnCitySelectedCallback(null); // Callback'i temizle
-        }, 1500); // Toast'ın görünmesi için bekle
+          setOnCitySelectedCallback(null);
+        }, 1500);
       }
       
       return true;
@@ -264,15 +257,12 @@ export const LocationProvider = ({ children }) => {
 
   const getLocationText = () => {
     if (currentLocation) {
-      // Eğer GPS izni varsa ve mevcut konum GPS'ten alınmışsa, onu öncele
       if (hasLocationPermission && !selectedCity) {
         return currentLocation.cityName;
       }
-      // Manuel seçilmiş şehir varsa onu göster
       else if (selectedCity) {
         return selectedCity.name;
       }
-      // Diğer durumlarda mevcut konumu göster
       else {
         return currentLocation.cityName;
       }

@@ -37,7 +37,7 @@ export const placeService = {
       const data = response?.data;
       return Array.isArray(data) ? data : (data?.places ? (Array.isArray(data.places) ? data.places : []) : []);
     } catch (error) {
-      return []; // Hata durumunda boş array döndür
+      return [];
     }
   },
 
@@ -55,7 +55,7 @@ export const placeService = {
       const data = response?.data;
       return Array.isArray(data) ? data : (data?.places ? (Array.isArray(data.places) ? data.places : []) : []);
     } catch (error) {
-      return []; // Hata durumunda boş array döndür
+      return [];
     }
   },
 
@@ -67,7 +67,7 @@ export const placeService = {
       });
       return response?.data || null;
     } catch (error) {
-      return null; // Hata durumunda null döndür
+      return null;
     }
   },
 

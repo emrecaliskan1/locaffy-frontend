@@ -44,9 +44,8 @@ export default function HomeScreen({ navigation }) {
     setToast({ visible: false, message: '', type: 'success' });
   };
 
-  // Restoranları arama metni ve filtrelere göre filtrele
+  // Mekanları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
-    // isAvailable kontrolü - sadece aktif mekanları göster
     if (place.isAvailable === false) return false;
     
     const matchesSearch = place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
@@ -77,8 +76,6 @@ export default function HomeScreen({ navigation }) {
   const loadPlaces = async () => {
     try {
       setLoading(true);
-      
-      // Şehir seçimi yapılmamışsa mekan yükleme
       if (!currentLocation?.latitude || !currentLocation?.longitude) {
         setPlaces([]);
         setLoading(false);
@@ -88,14 +85,10 @@ export default function HomeScreen({ navigation }) {
       let result;
       const latitude = currentLocation.latitude;
       const longitude = currentLocation.longitude;
-      
       // Önce yakındaki tüm mekanları al
       result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
-      
-      // Güvenli array kontrolü - result null, undefined veya array değilse boş array kullan
       let places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
       
-      // Frontend'de filtreleme uygula
       if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
         places = places.filter(place => {
           const categoryMatch = appliedFilters.category === 'all' || 
@@ -105,8 +98,6 @@ export default function HomeScreen({ navigation }) {
           return categoryMatch && ratingMatch;
         });
       }
-      
-      // Ek güvenlik için frontend'de de isAvailable kontrolü yap
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {

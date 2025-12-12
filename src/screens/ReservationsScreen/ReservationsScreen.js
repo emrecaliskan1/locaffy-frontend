@@ -97,9 +97,7 @@ export default function ReservationsScreen({ navigation, route }) {
   // Değerlendirme sonrası güncelleme için listener
   useEffect(() => {
     loadReservations();
-    
     const unsubscribe = navigation.addListener('focus', () => {
-      // Ekran her açıldığında verileri yenile
       loadReservations();
     });
 
@@ -117,11 +115,9 @@ export default function ReservationsScreen({ navigation, route }) {
   };
 
   const handleCancelReservation = (reservation) => {
-    // Client-side validasyon
     if (!reservationService.canCancelReservation(reservation)) {
       let errorMessage = '';
       
-      // Status kontrolü
       if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
         errorMessage = `Sadece BEKLEYEN (PENDING) veya ONAYLANMIŞ (APPROVED) durumundaki rezervasyonlar iptal edilebilir. Mevcut durum: ${reservation.status}`;
       } else {
@@ -157,8 +153,6 @@ export default function ReservationsScreen({ navigation, route }) {
 
   const confirmCancelReservation = async () => {
     if (!selectedReservation) return;
-    
-    // İptal sebebi kontrolü
     if (!cancelReason || cancelReason.trim() === '') {
       showToast('İptal sebebi belirtilmelidir', 'error', 3000);
       return;
@@ -170,8 +164,6 @@ export default function ReservationsScreen({ navigation, route }) {
         selectedReservation.id,
         cancelReason.trim()
       );
-      
-      // Rezervasyon listesini güncelle
       setActiveReservations(prev => prev.filter(r => r.id !== selectedReservation.id));
       setPastReservations(prev => [
         {
@@ -180,13 +172,11 @@ export default function ReservationsScreen({ navigation, route }) {
         },
         ...prev
       ]);
-      
       setSelectedReservation(null);
       setCancelReason('');
       setShowCancelModal(false);
       showToast('Rezervasyonunuz başarıyla iptal edildi', 'success', 3000);
     } catch (error) {
-      // Hata mesajını göster
       const errorMessage = error.message || 'Rezervasyon iptal edilemedi';
       showToast(errorMessage, 'error', 5000);
     } finally {

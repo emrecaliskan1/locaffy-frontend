@@ -45,17 +45,14 @@ export const reservationService = {
         throw new Error('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.');
       }
       
-      // 400 Bad Request - Validation hataları (yeni backend validasyonları)
+      // 400 Bad Request -(yeni backend validasyonları)
       if (error.response?.status === 400) {
-        // Backend'den gelen hata mesajını kullan
         const errorMessage = error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
         const validationError = new Error(errorMessage);
         validationError.status = 400;
         validationError.response = error.response;
         throw validationError;
       }
-      
-      // Diğer hatalar
       const errorMessage = error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
       throw new Error(errorMessage);
     }
@@ -117,7 +114,6 @@ export const reservationService = {
       const response = await axios.get(`${BASE_URL}/place/${placeId}/first-available-date`, { headers });
       return response.data.firstAvailableDate;
     } catch (error) {
-      // Hata durumunda fallback: yarını döndür
       console.log('Error fetching first available date:', error);
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
@@ -165,11 +161,9 @@ export const reservationService = {
 
   // Rezervasyonun iptal edilip edilemeyeceğini kontrol et (client-side)
   canCancelReservation: (reservation) => {
-    // Statü kontrolü
     if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
       return false;
     }
-    
     // Zaman kontrolü (60 dakika)
     let reservationTime;
     if (reservation.reservationTime.includes('T')) {
@@ -210,8 +204,6 @@ export const reservationService = {
 
   //DATE FORMATLAMA İŞLERİ
   formatReservationTime: (reservationTime) => {
-    // Backend'den gelen format: "2025-11-25T15:00:00" 
-    // Direkt parse et ve göster
     let dateStr = reservationTime;
     
     if (dateStr.includes('T')) {

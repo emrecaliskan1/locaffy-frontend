@@ -38,7 +38,6 @@ export const InfoTab = ({ restaurant, styles }) => {
     if (workingDaysStr === 'Hergün' || workingDaysStr === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR') {
       return 'Her gün';
     }
-    
     // Tek gün
     return dayMap[workingDaysStr] || workingDaysStr;
   };

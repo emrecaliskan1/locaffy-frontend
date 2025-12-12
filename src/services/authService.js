@@ -72,7 +72,6 @@ export const authService = {
       
       if (response.data.accessToken) {
         await saveToken(response.data.accessToken);
-        // Kullanıcı bilgilerini kaydet (JwtResponse'dan)
         await saveUserInfo({
           username: response.data.username,
           email: response.data.email,
@@ -102,7 +101,6 @@ export const authService = {
       
       if (response.data.accessToken) {
         await saveToken(response.data.accessToken);
-        // Kullanıcı bilgilerini kaydet (JwtResponse'dan)
         await saveUserInfo({
           username: response.data.username,
           email: response.data.email,
@@ -152,7 +150,6 @@ export const authService = {
       await removeUserInfo();
       return response.data;
     } catch (error) {
-      // Hata olsa bile local token'ları temizle
       await removeToken();
       await removeUserInfo();
       const errorMessage = error.response?.data?.message || 'Çıkış yapılırken bir hata oluştu';

@@ -54,7 +54,7 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
         activeOpacity={0.8}
       >
         <View style={[styles.bottomSheetHandle, { backgroundColor: theme.colors.border }]} />
-        <Text style={[styles.bottomSheetTitle, { color: theme.colors.text }]}>Yakındaki Restoranlar</Text>
+        <Text style={[styles.bottomSheetTitle, { color: theme.colors.text }]}>Yakındaki Mekanlar</Text>
       </TouchableOpacity>
       
       {isExpanded && (

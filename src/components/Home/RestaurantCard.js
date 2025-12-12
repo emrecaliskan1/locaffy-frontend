@@ -39,7 +39,6 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
       const endDayNum = dayMap[endDay];
       
       if (startDayNum !== undefined && endDayNum !== undefined) {
-        // Pazartesi-Cuma gibi aralık varsa
         if (startDayNum <= endDayNum) {
           for (let i = startDayNum; i <= endDayNum; i++) {
             workingDayNumbers.push(i);
@@ -77,9 +76,8 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
   // Favori toggle fonksiyonu
   const handleFavoriteToggle = async (e) => {
     e.stopPropagation(); 
-    
     if (favoriteLoading) return;
-    
+  
     try {
       setFavoriteLoading(true);
       

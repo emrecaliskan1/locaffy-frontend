@@ -116,7 +116,6 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.register(username, email, password, passwordConfirm);
       
       if (response && response.accessToken) {
-        // Backend'den gelen kullanıcı bilgilerini context'e kaydet
         const userInfo = {
           username: response.username,
           email: response.email,
@@ -158,7 +157,6 @@ export const AuthProvider = ({ children }) => {
         await authService.clearToken();
       }
       
-      // Konum bilgilerini de temizle
       try {
         const AsyncStorage = require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.multiRemove(['selectedCity', 'currentLocation']);

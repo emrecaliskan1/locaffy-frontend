@@ -64,7 +64,6 @@ export default function MapScreen({ navigation }) {
           longitudeDelta: 0.01,
         });
       } else {
-        // Konum seçilmemişse haritayı başlatma
         setUserLocation(null);
         setRegion(null);
       }
@@ -82,7 +81,6 @@ export default function MapScreen({ navigation }) {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         showToast('Konum izni verilmedi. Seçilen şehir gösterilecek.', 'info');
-        // LocationContext'ten gelen konum kullanılacak (seçilen şehir)
         if (currentLocation) {
           setUserLocation({ 
             latitude: currentLocation.latitude, 
@@ -141,11 +139,8 @@ export default function MapScreen({ navigation }) {
       const lat = userLocation.latitude;
       const lng = userLocation.longitude;
       const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
-      
-      // Güvenli array kontrolü - result null, undefined veya array değilse boş array kullan
       const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
-      
-      // Ek güvenlik için frontend'de de isAvailable kontrolü yap
+
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
       setPlaces(availablePlaces);
     } catch (error) {
