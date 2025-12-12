@@ -9,17 +9,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../context/ThemeContext';
 
 const categories = [
-  { id: 'all', name: 'Tümü', icon: 'th-large' },
-  { id: 'restaurant', name: 'Restoran', icon: 'cutlery' },
-  { id: 'cafe', name: 'Kafe', icon: 'coffee' },
-  { id: 'bar', name: 'Bar', icon: 'glass' },
-  { id: 'bistro', name: 'Bistro', icon: 'cutlery' }
+  { id: 'all', name: 'Tümü', icon: 'th-large', iconType: 'fa' },
+  { id: 'restaurant', name: 'Restoran', icon: 'cutlery', iconType: 'fa' },
+  { id: 'cafe', name: 'Kafe', icon: 'coffee', iconType: 'fa' },
+  { id: 'bar', name: 'Bar', icon: 'glass', iconType: 'fa' },
+  { id: 'bistro', name: 'Bistro', icon: 'utensils', iconType: 'fa5' },
+  { id: 'dessert', name: 'Tatlıcı', icon: 'birthday-cake', iconType: 'fa' },
+  { id: 'fastfood', name: 'Fast Food', icon: 'hamburger', iconType: 'fa5' }
 ];
 
 const ratingOptions = [
@@ -145,12 +147,21 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
                   ]}
                   onPress={() => handleCategoryChange(category.id)}
                 >
-                  <FontAwesome 
-                    name={category.icon} 
-                    size={16} 
-                    color={theme.colors.primary}
-                    style={styles.categoryIcon} 
-                  />
+                  {category.iconType === 'fa5' ? (
+                    <FontAwesome5 
+                      name={category.icon} 
+                      size={20} 
+                      color={theme.colors.primary}
+                      style={styles.categoryIcon} 
+                    />
+                  ) : (
+                    <FontAwesome 
+                      name={category.icon} 
+                      size={20} 
+                      color={theme.colors.primary}
+                      style={styles.categoryIcon} 
+                    />
+                  )}
                   <Text style={[
                     styles.categoryText,
                     { color: filters.category === category.id ? "#FFFFFF" : theme.colors.primary },

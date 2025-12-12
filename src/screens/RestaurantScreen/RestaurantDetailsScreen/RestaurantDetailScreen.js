@@ -19,6 +19,18 @@ import { reviewService, userService, menuService } from '../../../services';
 import { useTheme } from '../../../context/ThemeContext';
 import Toast from '../../../components/Toast';
 
+const getPlaceTypeLabel = (type) => {
+  const typeMap = {
+    'CAFE': 'Kafe',
+    'RESTAURANT': 'Restoran',
+    'BAR': 'Bar',
+    'BISTRO': 'Bistro',
+    'DESSERT': 'Tatlıcı',
+    'FASTFOOD': 'Fast Food',
+  };
+  return typeMap[type] || type;
+};
+
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
   const { theme } = useTheme();
@@ -265,7 +277,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
 
         <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
-          <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{finalRestaurantData.placeType || 'Restoran'}</Text>
+          <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{getPlaceTypeLabel(finalRestaurantData.placeType) || 'Restoran'}</Text>
           <View style={[styles.restaurantMeta, { justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
             <View style={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', maxWidth: '100%', flexWrap: 'wrap' }}>

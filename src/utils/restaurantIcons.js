@@ -1,4 +1,4 @@
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Restoran type'ına göre icon bilgilerini döndüren fonksiyon
 export const getRestaurantIcon = (type) => {
@@ -6,7 +6,9 @@ export const getRestaurantIcon = (type) => {
     'CAFE': { name: 'coffee', iconType: 'FontAwesome', color: '#ffffffff' },
     'RESTAURANT': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
     'BAR': { name: 'glass', iconType: 'FontAwesome', color: '#ffffffff' },
-    'BISTRO': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' }
+    'BISTRO': { name: 'cutlery', iconType: 'FontAwesome', color: '#ffffffff' },
+    'DESSERT': { name: 'birthday-cake', iconType: 'FontAwesome', color: '#ffffffff' },
+    'FASTFOOD': { name: 'hamburger', iconType: 'FontAwesome5', color: '#ffffffff' }
   };
   return iconMap[type] || iconMap.default;
 };
@@ -20,6 +22,8 @@ export const getRestaurantIconComponent = (type, size = 24, customColor = null) 
       return <MaterialIcons name={iconData.name} size={size} color={color} />;
     case 'MaterialCommunityIcons':
       return <MaterialCommunityIcons name={iconData.name} size={size} color={color} />;
+    case 'FontAwesome5':
+      return <FontAwesome5 name={iconData.name} size={size} color={color} />;
     case 'FontAwesome':
     default:
       return <FontAwesome name={iconData.name} size={size} color={color} />;
@@ -34,6 +38,10 @@ export const getRestaurantIconForHTML = (type) => {
     return 'fas fa-coffee';
   } else if (type === 'BAR') {
     return 'fas fa-wine-glass';
+  } else if (type === 'DESSERT') {
+    return 'fas fa-birthday-cake';
+  } else if (type === 'FASTFOOD') {
+    return 'fas fa-hamburger';
   }
   
   // Legacy support

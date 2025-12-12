@@ -10,6 +10,18 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { userService } from '../../services';
 
+const getPlaceTypeLabel = (type) => {
+  const typeMap = {
+    'CAFE': 'Kafe',
+    'RESTAURANT': 'Restoran',
+    'BAR': 'Bar',
+    'BISTRO': 'Bistro',
+    'DESSERT': 'Tatlıcı',
+    'FASTFOOD': 'Fast Food',
+  };
+  return typeMap[type] || type;
+};
+
 export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, styles }) => {
   const { theme } = useTheme();
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -151,7 +163,7 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
           </View>
         </View>
         
-        <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>{item.placeType}</Text>
+        <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>{getPlaceTypeLabel(item.placeType)}</Text>
         
         <View style={styles.cardFooter}>
           <View style={styles.infoItem}>

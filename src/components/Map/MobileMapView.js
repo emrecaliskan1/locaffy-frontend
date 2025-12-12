@@ -177,6 +177,10 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
             return 'fas fa-coffee';
           } else if (type === 'BAR') {
             return 'fas fa-wine-glass';
+          } else if (type === 'DESSERT') {
+            return 'fas fa-birthday-cake';
+          } else if (type === 'FASTFOOD') {
+            return 'fas fa-hamburger';
           }
           
           return 'fas fa-utensils';

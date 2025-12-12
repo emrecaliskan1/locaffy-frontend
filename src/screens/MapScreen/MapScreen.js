@@ -216,6 +216,20 @@ export default function MapScreen({ navigation }) {
       iconFamily: 'FontAwesome',
       label: 'Bar', 
       description: 'Bar, Alkollü mekanlar'
+    },
+    { 
+      types: ['DESSERT'], 
+      icon: 'birthday-cake', 
+      iconFamily: 'FontAwesome',
+      label: 'Tatlı', 
+      description: 'Pastane, Tatlıcı'
+    },
+    { 
+      types: ['FASTFOOD'], 
+      icon: 'hamburger', 
+      iconFamily: 'FontAwesome5',
+      label: 'Fast Food', 
+      description: 'Hızlı yemek'
     }
   ];
 
