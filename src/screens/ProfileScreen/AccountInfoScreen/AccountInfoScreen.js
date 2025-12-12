@@ -40,6 +40,18 @@ export default function AccountInfoScreen({ navigation, route }) {
   const loadUserProfile = async () => {
     try {
       setLoading(true);
+      const profile = await userService.getProfile();
+      setUserInfo({
+        name: profile?.username || user?.username || '',
+        email: profile?.email || user?.email || '',
+        username: profile?.username || user?.username || '',
+        phone: profile?.phoneNumber || '',
+      });
+      if (profile?.profileImageUrl) {
+        setProfileImageUrl(profile.profileImageUrl);
+      }
+    } catch (error) {
+      console.log('Profile load error:', error);
       setUserInfo({
         name: user?.username || '',
         email: user?.email || '',
@@ -58,12 +70,16 @@ export default function AccountInfoScreen({ navigation, route }) {
   const handleSave = async () => {
     try {
       setSaving(true);
+      await userService.updateProfile({
+        username: userInfo.name,
+        phoneNumber: userInfo.phone,
+      });
       showToast('Değişiklikler kaydedildi', 'success');
       setTimeout(() => {
         navigation.goBack();
       }, 1000);
     } catch (error) {
-      showToast('Profil güncellenirken bir hata oluştu', 'error');
+      showToast(error.message || 'Profil güncellenirken bir hata oluştu', 'error');
     } finally {
       setSaving(false);
     }
