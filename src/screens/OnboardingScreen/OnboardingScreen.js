@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { styles } from './styles';
 import { useTheme } from '../../context/ThemeContext';
@@ -43,8 +43,12 @@ export default function OnboardingScreen({ navigation }) {
 
       <View style={styles.contentContainer}>
 
-        <View style={[styles.logoContainer, { backgroundColor: theme.colors.primary }]}>
-          <Text style={[styles.logoText, { color: '#FFFFFF' }]}>L</Text>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('../../../assets/locaffy.png')} 
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={styles.iconContainer}>

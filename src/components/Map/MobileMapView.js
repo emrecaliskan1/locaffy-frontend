@@ -212,8 +212,8 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
             const restaurantIcon = L.divIcon({
               className: 'custom-restaurant-marker',
               html: \`
-                <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-                  <div style="background: \${getRestaurantMarkerColor(restaurant.placeType)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);">
+                <div class="marker-wrapper" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s ease;">
+                  <div class="marker-circle" style="background: \${getRestaurantMarkerColor(restaurant.placeType)}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); transition: all 0.2s ease;">
                     <i class="\${getRestaurantIconClass(restaurant.placeType)}" style="color: white; font-size: 14px;"></i>
                   </div>
                   <div style="
@@ -234,6 +234,12 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
                     \${restaurant.name}
                   </div>
                 </div>
+                <style>
+                  .marker-wrapper:hover .marker-circle {
+                    transform: scale(1.2);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+                  }
+                </style>
               \`,
               iconSize: [140, 60],
               iconAnchor: [70, 32]

@@ -9,7 +9,8 @@ import {
   ScrollView,
   Animated,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
@@ -161,13 +162,19 @@ export default function AuthScreen({ navigation }) {
       <Animated.View 
         style={[
           styles.floatingElement1,
-          { transform: [{ translateY: floatAnim1 }] }
+          { 
+            backgroundColor: theme.isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.1)',
+            transform: [{ translateY: floatAnim1 }] 
+          }
         ]} 
       />
       <Animated.View 
         style={[
           styles.floatingElement2,
-          { transform: [{ translateY: floatAnim2 }] }
+          { 
+            backgroundColor: theme.isDarkMode ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)',
+            transform: [{ translateY: floatAnim2 }] 
+          }
         ]} 
       />
 
@@ -183,14 +190,6 @@ export default function AuthScreen({ navigation }) {
             }}
           >
             <View style={styles.header}>
-              <Animated.View 
-                style={[
-                  styles.logoContainer,
-                  { transform: [{ scale: scaleAnim }] }
-                ]}
-              >
-                <Text style={styles.logoText}>L</Text>
-              </Animated.View>
               <Text style={styles.title}>Locaffy'e Hoş Geldin</Text>
               <Text style={styles.subtitle}>
                 {activeTab === 'login' 
