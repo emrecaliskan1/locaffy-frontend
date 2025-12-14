@@ -56,17 +56,19 @@ export const styles = StyleSheet.create({
   categoriesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 8,
   },
   categoryButton: {
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 16,
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 12,
     backgroundColor: '#F8F9FA',
     borderWidth: 1,
     borderColor: '#E1E8ED',
-    minWidth: 80,
+    width: '22%',
+    aspectRatio: 1,
   },
   activeCategoryButton: {
     backgroundColor: '#FFFFFF',
@@ -74,8 +76,7 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
   },
   categoryIcon: {
-    fontSize: 20,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   categoryText: {
     fontSize: 12,
@@ -94,6 +95,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     borderWidth: 1,
     borderColor: '#E1E8ED',
+    alignItems: 'center',
   },
   activeOptionButton: {
     backgroundColor: '#FFFFFF',

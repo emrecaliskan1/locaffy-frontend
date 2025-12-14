@@ -9,7 +9,8 @@ import {
   ScrollView,
   Animated,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useRef } from 'react';
@@ -29,6 +30,7 @@ export default function AuthScreen({ navigation }) {
     email: '',
     password: '',
     username: '',
+    phoneNumber: '',
     passwordConfirm: ''
   });
 
@@ -138,7 +140,8 @@ export default function AuthScreen({ navigation }) {
     try {
       const result = await register(
         formData.username,
-        formData.email, 
+        formData.email,
+        formData.phoneNumber,
         formData.password, 
         formData.passwordConfirm
       );
@@ -159,13 +162,19 @@ export default function AuthScreen({ navigation }) {
       <Animated.View 
         style={[
           styles.floatingElement1,
-          { transform: [{ translateY: floatAnim1 }] }
+          { 
+            backgroundColor: theme.isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.1)',
+            transform: [{ translateY: floatAnim1 }] 
+          }
         ]} 
       />
       <Animated.View 
         style={[
           styles.floatingElement2,
-          { transform: [{ translateY: floatAnim2 }] }
+          { 
+            backgroundColor: theme.isDarkMode ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)',
+            transform: [{ translateY: floatAnim2 }] 
+          }
         ]} 
       />
 
@@ -181,14 +190,6 @@ export default function AuthScreen({ navigation }) {
             }}
           >
             <View style={styles.header}>
-              <Animated.View 
-                style={[
-                  styles.logoContainer,
-                  { transform: [{ scale: scaleAnim }] }
-                ]}
-              >
-                <Text style={styles.logoText}>L</Text>
-              </Animated.View>
               <Text style={styles.title}>Locaffy'e Hoş Geldin</Text>
               <Text style={styles.subtitle}>
                 {activeTab === 'login' 
@@ -307,6 +308,18 @@ export default function AuthScreen({ navigation }) {
                       onChangeText={(value) => handleInputChange('email', value)}
                       keyboardType="email-address"
                       autoCapitalize="none"
+                    />
+                  </View>
+
+                  <View style={[styles.inputContainer, { backgroundColor: "#FFFFFF", borderColor: theme.colors.border }]}>
+                    <FontAwesome name="phone" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
+                    <TextInput
+                      style={[styles.input, { color: "#000000" }]}
+                      placeholder="Telefon Numarası"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      value={formData.phoneNumber}
+                      onChangeText={(value) => handleInputChange('phoneNumber', value)}
+                      keyboardType="phone-pad"
                     />
                   </View>
 

@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StatusBar,
   Animated,
+  Image,
 } from 'react-native';
 import Toast from '../../components/Toast';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -216,6 +217,20 @@ export default function MapScreen({ navigation }) {
       iconFamily: 'FontAwesome',
       label: 'Bar', 
       description: 'Bar, Alkollü mekanlar'
+    },
+    { 
+      types: ['DESSERT'], 
+      icon: 'birthday-cake', 
+      iconFamily: 'FontAwesome',
+      label: 'Tatlı', 
+      description: 'Pastane, Tatlıcı'
+    },
+    { 
+      types: ['FASTFOOD'], 
+      icon: 'hamburger', 
+      iconFamily: 'FontAwesome5',
+      label: 'Fast Food', 
+      description: 'Hızlı yemek'
     }
   ];
 
@@ -230,7 +245,11 @@ export default function MapScreen({ navigation }) {
           <TouchableOpacity 
             style={[styles.searchButton, { backgroundColor: theme.colors.background }]} 
             onPress={getLocation}>
-            <FontAwesome name="map-marker" size={18} color={theme.colors.primary} style={styles.searchIcon} />
+            <Image 
+              source={require('../../../assets/locaffyicon.png')} 
+              style={{ width: 24, height: 24 }}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
