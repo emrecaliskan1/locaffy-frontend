@@ -99,7 +99,13 @@ export default function HomeScreen({ navigation }) {
         });
       }
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-      setPlaces(availablePlaces);
+      // Mekanları yıldız puanına göre sırala
+      const sortedPlaces = availablePlaces.sort((a, b) => {
+        const ratingA = a.averageRating || 0;
+        const ratingB = b.averageRating || 0;
+        return ratingB - ratingA;
+      });
+      setPlaces(sortedPlaces);
     } catch (error) {
       console.error('Mekanlar yüklenirken hata oluştu:', error);
       setPlaces([]);
