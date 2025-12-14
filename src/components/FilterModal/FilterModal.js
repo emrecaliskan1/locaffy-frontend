@@ -4,8 +4,7 @@ import {
   Text, 
   TouchableOpacity, 
   Modal, 
-  ScrollView,
-  Switch
+  ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -35,13 +34,7 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const { theme } = useTheme();
   const [filters, setFilters] = useState({
     rating: 'all',
-    category: 'all',
-    features: {
-      selfService: false,
-      reservation: false,
-      card: false,
-      cash: false
-    }
+    category: 'all'
   });
 
   const handleRatingChange = (value) => {
@@ -52,16 +45,6 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
     setFilters(prev => ({ ...prev, category: value }));
   };
 
-  const handleFeatureToggle = (feature) => {
-    setFilters(prev => ({
-      ...prev,
-      features: {
-        ...prev.features,
-        [feature]: !prev.features[feature]
-      }
-    }));
-  };
-
   const handleApplyFilters = () => {
     onApplyFilters(filters);
     onClose();
@@ -70,13 +53,7 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const handleResetFilters = () => {
     setFilters({
       rating: 'all',
-      category: 'all',
-      features: {
-        selfService: false,
-        reservation: false,
-        card: false,
-        cash: false
-      }
+      category: 'all'
     });
   };
 
@@ -84,8 +61,10 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="pageSheet"
+      transparent={true}
     >
+      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end' }}>
+        <View style={{ height: '75%', backgroundColor: theme.colors.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, overflow: 'hidden' }}>
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
         <View style={[styles.header, { backgroundColor: theme.colors.background, borderBottomColor: theme.colors.border }]}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -173,35 +152,6 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
               ))}
             </View>
           </View>
-
-          <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Özellikler</Text>
-            <View style={styles.featuresContainer}>
-              {Object.entries(filters.features).map(([feature, value]) => (
-                <View key={feature} style={[styles.featureRow, { borderBottomColor: theme.colors.border }]}>
-                  <View style={styles.featureLabelContainer}>
-                    {feature === 'selfService' && <FontAwesome name="cutlery" size={16} color="#667eea" style={styles.featureIcon} />}
-                    {feature === 'reservation' && <FontAwesome name="calendar" size={16} color="#667eea" style={styles.featureIcon} />}
-                    {feature === 'card' && <FontAwesome name="credit-card" size={16} color="#667eea" style={styles.featureIcon} />}
-                    {feature === 'cash' && <FontAwesome name="money" size={16} color="#667eea" style={styles.featureIcon} />}
-                    <Text style={[styles.featureLabel, { color: theme.colors.text }]}>
-                      {feature === 'selfService' && ' Self Servis'}
-                      {feature === 'reservation' && ' Rezervasyon'}
-                      {feature === 'card' && ' Kart Ödemesi'}
-                      {feature === 'cash' && ' Nakit Ödeme'}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={value}
-                    onValueChange={() => handleFeatureToggle(feature)}
-                    trackColor={{ false: '#E1E8ED', true: COLORS.PRIMARY }}
-                    thumbColor={value ? COLORS.PRIMARY : '#FFFFFF'}
-                    style={{ borderWidth: 1, borderColor: value ? COLORS.PRIMARY : '#E1E8ED' }}
-                  />
-                </View>
-              ))}
-            </View>
-          </View>
         </ScrollView>
 
         <View style={[styles.footer, { backgroundColor: theme.colors.background, borderTopColor: theme.colors.border }]}>
@@ -210,6 +160,8 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+        </View>
+      </View>
     </Modal>
   );
 };
