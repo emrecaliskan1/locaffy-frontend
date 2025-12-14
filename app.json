@@ -33,12 +33,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      "expo-font"
+    ],
     "extra": {
+      "apiBaseUrl": "https://api.locaffy.store/api",
       "eas": {
-        "projectId": "f82150af-06a5-4e55-9f68-681fda9c569c"
-      },
-      "apiBaseUrl": "http://localhost:8080/api"
+        "projectId": "401baaa9-939d-4d08-a160-caddc3ee9a84"
+      }
     }
   }
 }
