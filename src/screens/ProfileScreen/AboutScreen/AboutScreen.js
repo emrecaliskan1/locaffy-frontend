@@ -181,7 +181,7 @@ export default function AboutScreen({ navigation }) {
             © 2025 Locaffy. Tüm hakları saklıdır.
           </Text>
           <Text style={[styles.footerSubtext, { color: theme.colors.textTertiary }]}>
-            Türkiye'de ❤️ ile yapıldı
+            Emir Öztürk'ün proje ekibi tarafından geliştirildi.
           </Text>
         </View>
 

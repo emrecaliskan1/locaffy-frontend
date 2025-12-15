@@ -28,7 +28,6 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // App Info Card
   appInfoCard: {
     margin: 20,
     padding: 30,
@@ -58,7 +57,6 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // Section
   section: {
     marginHorizontal: 20,
     marginBottom: 20,
@@ -69,7 +67,6 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Features Card
   featuresCard: {
     borderRadius: 16,
     overflow: 'hidden',
@@ -104,7 +101,6 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Contact Card
   contactCard: {
     borderRadius: 16,
     overflow: 'hidden',
@@ -137,7 +133,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // Legal Card
   legalCard: {
     borderRadius: 16,
     overflow: 'hidden',
@@ -164,7 +159,6 @@ export const styles = StyleSheet.create({
     fontWeight: '300',
   },
 
-  // Footer
   footer: {
     alignItems: 'center',
     paddingVertical: 24,

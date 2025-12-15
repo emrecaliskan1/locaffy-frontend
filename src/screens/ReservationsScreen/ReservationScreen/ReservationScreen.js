@@ -463,24 +463,19 @@ export default function ReservationScreen({ route, navigation }) {
         <Text style={[
           styles.dateDay, 
           isSelected && styles.selectedDateText,
-          !isWorkingDay && { color: '#999', opacity: 0.5 }
+          !isWorkingDay && styles.dateDayClosed
         ]}>
           {date.day}
         </Text>
         <Text style={[
           styles.dateMonth, 
           isSelected && styles.selectedDateText,
-          !isWorkingDay && { color: '#999', opacity: 0.5 }
+          !isWorkingDay && styles.dateMonthClosed
         ]}>
           {date.dayName} · {date.month}
         </Text>
         {!isWorkingDay && (
-          <Text style={{
-            fontSize: 8,
-            color: '#999',
-            textAlign: 'center',
-            marginTop: 2
-          }}>
+          <Text style={styles.dateClosedText}>
             Kapalı
           </Text>
         )}
@@ -545,12 +540,7 @@ export default function ReservationScreen({ route, navigation }) {
           {time}
         </Text>
         {isDisabled && disableReason && (
-          <Text style={{
-            fontSize: 8,
-            color: '#999',
-            textAlign: 'center',
-            marginTop: 2
-          }}>
+          <Text style={styles.timeSlotReason}>
             {disableReason}
           </Text>
         )}
