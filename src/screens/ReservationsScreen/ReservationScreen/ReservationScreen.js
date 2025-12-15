@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Toast from '../../../components/Toast';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { reservationService } from '../../../services';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAuth } from '../../../context/AuthContext';
@@ -24,7 +24,7 @@ const monthNames = [
   'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
 ];
 const availableTimes = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
-const maxPeople = 10;
+const maxPeople = 12;
 
 export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;
@@ -43,6 +43,7 @@ export default function ReservationScreen({ route, navigation }) {
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success', duration: 3000 });
+  const timeScrollViewRef = useRef(null);
 
   const showToast = (message, type = 'error', duration = 3000) => {
     setToast({ visible: true, message, type, duration });
@@ -205,7 +206,6 @@ export default function ReservationScreen({ route, navigation }) {
         await reservationService.getFirstAvailableDate(restaurant.id);
         
         if (mounted) {
-          // Backend ne dönerse dönsün, bugünden başlat
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           setFirstAvailableDate(today);
@@ -220,7 +220,6 @@ export default function ReservationScreen({ route, navigation }) {
         }
       } catch (error) {
         console.log('Error fetching first available date:', error);
-        // Hata durumunda da bugünden başlat
         if (mounted) {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -259,6 +258,45 @@ export default function ReservationScreen({ route, navigation }) {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTime(null);
+    
+    // Seçilen tarihe göre en yakın saate scroll yap
+    setTimeout(() => {
+      scrollToFirstAvailableTime(date);
+    }, 100);
+  };
+
+  const scrollToFirstAvailableTime = (date) => {
+    if (!timeScrollViewRef.current) return;
+    
+    const today = new Date();
+    const selectedDateOnly = new Date(date);
+    selectedDateOnly.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDateOnly.getTime() === today.getTime()) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      let firstAvailableIndex = -1;
+      for (let i = 0; i < reservationData.availableTimes.length; i++) {
+        const time = reservationData.availableTimes[i];
+        const [timeHour, timeMinute] = time.split(':').map(Number);
+        const reservationDateTime = new Date();
+        reservationDateTime.setHours(timeHour, timeMinute, 0, 0);
+        
+        if (reservationDateTime > now) {
+          firstAvailableIndex = i;
+          break;
+        }
+      }
+      if (firstAvailableIndex > 0) {
+        const scrollPosition = firstAvailableIndex * 105;
+        timeScrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
+      }
+    } else {
+      timeScrollViewRef.current.scrollTo({ x: 0, animated: true });
+    }
   };
 
   const handleTimeSelect = (time) => {
@@ -270,8 +308,7 @@ export default function ReservationScreen({ route, navigation }) {
   };
 
   const handleContinue = async () => {
-    // Client-side validasyonlar
-    
+
     // Tarih ve saat kontrolü
     if (!selectedDate || !selectedTime) {
       showToast('Lütfen tarih ve saat seçin.', 'error');
@@ -382,19 +419,16 @@ export default function ReservationScreen({ route, navigation }) {
             formattedMessage += '\n\nLütfen daha sonra tekrar deneyin.';
           }
           
-          showToast(formattedMessage, 'error', 0); // Manuel kapatma
+          showToast(formattedMessage, 'error', 0);
         }
         // Çakışma hatalarını tespit et (mekan veya kullanıcı çakışması)
         else if (errorMessage.includes('zaten bir rezervasyon') || 
                  errorMessage.includes('zaten başka bir rezervasyonunuz')) {
-          // Çakışma hataları için özel stil ve manuel kapatma
           showToast(errorMessage, 'conflict', 0);
         } else {
-          // Diğer validasyon hataları
           showToast(errorMessage, 'error', 4000);
         }
       } else {
-        // Diğer hatalar
         showToast(error.message || 'Rezervasyon oluşturulurken bir hata oluştu', 'error', 3000);
       }
     } finally {
@@ -601,9 +635,15 @@ export default function ReservationScreen({ route, navigation }) {
             <FontAwesome name="clock-o" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
             <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Saat Seçin</Text>
           </View>
-          <View style={styles.timesContainer}>
+          <ScrollView 
+            ref={timeScrollViewRef}
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.timesContainer}
+            contentContainerStyle={styles.timesContent}
+          >
             {reservationData.availableTimes.map(renderTimeSlot)}
-          </View>
+          </ScrollView>
         </View>
 
         {/* Not Bölümü */}

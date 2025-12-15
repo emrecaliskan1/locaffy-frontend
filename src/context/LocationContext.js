@@ -256,7 +256,7 @@ export const LocationProvider = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.log('Mevcut konum alınamadı:', error);
+
       // GPS hatası aldıysak şehir seçimi gerektiğini işaretle
       setNeedsCitySelection(true);
       return false;

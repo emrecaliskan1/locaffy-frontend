@@ -2,19 +2,17 @@ import * as Calendar from 'expo-calendar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-/**
- * Calendar Reminder Service
- * Rezervasyon onaylandığında takvim hatırlatıcısı oluşturur
- * ve rezervasyon iptal edildiğinde hatırlatıcıyı siler.
+/*
+ Calendar Reminder Service
+ Rezervasyon onaylandığında takvim hatırlatıcısı oluşturur
+ ve rezervasyon iptal edildiğinde hatırlatıcıyı siler.
  */
 
 const CALENDAR_STORAGE_PREFIX = 'eventId_';
 
 class CalendarReminderService {
-  /**
-   * Takvim izinlerini iste
-   * @returns {Promise<boolean>} İzin verildi mi?
-   */
+  
+  // Takvim izinlerini iste
   async requestCalendarPermissions() {
     try {
       if (Platform.OS === 'web') {
@@ -28,7 +26,7 @@ class CalendarReminderService {
         console.log('✅ Calendar permissions granted');
         return true;
       } else {
-        console.warn('⚠️ Calendar permissions denied');
+
         return false;
       }
     } catch (error) {
@@ -37,27 +35,20 @@ class CalendarReminderService {
     }
   }
 
-  /**
-   * Default takvimi al veya oluştur
-   * @returns {Promise<string|null>} Takvim ID'si
-   */
   async getDefaultCalendar() {
     try {
       const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
       
       console.log(`📅 Found ${calendars.length} calendars`);
       
-      // Herhangi bir takvim var mı?
       if (calendars.length === 0) {
         console.warn('No calendars found on device');
-        // Android için yeni takvim oluşturmayı dene
         if (Platform.OS === 'android') {
           return await this.createLocalCalendar();
         }
         return null;
       }
       
-      // iOS için - allowsModifications olan ilk takvim
       if (Platform.OS === 'ios') {
         const defaultCalendar = calendars.find(cal => cal.allowsModifications);
         if (defaultCalendar) {
@@ -66,41 +57,34 @@ class CalendarReminderService {
         }
       }
 
-      // Android için - owner veya primary olan
       if (Platform.OS === 'android') {
         const ownerCalendar = calendars.find(cal => cal.accessLevel === 'owner');
         if (ownerCalendar) {
-          console.log(`📅 Using Android calendar: ${ownerCalendar.title}`);
           return ownerCalendar.id;
         }
         
         const primaryCalendar = calendars.find(cal => cal.isPrimary);
         if (primaryCalendar) {
-          console.log(`📅 Using Android primary calendar: ${primaryCalendar.title}`);
           return primaryCalendar.id;
         }
       }
 
-      // Herhangi bir yazılabilir takvim
       const writableCalendar = calendars.find(cal => 
         cal.allowsModifications !== false && 
         cal.accessLevel !== 'read'
       );
       
       if (writableCalendar) {
-        console.log(`📅 Using writable calendar: ${writableCalendar.title}`);
         return writableCalendar.id;
       }
       
-      // Hiçbiri bulunamadıysa ilk takvimi kullan (son çare)
+      // Hiçbiri bulunamadıysa ilk takvimi kullan
       if (calendars[0]) {
-        console.log(`⚠️ Using first available calendar: ${calendars[0].title}`);
         return calendars[0].id;
       }
 
       return null;
     } catch (error) {
-      console.error('Error getting calendar:', error);
       return null;
     }
   }
@@ -118,8 +102,6 @@ class CalendarReminderService {
       const localSource = sources.find(cal => cal.source?.type === 'local');
       
       if (!localSource) {
-        console.warn('⚠️ No local calendar source - Google account may not be set up');
-        console.warn('ℹ️ To enable calendar reminders: Add a Google account in Settings → Accounts');
         return null;
       }
 
@@ -137,7 +119,6 @@ class CalendarReminderService {
       console.log(`✅ Created new calendar: ${newCalendarId}`);
       return newCalendarId;
     } catch (error) {
-      console.error('Error creating calendar:', error);
       return null;
     }
   }
@@ -176,11 +157,10 @@ class CalendarReminderService {
     if (hoursUntilReservation >= 2) {
       startDate = new Date(reservationDate.getTime() - (2 * 60 * 60 * 1000));
       alarms = [
-        { relativeOffset: 0, method: Calendar.AlarmMethod.ALERT },      // 2 saat önce
-        { relativeOffset: 90, method: Calendar.AlarmMethod.ALERT },     // 30 dk önce
+        { relativeOffset: 0, method: Calendar.AlarmMethod.ALERT },      
+        { relativeOffset: 90, method: Calendar.AlarmMethod.ALERT },    
       ];
     } 
-    // Rezervasyon 30 dk - 2 saat arasıysa: sadece 30 dk önce
     else {
       startDate = new Date(reservationDate.getTime() - (30 * 60 * 1000));
       alarms = [
@@ -212,19 +192,15 @@ class CalendarReminderService {
       const hasPermission = await this.requestCalendarPermissions();
       if (!hasPermission) return null;
 
-      // Takvim ID
       const calendarId = await this.getDefaultCalendar();
       if (!calendarId) {
         console.warn('⚠️ No calendar found - reminder will not be created');
         return null;
       }
 
-      // Tarihleri hesapla
       const dateInfo = this.calculateReminderDates(reservation.reservationTime);
       
-      // Rezervasyon çok yakınsa hatırlatıcı oluşturma
       if (!dateInfo.isValid) {
-        console.log(`⏰ Skipping reminder for reservation ${reservation.id}: ${dateInfo.reason}`);
         return null;
       }
 
@@ -245,13 +221,10 @@ class CalendarReminderService {
       
       if (eventId) {
         await this.saveEventId(reservation.id, eventId);
-        console.log(`✅ Reminder created for reservation ${reservation.id}`);
         return eventId;
       }
-
       return null;
     } catch (error) {
-      console.error('Error creating reminder:', error);
       return null;
     }
   }
@@ -267,7 +240,6 @@ class CalendarReminderService {
 
       const eventId = await this.getEventId(reservationId);
       if (!eventId) {
-        console.warn(`No event ID found for reservation ${reservationId}`);
         return false;
       }
 
@@ -276,18 +248,13 @@ class CalendarReminderService {
 
       await Calendar.deleteEventAsync(eventId);
       await this.removeEventId(reservationId);
-      
-      console.log(`✅ Reminder deleted for reservation ${reservationId}`);
       return true;
     } catch (error) {
-      console.error('Error deleting reminder:', error);
       return false;
     }
   }
 
-  /**
-   * Event ID'yi kaydet
-   */
+ // Event ID'yi kaydet
   async saveEventId(reservationId, eventId) {
     try {
       const key = `${CALENDAR_STORAGE_PREFIX}${reservationId}`;
@@ -297,9 +264,7 @@ class CalendarReminderService {
     }
   }
 
-  /**
-   * Event ID'yi al
-   */
+  // Event ID'yi al
   async getEventId(reservationId) {
     try {
       const key = `${CALENDAR_STORAGE_PREFIX}${reservationId}`;
@@ -310,9 +275,6 @@ class CalendarReminderService {
     }
   }
 
-  /**
-   * Event ID'yi sil
-   */
   async removeEventId(reservationId) {
     try {
       const key = `${CALENDAR_STORAGE_PREFIX}${reservationId}`;
@@ -322,9 +284,6 @@ class CalendarReminderService {
     }
   }
 
-  /**
-   * Tarih formatla
-   */
   formatDateTime(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -334,11 +293,7 @@ class CalendarReminderService {
     return `${day}.${month}.${year} ${hours}:${minutes}`;
   }
 
-  /**
-   * Rezervasyon durum değişikliklerini izle
-   * @param {Array} oldReservations - Eski liste
-   * @param {Array} newReservations - Yeni liste
-   */
+
   async watchStatusChanges(oldReservations, newReservations) {
     try {
       if (Platform.OS === 'web') return;
@@ -346,16 +301,16 @@ class CalendarReminderService {
 
       // İlk yükleme - APPROVED olanlar için hatırlatıcı oluştur (ama sadece yoksa)
       if (!oldReservations || oldReservations.length === 0) {
-        // Background'da çalıştır - UI'ı bloklamadan
+        // Background'da çalıştır 
         setTimeout(async () => {
           for (const reservation of newReservations) {
             if (reservation.status === 'APPROVED') {
               const existingEventId = await this.getEventId(reservation.id);
               if (!existingEventId) {
-                console.log(`📅 Initial load - creating reminder for reservation ${reservation.id}`);
+
                 await this.createReminder(reservation);
               } else {
-                console.log(`ℹ️ Reminder already exists for reservation ${reservation.id}`);
+                console.log(`ℹReminder already exists for reservation ${reservation.id}`);
               }
             }
           }
@@ -371,7 +326,6 @@ class CalendarReminderService {
         if (!oldRes && newRes.status === 'APPROVED') {
           const existingEventId = await this.getEventId(newRes.id);
           if (!existingEventId) {
-            console.log(`📅 New approved reservation ${newRes.id} - creating reminder`);
             await this.createReminder(newRes);
           }
           continue;
@@ -383,17 +337,16 @@ class CalendarReminderService {
           if (oldRes.status === 'PENDING' && newRes.status === 'APPROVED') {
             const existingEventId = await this.getEventId(newRes.id);
             if (!existingEventId) {
-              console.log(`📅 Reservation ${newRes.id} approved - creating reminder`);
               await this.createReminder(newRes);
             } else {
-              console.log(`ℹ️ Reminder already exists for reservation ${newRes.id}`);
+              console.log(`Reminder already exists for reservation ${newRes.id}`);
             }
           }
           
           // APPROVED → CANCELLED/REJECTED: Hatırlatıcıyı sil
           if (oldRes.status === 'APPROVED' && 
               (newRes.status === 'CANCELLED' || newRes.status === 'REJECTED')) {
-            console.log(`🗑️ Reservation ${newRes.id} cancelled - deleting reminder`);
+            console.log(`Reservation ${newRes.id} cancelled - deleting reminder`);
             await this.deleteReminder(newRes.id);
           }
         }

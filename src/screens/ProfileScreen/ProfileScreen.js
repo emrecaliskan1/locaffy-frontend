@@ -161,8 +161,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'SSS ve iletişim',
       icon: 'question-circle',
       iconColor: '#667eea',
-      onPress: () => {
-      },
+      onPress: () => navigation.navigate('HelpSupport'),
     },
     {
       id: 7,
@@ -170,8 +169,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Uygulama bilgileri',
       icon: 'info-circle',
       iconColor: '#667eea',
-      onPress: () => {
-      },
+      onPress: () => navigation.navigate('AboutScreen'),
     },
   ];
 

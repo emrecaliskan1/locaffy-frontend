@@ -15,6 +15,18 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
 const BOTTOM_SHEET_MIN_HEIGHT = 50;
 
+const getPlaceTypeLabel = (type) => {
+  const typeMap = {
+    'CAFE': 'Kafe',
+    'RESTAURANT': 'Restoran',
+    'BAR': 'Bar',
+    'BISTRO': 'Bistro',
+    'DESSERT': 'Tatlıcı',
+    'FASTFOOD': 'Fast Food',
+  };
+  return typeMap[type] || type;
+};
+
 export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
@@ -70,10 +82,12 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
             >
               <View style={[styles.restaurantItemInfo, { backgroundColor: theme.colors.background }]}>
                 <Text style={[styles.restaurantItemName, { color: theme.colors.text }]}>{restaurant.name}</Text>
-                <Text style={[styles.restaurantItemType, { color: theme.colors.textSecondary }]}>{restaurant.placeType}</Text>
+                <Text style={[styles.restaurantItemType, { color: theme.colors.textSecondary }]}>{getPlaceTypeLabel(restaurant.placeType)}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <FontAwesome name="star" size={14} color="#F1C40F" style={{ marginRight: 4 }} />
-                  <Text style={[styles.restaurantItemRating, { color: theme.colors.text }]}>{restaurant.averageRating || '0.0'}</Text>
+                  <Text style={[styles.restaurantItemRating, { color: theme.colors.text }]}>
+                    {restaurant.averageRating ? restaurant.averageRating.toFixed(1) : '0.0'}
+                  </Text>
                 </View>
                 <Text style={[styles.restaurantItemAddress, { color: theme.colors.textTertiary }]}>{restaurant.address}</Text>
               </View>

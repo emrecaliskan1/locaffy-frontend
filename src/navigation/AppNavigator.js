@@ -13,6 +13,8 @@ import ReservationsScreen from '../screens/ReservationsScreen';
 import AccountInfoScreen from '../screens/ProfileScreen/AccountInfoScreen';
 import FavoriteRestaurantsScreen from '../screens/ProfileScreen/FavoriteRestaurantsScreen';
 import NotificationSettingsScreen from '../screens/ProfileScreen/NotificationSettingsScreen';
+import AboutScreen from '../screens/ProfileScreen/AboutScreen';
+import HelpSupportScreen from '../screens/ProfileScreen/HelpSupportScreen';
 import CitySelectionScreen from '../screens/CitySelectionScreen';
 
 const Stack = createNativeStackNavigator();
@@ -41,6 +43,8 @@ export default function AppNavigator() {
               <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
               <Stack.Screen name="FavoriteRestaurants" component={FavoriteRestaurantsScreen} />
               <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+              <Stack.Screen name="AboutScreen" component={AboutScreen} />
+              <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
               <Stack.Screen 
                 name="CitySelectionModal" 
                 component={CitySelectionScreen} 

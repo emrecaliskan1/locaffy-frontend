@@ -9,10 +9,8 @@ export default function NotificationSettingsScreen({ navigation }) {
   const { theme } = useTheme();
   const [notifications, setNotifications] = useState({
     reservations: true,
-    promotions: false,
     updates: true,
     email: true,
-    sms: false,
     push: true,
   });
   const [saving, setSaving] = useState(false);
@@ -63,22 +61,6 @@ export default function NotificationSettingsScreen({ navigation }) {
             />
           </View>
 
-          <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>
-            <View style={styles.settingLeft}>
-              <FontAwesome name="gift" size={18} color="#F39C12" style={styles.settingIcon} />
-              <View style={styles.settingTextContainer}>
-                <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Kampanyalar ve Fırsatlar</Text>
-                <Text style={[styles.settingDescription, { color: theme.colors.textSecondary }]}>Özel teklifler ve indirimler</Text>
-              </View>
-            </View>
-            <Switch
-              value={notifications.promotions}
-              onValueChange={() => handleToggle('promotions')}
-              trackColor={{ false: '#E0E0E0', true: '#4CAF50' }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
               <FontAwesome name="info-circle" size={18} color="#667eea" style={styles.settingIcon} />
@@ -111,22 +93,6 @@ export default function NotificationSettingsScreen({ navigation }) {
             <Switch
               value={notifications.email}
               onValueChange={() => handleToggle('email')}
-              trackColor={{ false: '#E0E0E0', true: '#4CAF50' }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
-          <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>
-            <View style={styles.settingLeft}>
-              <FontAwesome name="comment" size={18} color="#667eea" style={styles.settingIcon} />
-              <View style={styles.settingTextContainer}>
-                <Text style={[styles.settingTitle, { color: theme.colors.text }]}>SMS Bildirimleri</Text>
-                <Text style={[styles.settingDescription, { color: theme.colors.textSecondary }]}>SMS ile bildirim al</Text>
-              </View>
-            </View>
-            <Switch
-              value={notifications.sms}
-              onValueChange={() => handleToggle('sms')}
               trackColor={{ false: '#E0E0E0', true: '#4CAF50' }}
               thumbColor="#FFFFFF"
             />

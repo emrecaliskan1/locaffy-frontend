@@ -384,6 +384,12 @@ export const styles = StyleSheet.create({
   reviewUser: {
     flex: 1,
   },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
   reviewUserName: {
     fontSize: 16,
     fontWeight: 'bold',

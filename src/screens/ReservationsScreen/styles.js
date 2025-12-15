@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '600',
     color: '#9CA3AF',
   },

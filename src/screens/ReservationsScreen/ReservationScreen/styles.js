@@ -145,9 +145,10 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   timesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    marginHorizontal: -5,
+  },
+  timesContent: {
+    paddingHorizontal: 5,
   },
   timeSlot: {
     backgroundColor: '#F8F9FA',
@@ -156,8 +157,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderWidth: 2,
     borderColor: 'transparent',
-    width: 95,
+    minWidth: 95,
     alignItems: 'center',
+    marginHorizontal: 5,
   },
   selectedTimeSlot: {
     backgroundColor: '#667eea',

@@ -81,18 +81,6 @@ export const InfoTab = ({ restaurant, styles }) => {
             ({restaurant.reviewCount || 0} {restaurant.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})
           </Text>
         </View>
-
-        <View style={[styles.webMapPlaceholder, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <FontAwesome name="map-marker" size={18} color={theme.colors.primary} style={{ marginRight: 8 }} />
-            <Text style={[styles.webMapTitle, { color: theme.colors.text }]}>Konum</Text>
-          </View>
-          <Text style={[styles.webMapText, { color: theme.colors.text }]}>{restaurant.name}</Text>
-          <Text style={[styles.webMapAddress, { color: theme.colors.textSecondary }]}>{restaurant.address || 'Adres bilgisi bulunmuyor'}</Text>
-          <TouchableOpacity style={[styles.webMapButton, { backgroundColor: theme.colors.primary }]}>
-            <Text style={[styles.webMapButtonText, { color: '#FFFFFF' }]}>Haritada Gör</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
