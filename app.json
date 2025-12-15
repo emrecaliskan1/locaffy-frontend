@@ -15,7 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Bu uygulama profil fotoğrafı seçmek için fotoğraf galerinize erişim istemektedir."
+        "NSPhotoLibraryUsageDescription": "Bu uygulama profil fotoğrafı seçmek için fotoğraf galerinize erişim istemektedir.",
+        "NSCalendarsUsageDescription": "Bu uygulama rezervasyon hatırlatmaları oluşturmak için takviminize erişim istemektedir."
       }
     },
     "android": {
@@ -27,7 +28,9 @@
       "package": "com.zenvero.locaffymobileapp",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
       ]
     },
     "web": {

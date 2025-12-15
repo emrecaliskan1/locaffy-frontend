@@ -16,7 +16,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
 import Toast from '../../components/Toast';
-import { reservationService } from '../../services';
+import { reservationService, calendarReminderService } from '../../services';
 
 
 export default function ReservationsScreen({ navigation, route }) {
@@ -26,6 +26,7 @@ export default function ReservationsScreen({ navigation, route }) {
 
   const [activeReservations, setActiveReservations] = useState([]);
   const [pastReservations, setPastReservations] = useState([]);
+  const [previousReservations, setPreviousReservations] = useState([]); // Durum değişikliği için
   const [loading, setLoading] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -45,6 +46,22 @@ export default function ReservationsScreen({ navigation, route }) {
     try {
       setLoading(true);
       const reservations = await reservationService.getUserReservations();
+      
+      // Durum değişikliklerini kontrol et (Calendar Reminder için)
+      const allCurrentReservations = [...activeReservations, ...pastReservations];
+      if (allCurrentReservations.length > 0) {
+        await calendarReminderService.watchStatusChanges(
+          allCurrentReservations,
+          reservations
+        );
+      } else if (reservations.length > 0) {
+        // İlk yükleme - APPROVED olanlar için hatırlatıcı oluştur
+        await calendarReminderService.watchStatusChanges(
+          [],
+          reservations
+        );
+      }
+      
       // Rezervasyonları tarih ve durumuna göre ayır
       const now = new Date();
       const active = reservations.filter(res => {
@@ -87,6 +104,7 @@ export default function ReservationsScreen({ navigation, route }) {
       
       setActiveReservations(active.sort(sortByCreatedDate));
       setPastReservations(past.sort(sortByCreatedDate));
+      setPreviousReservations(reservations); // Bir sonraki karşılaştırma için kaydet
     } catch (error) {
       showToast('Rezervasyonlar yüklenirken bir hata oluştu', 'error');
     } finally {
@@ -164,6 +182,10 @@ export default function ReservationsScreen({ navigation, route }) {
         selectedReservation.id,
         cancelReason.trim()
       );
+      
+      // Takvim hatırlatıcısını sil
+      await calendarReminderService.deleteReminder(selectedReservation.id);
+      
       setActiveReservations(prev => prev.filter(r => r.id !== selectedReservation.id));
       setPastReservations(prev => [
         {
