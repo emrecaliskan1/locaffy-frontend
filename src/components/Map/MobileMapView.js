@@ -1,104 +1,49 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
-import * as Location from 'expo-location';
 import { getRestaurantIconForHTML } from '../../utils/restaurantIcons';
 
 // WebView gerçek haritayı göstermek için(openstreetmap) kullanılıyor. Mini int tarayıcısı gibi.
+// Konum yönetimi LocationContext tarafından yapılıyor - buraya sadece props olarak geliyor.
 
 export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
 
-  const edirneCenter = { 
-    latitude: 41.6783, 
-    longitude: 26.5625, 
-    accuracy: 50 
+  // userLocation veya region'dan gelen konumu kullan (LocationContext'ten geliyor)
+  const getLocationFromProps = () => {
+    if (userLocation) {
+      return {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        accuracy: 50
+      };
+    }
+    if (region) {
+      return {
+        latitude: region.latitude,
+        longitude: region.longitude,
+        accuracy: 50
+      };
+    }
+    return null; // Konum yoksa null döner
   };
   
-  //Kullanıcının Anlık Konumu - Emülatör için Edirne Merkezi ekledim.
-  const [currentLocation, setCurrentLocation] = useState(userLocation || edirneCenter);
+  const [currentLocation, setCurrentLocation] = useState(getLocationFromProps());
   const [loading, setLoading] = useState(false);
   const webViewRef = useRef(null);
 
-  // Kullanıcının konumunu alıp güncelleyen fonksiyon
-  const getCurrentLocation = async () => {
-    setLoading(true);
-    try {
-      let { status } = await Location.getForegroundPermissionsAsync();
-      
-      if (status !== 'granted') {
-        let permission = await Location.requestForegroundPermissionsAsync();
-        if (permission.status !== 'granted') {
-          setLoading(false);
-          return;
-        }
-      }
-
-      // GPS'in açık olup olmadığını kontrol eder
-      let gpsEnabled = await Location.hasServicesEnabledAsync();
-      if (!gpsEnabled) {
-        setCurrentLocation(edirneCenter);
-        if (webViewRef.current) {
-          webViewRef.current.postMessage(JSON.stringify({
-            type: 'updateLocation',
-            location: edirneCenter
-          }));
-        }
-        setLoading(false);
-        return;
-      }
-      
-      let location = await Location.getCurrentPositionAsync({ 
-        accuracy: Location.Accuracy.BestForNavigation,
-        timeout: 15000, 
-        maximumAge: 1000 
-      });
-      
-      const newLocation = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        accuracy: location.coords.accuracy
-      };
-      
-      // Türkiye dışında ise Edirne merkez göster
-      if (newLocation.latitude < 35 || newLocation.latitude > 43 || 
-          newLocation.longitude < 25 || newLocation.longitude > 45) {
-        setCurrentLocation(edirneCenter);
-        if (webViewRef.current) {
-          webViewRef.current.postMessage(JSON.stringify({
-            type: 'updateLocation',
-            location: edirneCenter
-          }));
-        }
-      } else {
-        setCurrentLocation(newLocation);
-        if (webViewRef.current) {
-          webViewRef.current.postMessage(JSON.stringify({
-            type: 'updateLocation',
-            location: newLocation
-          }));
-        }
-      }
-      
-    } catch (error) {
-      setCurrentLocation(edirneCenter);
+  // userLocation veya region değiştiğinde konumu güncelle
+  useEffect(() => {
+    const newLocation = getLocationFromProps();
+    if (newLocation) {
+      setCurrentLocation(newLocation);
       if (webViewRef.current) {
         webViewRef.current.postMessage(JSON.stringify({
           type: 'updateLocation',
-          location: edirneCenter
+          location: newLocation
         }));
       }
-    } finally {
-      setLoading(false);
     }
-  };  
-  
-  // Sayfa yüklendiginde konumu alır
-  useEffect(() => {
-    if (!currentLocation) {
-      setCurrentLocation(edirneCenter);
-    }
-    getCurrentLocation();
-  }, []);
+  }, [userLocation?.latitude, userLocation?.longitude, region?.latitude, region?.longitude]);
 
   // Restaurants verisi degistiginde haritayı güncelle
   useEffect(() => {
@@ -115,8 +60,38 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
 
   // Harita HTML içeriğini oluşturan fonksiyon
   const createMapHTML = () => {
-    const centerLat = currentLocation?.latitude || edirneCenter.latitude;
-    const centerLng = currentLocation?.longitude || edirneCenter.longitude;
+    // Konum yoksa harita gösterme
+    if (!currentLocation) {
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <style>
+            body { 
+              margin: 0; 
+              padding: 0; 
+              display: flex; 
+              justify-content: center; 
+              align-items: center; 
+              height: 100vh; 
+              background: #f5f5f5;
+              font-family: sans-serif;
+            }
+            .message { text-align: center; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="message">
+            <p>Konum bekleniyor...</p>
+          </div>
+        </body>
+        </html>
+      `;
+    }
+    
+    const centerLat = currentLocation.latitude;
+    const centerLng = currentLocation.longitude;
     
     // Icon mapping fonksiyonu HTML içinde tanımla (3 kategori gruplandırma)
     const getRestaurantIconClass = (type) => {

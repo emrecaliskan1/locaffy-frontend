@@ -20,7 +20,7 @@ import { useLocation } from '../../context/LocationContext';
 
 export default function MapScreen({ navigation }) {
   const { theme } = useTheme();
-  const { currentLocation, hasLocationPermission, getLocationText } = useLocation();
+  const { currentLocation, hasLocationPermission, getLocationText, needsCitySelection } = useLocation();
   const [region, setRegion] = useState(null);
 
   const [userLocation, setUserLocation] = useState(null);
@@ -45,6 +45,13 @@ export default function MapScreen({ navigation }) {
   useEffect(() => {
     initializeMap();
   }, [currentLocation]);
+
+  useEffect(() => {
+    // Eğer currentLocation yoksa ve şehir seçimi gerekiyorsa, kullanıcıyı yönlendir
+    if (!currentLocation && needsCitySelection) {
+      navigation.navigate('CitySelectionModal', { isModal: true });
+    }
+  }, [currentLocation, needsCitySelection]);
 
   const initializeMap = async () => {
     setLoading(true);

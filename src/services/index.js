@@ -6,6 +6,7 @@ export { default as adminService } from './adminService';
 export { default as imageService } from './imageService';
 export { default as userService } from './userService';
 export { default as reservationService } from './reservationService';
+export { default as calendarReminderService } from './calendarReminderService';
 
 export { 
   businessService, 

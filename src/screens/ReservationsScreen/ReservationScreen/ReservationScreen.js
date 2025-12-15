@@ -201,16 +201,17 @@ export default function ReservationScreen({ route, navigation }) {
     const fetchFirstAvailableDate = async () => {
       try {
         setLoading(true);
-        // Backend'den ilk müsait tarihi al
-        const firstDateStr = await reservationService.getFirstAvailableDate(restaurant.id);
+        // Backend'den ilk müsait tarihi al (ama bugünden başlatacağız)
+        await reservationService.getFirstAvailableDate(restaurant.id);
         
-        if (firstDateStr && mounted) {
-          // ISO formatından Date objesine çevir
-          const firstDate = new Date(firstDateStr);
-          setFirstAvailableDate(firstDate);
+        if (mounted) {
+          // Backend ne dönerse dönsün, bugünden başlat
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          setFirstAvailableDate(today);
           
-          // Takvimi backend'den gelen tarihten başlat
-          const dates = generateNextDates(14, firstDate);
+          // Takvimi bugünden başlat
+          const dates = generateNextDates(14, today);
           setReservationData({
             availableDates: dates,
             availableTimes: availableTimes,
@@ -219,6 +220,18 @@ export default function ReservationScreen({ route, navigation }) {
         }
       } catch (error) {
         console.log('Error fetching first available date:', error);
+        // Hata durumunda da bugünden başlat
+        if (mounted) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          setFirstAvailableDate(today);
+          const dates = generateNextDates(14, today);
+          setReservationData({
+            availableDates: dates,
+            availableTimes: availableTimes,
+            maxPeople: maxPeople
+          });
+        }
       } finally {
         if (mounted) {
           setLoading(false);

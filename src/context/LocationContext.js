@@ -43,6 +43,57 @@ export const LocationProvider = ({ children }) => {
       
       // Önce kaydedilmiş şehir var mı kontrol et
       const savedCity = await AsyncStorage.getItem('selectedCity');
+      
+      // Lokasyon izni kontrol et
+      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
+      
+      if (existingStatus === 'granted') {
+        setHasLocationPermission(true);
+        // GPS izni varsa, gerçek konumu almaya çalış
+        const success = await getCurrentLocation();
+        
+        if (!success) {
+          // GPS konum alınamadı, kaydedilmiş şehir var mı kontrol et
+          if (savedCity) {
+            const cityData = JSON.parse(savedCity);
+            setSelectedCity(cityData);
+            setCurrentLocation({
+              latitude: cityData.coordinates.lat,
+              longitude: cityData.coordinates.lng,
+              cityName: cityData.name
+            });
+            setNeedsCitySelection(false);
+          } else {
+            setNeedsCitySelection(true);
+          }
+        } else {
+          setNeedsCitySelection(false);
+        }
+      } else {
+        setHasLocationPermission(false);
+        
+        // Konum izni yoksa:
+        // - Eğer kaydedilmiş şehir varsa → onu kullan, şehir seçme ekranını gösterme
+        // - Eğer kaydedilmiş şehir yoksa → şehir seçme ekranını göster
+        if (savedCity) {
+          const cityData = JSON.parse(savedCity);
+          setSelectedCity(cityData);
+          setCurrentLocation({
+            latitude: cityData.coordinates.lat,
+            longitude: cityData.coordinates.lng,
+            cityName: cityData.name
+          });
+          setNeedsCitySelection(false);
+        } else {
+          // Hiç şehir seçilmemişse şehir seçme ekranını göster
+          setNeedsCitySelection(true);
+        }
+      }
+    } catch (error) {
+      console.log('Lokasyon başlatma hatası:', error);
+      setHasLocationPermission(false);
+      
+      const savedCity = await AsyncStorage.getItem('selectedCity');
       if (savedCity) {
         const cityData = JSON.parse(savedCity);
         setSelectedCity(cityData);
@@ -51,24 +102,8 @@ export const LocationProvider = ({ children }) => {
           longitude: cityData.coordinates.lng,
           cityName: cityData.name
         });
-      }
-      // Lokasyon izni kontrol et
-      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
-      
-      if (existingStatus === 'granted') {
-        setHasLocationPermission(true);
-        await getCurrentLocation();
+        setNeedsCitySelection(false);
       } else {
-        setHasLocationPermission(false);
-        if (!savedCity) {
-          setNeedsCitySelection(true);
-        }
-      }
-    } catch (error) {
-      console.log('Lokasyon başlatma hatası:', error);
-      setHasLocationPermission(false);
-      const savedCity = await AsyncStorage.getItem('selectedCity');
-      if (!savedCity) {
         setNeedsCitySelection(true);
       }
     } finally {
@@ -219,8 +254,12 @@ export const LocationProvider = ({ children }) => {
       
       showSuccessToast(`Konumunuz ${cityName} olarak ayarlandı`);
       
+      return true;
     } catch (error) {
       console.log('Mevcut konum alınamadı:', error);
+      // GPS hatası aldıysak şehir seçimi gerektiğini işaretle
+      setNeedsCitySelection(true);
+      return false;
     }
   };
 

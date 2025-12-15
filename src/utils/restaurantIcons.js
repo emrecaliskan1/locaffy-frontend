@@ -15,6 +15,12 @@ export const getRestaurantIcon = (type) => {
 
 export const getRestaurantIconComponent = (type, size = 24, customColor = null) => {
   const iconData = getRestaurantIcon(type);
+  
+  // Güvenlik kontrolü
+  if (!iconData || !iconData.iconType) {
+    return <FontAwesome name="cutlery" size={size} color={customColor || '#ffffffff'} />;
+  }
+  
   const color = customColor || iconData.color;
   
   switch (iconData.iconType) {

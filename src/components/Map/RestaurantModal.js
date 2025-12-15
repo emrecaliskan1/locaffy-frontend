@@ -80,38 +80,49 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+      <View style={{ 
+        flex: 1, 
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
         <TouchableOpacity 
-          style={styles.modalBackdrop} 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+          }} 
           activeOpacity={1} 
           onPress={onClose}
         />
-        <View style={[styles.modalContent, { 
+        <View style={{ 
           backgroundColor: theme.colors.background,
-          marginHorizontal: 20,
-          marginVertical: 20,
+          marginHorizontal: 15,
           borderRadius: 15,
-          maxHeight: '75%'
-        }]}>
+          width: '92%',
+          maxHeight: '90%',
+          minHeight: 580
+        }}>
 
-          <View style={[styles.modalHeader, {
+          <View style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             alignItems: 'center',
-            padding: 8,
+            padding: 10,
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.border
-          }]}>
-            <View />
+          }}>
             <TouchableOpacity 
-              style={[styles.modalCloseButton, {
+              style={{
                 backgroundColor: theme.colors.card,
                 width: 30,
                 height: 30,
                 borderRadius: 15,
                 alignItems: 'center',
                 justifyContent: 'center'
-              }]} 
+              }} 
               onPress={onClose}
             >
               <FontAwesome name="times" size={16} color={theme.colors.textSecondary} />
@@ -121,13 +132,14 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             {/* Restoran Görseli */}
             <View style={{ 
-              height: 200, 
+              height: 220, 
               backgroundColor: theme.colors.card,
               alignItems: 'center',
               justifyContent: 'center',
               marginHorizontal: 15,
               marginTop: 10,
-              borderRadius: 10
+              borderRadius: 10,
+              overflow: 'hidden'
             }}>
               <Image 
                 source={getImageUrl() ? { uri: getImageUrl() } : require('../../../assets/icon.png')} 
@@ -141,14 +153,14 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
             </View>
             
             {/* Restoran Bilgileri */}
-            <View style={{ padding: 20 }}>
+            <View style={{ padding: 15 }}>
         
-              <Text style={[styles.modalRestaurantName, {
-                fontSize: 24,
+              <Text style={{
+                fontSize: 22,
                 fontWeight: 'bold',
                 color: theme.colors.text,
                 marginBottom: 8
-              }]}>{restaurant.name}</Text>
+              }}>{restaurant.name}</Text>
               
               <View style={{
                 flexDirection: 'row',
@@ -273,28 +285,28 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
           </ScrollView>
           
           {/* Action Button */}
-          <View style={[styles.modalActions, {
-            padding: 20,
+          <View style={{
+            padding: 15,
             borderTopWidth: 1,
             borderTopColor: theme.colors.border
-          }]}>
+          }}>
             <TouchableOpacity 
-              style={[styles.modalDetailButton, {
+              style={{
                 backgroundColor: theme.colors.primary,
                 paddingVertical: 15,
                 borderRadius: 10,
                 alignItems: 'center'
-              }]}
+              }}
               onPress={() => {
                 onClose();
                 onViewDetails(restaurant);
               }}
             >
-              <Text style={[styles.modalDetailButtonText, {
+              <Text style={{
                 color: '#fff',
                 fontSize: 16,
                 fontWeight: '600'
-              }]}>Detay Gör</Text>
+              }}>Detay Gör</Text>
             </TouchableOpacity>
           </View>
         </View>
