@@ -27,10 +27,40 @@ const getPlaceTypeLabel = (type) => {
   return typeMap[type] || type;
 };
 
-export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle }) => {
+export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle, userLocation }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
   const { theme } = useTheme();
+
+  // Mesafe hesaplama fonksiyonu (Haversine formülü)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Dünya'nın yarıçapı (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // km cinsinden mesafe
+    return distance;
+  };
+
+  const getDistance = (restaurant) => {
+    if (restaurant.distance !== undefined && restaurant.distance !== null) {
+      return typeof restaurant.distance === 'number' ? restaurant.distance / 1000 : restaurant.distance;
+    }
+
+    if (userLocation && restaurant.latitude && restaurant.longitude) {
+      return calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        restaurant.latitude,
+        restaurant.longitude
+      );
+    }
+    return null;
+  };
 
   // Alt sayfa açma/kapatma fonksiyonu
   const toggleSheet = () => {
@@ -96,7 +126,10 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
                   {getRestaurantIconComponent(restaurant.placeType, 18, theme.colors.primary)}
                 </View>
                 <Text style={[styles.restaurantItemDistance, { color: theme.colors.textSecondary }]}>
-                  {restaurant.distance ? `${(restaurant.distance / 1000).toFixed(1)} km` : 'Yakın'}
+                  {(() => {
+                    const distance = getDistance(restaurant);
+                    return distance !== null ? `${distance.toFixed(1)} km` : 'Yakın';
+                  })()}
                 </Text>
               </View>
             </TouchableOpacity>

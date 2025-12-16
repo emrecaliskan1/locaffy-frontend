@@ -126,7 +126,8 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
       <View style={styles.cardImageContainer}>
         <Image 
           source={item.mainImageUrl ? { uri: item.mainImageUrl } : require('../../../assets/icon.png')} 
-          style={styles.cardImage} 
+          style={styles.cardImage}
+          resizeMode="cover"
         />
         <TouchableOpacity 
           style={styles.favoriteButton}

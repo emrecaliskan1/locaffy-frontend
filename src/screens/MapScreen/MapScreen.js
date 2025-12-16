@@ -55,16 +55,16 @@ export default function MapScreen({ navigation }) {
 
   const initializeMap = async () => {
     setLoading(true);
-    setPlaces([]); 
-    
+    setPlaces([]);
+
     try {
       if (currentLocation) {
         // LocationContext'ten gelen konum var (seçilen şehir)
-        setUserLocation({ 
-          latitude: currentLocation.latitude, 
-          longitude: currentLocation.longitude 
+        setUserLocation({
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude
         });
-        
+
         setRegion({
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
@@ -90,9 +90,9 @@ export default function MapScreen({ navigation }) {
       if (status !== 'granted') {
         showToast('Konum izni verilmedi. Seçilen şehir gösterilecek.', 'info');
         if (currentLocation) {
-          setUserLocation({ 
-            latitude: currentLocation.latitude, 
-            longitude: currentLocation.longitude 
+          setUserLocation({
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude
           });
           setRegion({
             latitude: currentLocation.latitude,
@@ -105,15 +105,15 @@ export default function MapScreen({ navigation }) {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({ 
-        accuracy: Location.Accuracy.Balanced 
+      let location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced
       });
-      
-      setUserLocation({ 
-        latitude: location.coords.latitude, 
-        longitude: location.coords.longitude 
+
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude
       });
-      
+
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
@@ -123,9 +123,9 @@ export default function MapScreen({ navigation }) {
     } catch (error) {
       // Hata durumunda LocationContext'ten gelen konum kullanılacak
       if (currentLocation) {
-        setUserLocation({ 
-          latitude: currentLocation.latitude, 
-          longitude: currentLocation.longitude 
+        setUserLocation({
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude
         });
       } else {
         setUserLocation(null);
@@ -143,14 +143,55 @@ export default function MapScreen({ navigation }) {
       if (!userLocation || !currentLocation) {
         return;
       }
-      
+
       const lat = userLocation.latitude;
       const lng = userLocation.longitude;
       const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
       const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
 
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-      setPlaces(availablePlaces);
+
+      const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+        return distance;
+      };
+
+      // Her mekan için mesafe hesapla
+      const placesWithDistance = availablePlaces.map(place => {
+        let distance;
+        if (place.distance !== undefined && place.distance !== null) {
+          // API'den gelen distance metre cinsindeyse km'ye çevir
+          distance = typeof place.distance === 'number' ? place.distance / 1000 : place.distance;
+        } else if (place.latitude && place.longitude) {
+          // Mesafeyi hesapla
+          distance = calculateDistance(
+            lat,
+            lng,
+            place.latitude,
+            place.longitude
+          );
+        } else {
+          // Konum bilgisi yoksa çok uzak olarak işaretle
+          distance = Infinity;
+        }
+        return { ...place, calculatedDistance: distance };
+      });
+
+      const sortedPlaces = placesWithDistance.sort((a, b) => {
+        const distanceA = a.calculatedDistance || Infinity;
+        const distanceB = b.calculatedDistance || Infinity;
+        return distanceA - distanceB;
+      });
+
+      setPlaces(sortedPlaces);
     } catch (error) {
       setPlaces([]);
     } finally {
@@ -164,7 +205,7 @@ export default function MapScreen({ navigation }) {
       const timer = setTimeout(() => {
         loadPlaces();
       }, 150);
-      
+
       return () => clearTimeout(timer);
     } else {
       setPlaces([]);
@@ -204,39 +245,39 @@ export default function MapScreen({ navigation }) {
 
   // Map screendeki bilgilendirme Card'ı için
   const categoryInfo = [
-    { 
-      types: ['RESTAURANT', 'BISTRO'], 
-      icon: 'cutlery', 
+    {
+      types: ['RESTAURANT', 'BISTRO'],
+      icon: 'cutlery',
       iconFamily: 'FontAwesome',
-      label: 'Yemek', 
+      label: 'Yemek',
       description: 'Restoran, Bistro'
     },
-    { 
-      types: ['CAFE'], 
-      icon: 'coffee', 
+    {
+      types: ['CAFE'],
+      icon: 'coffee',
       iconFamily: 'FontAwesome',
-      label: 'Kahve', 
+      label: 'Kahve',
       description: 'Cafe'
     },
-    { 
-      types: ['BAR'], 
-      icon: 'glass', 
+    {
+      types: ['BAR'],
+      icon: 'glass',
       iconFamily: 'FontAwesome',
-      label: 'Bar', 
+      label: 'Bar',
       description: 'Bar, Alkollü mekanlar'
     },
-    { 
-      types: ['DESSERT'], 
-      icon: 'birthday-cake', 
+    {
+      types: ['DESSERT'],
+      icon: 'birthday-cake',
       iconFamily: 'FontAwesome',
-      label: 'Tatlı', 
+      label: 'Tatlı',
       description: 'Pastane, Tatlıcı'
     },
-    { 
-      types: ['FASTFOOD'], 
-      icon: 'hamburger', 
+    {
+      types: ['FASTFOOD'],
+      icon: 'hamburger',
       iconFamily: 'FontAwesome5',
-      label: 'Fast Food', 
+      label: 'Fast Food',
       description: 'Hızlı yemek'
     }
   ];
@@ -249,11 +290,11 @@ export default function MapScreen({ navigation }) {
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
             {getLocationText()}
           </Text>
-          <TouchableOpacity 
-            style={[styles.searchButton, { backgroundColor: theme.colors.background }]} 
+          <TouchableOpacity
+            style={[styles.searchButton, { backgroundColor: theme.colors.background }]}
             onPress={getLocation}>
-            <Image 
-              source={require('../../../assets/locaffyicon.png')} 
+            <Image
+              source={require('../../../assets/locaffyicon.png')}
               style={{ width: 24, height: 24 }}
               resizeMode="contain"
             />
@@ -270,7 +311,7 @@ export default function MapScreen({ navigation }) {
         </View>
       ) : (
         <>
-          
+
           <ModernMapView
             restaurants={places}
             onMarkerPress={handleMarkerPress}
@@ -279,18 +320,18 @@ export default function MapScreen({ navigation }) {
             styles={styles}
             onBottomSheetToggle={setBottomSheetExpanded}
           />
-          
+
           {infoCardVisible && (
-            <Animated.View 
+            <Animated.View
               style={[
-                styles.infoCard, 
-                { 
+                styles.infoCard,
+                {
                   opacity: infoCardAnimation,
-                  transform: [{ 
+                  transform: [{
                     translateY: infoCardAnimation.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [100, 0], 
-                    }) 
+                      outputRange: [100, 0],
+                    })
                   }]
                 }
               ]}
@@ -298,14 +339,14 @@ export default function MapScreen({ navigation }) {
               {/* Bilgilendirme Kartı */}
               <View style={styles.infoCardHeader}>
                 <Text style={styles.infoCardTitle}>Marker Kategorileri</Text>
-                <TouchableOpacity 
-                  style={styles.infoCardCloseButton} 
+                <TouchableOpacity
+                  style={styles.infoCardCloseButton}
                   onPress={toggleInfoCard}
                 >
                   <FontAwesome name="times" size={12} color="#666" />
                 </TouchableOpacity>
               </View>
-              
+
               {/* Bilgilendirme Kartı İçeriği */}
               <View style={styles.infoCardContent}>
                 {categoryInfo.map((category, index) => (
@@ -328,8 +369,8 @@ export default function MapScreen({ navigation }) {
           )}
 
           {!infoCardVisible && !bottomSheetExpanded && (
-            <TouchableOpacity 
-              style={[styles.infoToggleButton, { backgroundColor: theme.colors.card }]} 
+            <TouchableOpacity
+              style={[styles.infoToggleButton, { backgroundColor: theme.colors.card }]}
               onPress={toggleInfoCard}
             >
               <FontAwesome name="info-circle" size={16} color={theme.colors.primary} />
@@ -340,7 +381,7 @@ export default function MapScreen({ navigation }) {
 
       {/* Restoran Modalı */}
       <RestaurantModal
-        visible={modalVisible}  
+        visible={modalVisible}
         restaurant={selectedRestaurant}
         onClose={closeModal}
         onViewDetails={handleViewDetails}

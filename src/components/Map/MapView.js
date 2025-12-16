@@ -22,6 +22,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
           onMarkerPress={onMarkerPress}
           styles={styles}
           onToggle={onBottomSheetToggle}
+          userLocation={userLocation}
         />
       </View>
     );
@@ -41,6 +42,7 @@ export const ModernMapView = ({ restaurants, onMarkerPress, userLocation, region
           onMarkerPress={onMarkerPress}
           styles={styles}
           onToggle={onBottomSheetToggle}
+          userLocation={userLocation}
         />
       </View>
     );

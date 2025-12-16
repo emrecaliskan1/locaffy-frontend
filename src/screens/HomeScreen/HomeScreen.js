@@ -1,10 +1,7 @@
-import { 
-  View, 
-  Text, 
-  FlatList, 
-  TouchableOpacity, 
-  ScrollView,
-  Dimensions,
+import {
+  View,
+  Text,
+  FlatList,
   StatusBar,
   ActivityIndicator
 } from 'react-native';
@@ -47,14 +44,14 @@ export default function HomeScreen({ navigation }) {
   // Mekanları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
     if (place.isAvailable === false) return false;
-    
-    const matchesSearch = place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
-    const matchesCategory = appliedFilters.category === 'all' || 
-                           place.placeType?.toLowerCase() === appliedFilters.category.toLowerCase() ||
-                           place.placeType === appliedFilters.category.toUpperCase();
-    const matchesRating = appliedFilters.rating === 'all' || 
-                         (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
-    
+
+    const matchesSearch = !searchText || place.name?.toLowerCase().includes(searchText.toLowerCase()) || false;
+    const matchesCategory = appliedFilters.category === 'all' ||
+      place.placeType?.toLowerCase() === appliedFilters.category.toLowerCase() ||
+      place.placeType === appliedFilters.category.toUpperCase();
+    const matchesRating = appliedFilters.rating === 'all' ||
+      (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
+
     return matchesSearch && matchesCategory && matchesRating;
   });
 
@@ -81,30 +78,62 @@ export default function HomeScreen({ navigation }) {
         setLoading(false);
         return;
       }
-      
+
       let result;
       const latitude = currentLocation.latitude;
       const longitude = currentLocation.longitude;
       // Önce yakındaki tüm mekanları al
       result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
       let places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
-      
+
       if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
         places = places.filter(place => {
-          const categoryMatch = appliedFilters.category === 'all' || 
-                               place.placeType === appliedFilters.category.toUpperCase();
-          const ratingMatch = appliedFilters.rating === 'all' || 
-                             (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
+          const categoryMatch = appliedFilters.category === 'all' ||
+            place.placeType === appliedFilters.category.toUpperCase();
+          const ratingMatch = appliedFilters.rating === 'all' ||
+            (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
           return categoryMatch && ratingMatch;
         });
       }
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-      // Mekanları yıldız puanına göre sırala
-      const sortedPlaces = availablePlaces.sort((a, b) => {
-        const ratingA = a.averageRating || 0;
-        const ratingB = b.averageRating || 0;
-        return ratingB - ratingA;
+
+      // Mesafe hesaplama fonksiyonu (Haversine formülü)
+      const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Dünya'nın yarıçapı (km)
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // km cinsinden mesafe
+        return distance;
+      };
+      const placesWithDistance = availablePlaces.map(place => {
+        let distance;
+        if (place.distance !== undefined && place.distance !== null) {
+          distance = typeof place.distance === 'number' ? place.distance / 1000 : place.distance;
+        } else if (place.latitude && place.longitude) {
+          distance = calculateDistance(
+            latitude,
+            longitude,
+            place.latitude,
+            place.longitude
+          );
+        } else {
+          distance = Infinity;
+        }
+        return {...place, calculatedDistance: distance};
       });
+
+      // Mekanları mesafeye göre sırala
+      const sortedPlaces = placesWithDistance.sort((a, b) => {
+        const distanceA = a.calculatedDistance || Infinity;
+        const distanceB = b.calculatedDistance || Infinity;
+        return distanceA - distanceB;
+      });
+
       setPlaces(sortedPlaces);
     } catch (error) {
       console.error('Mekanlar yüklenirken hata oluştu:', error);
@@ -119,7 +148,6 @@ export default function HomeScreen({ navigation }) {
       const favorites = await userService.getFavorites();
       setFavoritesList(favorites || []);
     } catch (error) {
-      console.log('Favoriler yüklenirken hata:', error);
       setFavoritesList([]);
     }
   };
@@ -160,8 +188,8 @@ export default function HomeScreen({ navigation }) {
         data={filteredRestaurants}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <RestaurantCard 
-            item={item} 
+          <RestaurantCard
+            item={item}
             onPress={handleRestaurantPress}
             favoritesList={favoritesList}
             onFavoriteChange={loadFavorites}
