@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { getRestaurantIconForHTML } from '../../utils/restaurantIcons';
+import { useTheme } from '../../context/ThemeContext';
 
 // WebView gerçek haritayı göstermek için(openstreetmap) kullanılıyor. Mini int tarayıcısı gibi.
 // Konum yönetimi LocationContext tarafından yapılıyor - buraya sadece props olarak geliyor.
 
 export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
+  const { theme } = useTheme();
 
   // userLocation veya region'dan gelen konumu kullan (LocationContext'ten geliyor)
   const getLocationFromProps = () => {
@@ -122,6 +124,23 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
         #mapid { height: 100vh; width: 100vw; }
         .custom-restaurant-marker { background: transparent !important; border: none !important; }
         .user-location-marker { background: transparent !important; border: none !important; }
+        
+        /* Apple Maps tarzı koyu tema */
+        .apple-dark-map {
+          background-color: #0a1929 !important;
+        }
+        .apple-dark-map .leaflet-tile-pane {
+          filter: 
+            brightness(0.6) 
+            invert(1) 
+            contrast(1.2) 
+            hue-rotate(185deg) 
+            saturate(0.5);
+        }
+        .apple-dark-map .leaflet-control-attribution {
+          background-color: rgba(10, 25, 41, 0.8) !important;
+          color: #8b9dc3 !important;
+        }
       </style>
     </head>
     <body>
@@ -134,11 +153,19 @@ export const MobileMapView = ({ restaurants, onMarkerPress, userLocation, region
         
         var map = L.map('mapid').setView([${centerLat}, ${centerLng}], 16);
         
+        // Her zaman normal OSM kullan, CSS filter uygula
+        var isDarkTheme = ${theme.isDarkMode ? 'true' : 'false'};
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
           minZoom: 10
         }).addTo(map);
+        
+        // Koyu tema ise CSS class ekle
+        if (isDarkTheme) {
+          document.getElementById('mapid').classList.add('apple-dark-map');
+        }
         
         var userMarker = null;
         var accuracyCircle = null;

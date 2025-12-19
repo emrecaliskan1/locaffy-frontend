@@ -31,6 +31,8 @@ export default function HomeScreen({ navigation }) {
   const [appliedFilters, setAppliedFilters] = useState({
     category: 'all',
     rating: 'all',
+    distance: 'all',
+    openNow: false,
     features: {}
   });
 
@@ -52,8 +54,42 @@ export default function HomeScreen({ navigation }) {
       place.placeType === appliedFilters.category.toUpperCase();
     const matchesRating = appliedFilters.rating === 'all' ||
       (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
+    
+    // Uzaklık filtresi
+    const matchesDistance = appliedFilters.distance === 'all' || (() => {
+      if (!currentLocation?.latitude || !currentLocation?.longitude || !place.latitude || !place.longitude) {
+        return true; 
+      }
+      const distance = calculateDistance(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        place.latitude,
+        place.longitude
+      );
+      return distance <= parseInt(appliedFilters.distance) / 1000; 
+    })();
 
-    return matchesSearch && matchesCategory && matchesRating;
+    // Açık mekanlar filtresi
+    const matchesOpenNow = !appliedFilters.openNow || (() => {
+      if (!place.workingHours) return true;
+      const now = new Date();
+      const currentDay = now.getDay(); 
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+      
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const todaySchedule = place.workingHours[dayNames[currentDay]];
+      
+      if (!todaySchedule || todaySchedule.isClosed) return false;
+      
+      const [openHour, openMin] = todaySchedule.open.split(':').map(Number);
+      const [closeHour, closeMin] = todaySchedule.close.split(':').map(Number);
+      const openTime = openHour * 60 + openMin;
+      const closeTime = closeHour * 60 + closeMin;
+      
+      return currentTime >= openTime && currentTime <= closeTime;
+    })();
+
+    return matchesSearch && matchesCategory && matchesRating && matchesDistance && matchesOpenNow;
   });
 
   // Sayfa odaklanıldığında ve filtreler/lokasyon değiştiğinde yükle
@@ -87,13 +123,46 @@ export default function HomeScreen({ navigation }) {
       result = await placeService.getNearbyPlaces(latitude, longitude, 10000, true);
       let places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
 
-      if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all') {
+      if (appliedFilters.category !== 'all' || appliedFilters.rating !== 'all' || appliedFilters.distance !== 'all' || appliedFilters.openNow) {
         places = places.filter(place => {
           const categoryMatch = appliedFilters.category === 'all' ||
             place.placeType === appliedFilters.category.toUpperCase();
           const ratingMatch = appliedFilters.rating === 'all' ||
             (place.averageRating && place.averageRating >= parseFloat(appliedFilters.rating));
-          return categoryMatch && ratingMatch;
+          
+          // Uzaklık filtresi
+          const distanceMatch = appliedFilters.distance === 'all' || (() => {
+            if (!place.latitude || !place.longitude) return true;
+            const distance = calculateDistance(
+              latitude,
+              longitude,
+              place.latitude,
+              place.longitude
+            );
+            return distance <= parseInt(appliedFilters.distance) / 1000;
+          })();
+          
+          // Açık mekanlar filtresi
+          const openNowMatch = !appliedFilters.openNow || (() => {
+            if (!place.workingHours) return true;
+            const now = new Date();
+            const currentDay = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            
+            const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const todaySchedule = place.workingHours[dayNames[currentDay]];
+            
+            if (!todaySchedule || todaySchedule.isClosed) return false;
+            
+            const [openHour, openMin] = todaySchedule.open.split(':').map(Number);
+            const [closeHour, closeMin] = todaySchedule.close.split(':').map(Number);
+            const openTime = openHour * 60 + openMin;
+            const closeTime = closeHour * 60 + closeMin;
+          
+            return currentTime >= openTime && currentTime <= closeTime;
+          })();
+          
+          return categoryMatch && ratingMatch && distanceMatch && openNowMatch;
         });
       }
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);

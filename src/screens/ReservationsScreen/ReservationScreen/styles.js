@@ -175,7 +175,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   timeSlot: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: 'transparent',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 18,
@@ -185,24 +185,25 @@ export const styles = StyleSheet.create({
   },
   selectedTimeSlot: {
     backgroundColor: '#667eea',
+    borderRadius: 10,
   },
   timeText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2C3E50',
+    color: '#CCCCCC',
   },
   selectedTimeText: {
     color: '#FFFFFF',
   },
   timeSlotReason: {
     fontSize: 9,
-    color: '#777777',
+    color: '#AAAAAA',
     marginTop: 2,
     textAlign: 'center',
   },
   disabledTimeSlot: {
-    backgroundColor: '#F5F5F5',
-    opacity: 0.5,
+    backgroundColor: 'transparent',
+    opacity: 1,
   },
   buttonContainer: {
     paddingHorizontal: 20,

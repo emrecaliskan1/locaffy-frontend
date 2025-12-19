@@ -275,8 +275,6 @@ export default function ReservationScreen({ route, navigation }) {
     
     if (selectedDateOnly.getTime() === today.getTime()) {
       const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
       
       let firstAvailableIndex = -1;
       for (let i = 0; i < reservationData.availableTimes.length; i++) {
@@ -285,17 +283,35 @@ export default function ReservationScreen({ route, navigation }) {
         const reservationDateTime = new Date();
         reservationDateTime.setHours(timeHour, timeMinute, 0, 0);
         
-        if (reservationDateTime > now) {
+        // Hem geçmiş saat kontrolü hem de çalışma saati kontrolü
+        const isPastTime = reservationDateTime <= now;
+        const isWithinWorkingHours = isTimeWithinWorkingHours(time, date);
+        
+        if (!isPastTime && isWithinWorkingHours) {
           firstAvailableIndex = i;
           break;
         }
       }
       if (firstAvailableIndex > 0) {
-        const scrollPosition = firstAvailableIndex * 105;
+        const scrollPosition = firstAvailableIndex * 83; // minWidth (75) + marginHorizontal (4*2)
         timeScrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
       }
     } else {
-      timeScrollViewRef.current.scrollTo({ x: 0, animated: true });
+      // Gelecek tarih için ilk çalışma saatine scroll
+      let firstWorkingHourIndex = -1;
+      for (let i = 0; i < reservationData.availableTimes.length; i++) {
+        const time = reservationData.availableTimes[i];
+        if (isTimeWithinWorkingHours(time, date)) {
+          firstWorkingHourIndex = i;
+          break;
+        }
+      }
+      if (firstWorkingHourIndex > 0) {
+        const scrollPosition = firstWorkingHourIndex * 83;
+        timeScrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
+      } else {
+        timeScrollViewRef.current.scrollTo({ x: 0, animated: true });
+      }
     }
   };
 
@@ -546,7 +562,7 @@ export default function ReservationScreen({ route, navigation }) {
         <Text style={[
           styles.timeText, 
           isSelected && styles.selectedTimeText,
-          isDisabled && { color: '#777777' }
+          isDisabled && { color: '#888888' }
         ]}>
           {time}
         </Text>

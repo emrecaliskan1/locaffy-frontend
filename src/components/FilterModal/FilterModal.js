@@ -30,11 +30,20 @@ const ratingOptions = [
   { value: '2+', label: '2+', showStar: true }
 ];
 
+const distanceOptions = [
+  { value: 'all', label: 'Tüm Uzaklıklar' },
+  { value: '1000', label: '1km' },
+  { value: '3000', label: '3km' },
+  { value: '5000', label: '5km' }
+];
+
 const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const { theme } = useTheme();
   const [filters, setFilters] = useState({
     rating: 'all',
-    category: 'all'
+    category: 'all',
+    distance: 'all',
+    openNow: false
   });
 
   const handleRatingChange = (value) => {
@@ -45,6 +54,14 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
     setFilters(prev => ({ ...prev, category: value }));
   };
 
+  const handleDistanceChange = (value) => {
+    setFilters(prev => ({ ...prev, distance: value }));
+  };
+
+  const handleOpenNowToggle = () => {
+    setFilters(prev => ({ ...prev, openNow: !prev.openNow }));
+  };
+
   const handleApplyFilters = () => {
     onApplyFilters(filters);
     onClose();
@@ -53,7 +70,9 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
   const handleResetFilters = () => {
     setFilters({
       rating: 'all',
-      category: 'all'
+      category: 'all',
+      distance: 'all',
+      openNow: false
     });
   };
 
@@ -151,6 +170,57 @@ const FilterModal = ({ visible, onClose, onApplyFilters }) => {
                 </TouchableOpacity>
               ))}
             </View>
+          </View>
+
+          {/* Yakınlık Filtresi */}
+          <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Yakınlık</Text>
+            <View style={styles.optionsContainer}>
+              {distanceOptions.map((option) => (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[
+                    styles.optionButton,
+                    { borderColor: filters.distance === option.value ? theme.colors.primary : theme.colors.border, borderWidth: filters.distance === option.value ? 3 : 1 },
+                    filters.distance === option.value && styles.activeOptionButton
+                  ]}
+                  onPress={() => handleDistanceChange(option.value)}
+                >
+                  <Text style={[
+                    styles.optionText,
+                    { color: filters.distance === option.value ? "#FFFFFF" : theme.colors.primary },
+                    filters.distance === option.value && styles.activeOptionText
+                  ]}>
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Açık Mekanlar Filtresi */}
+          <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
+            <TouchableOpacity 
+              style={[styles.openNowContainer, { backgroundColor: theme.colors.card }]}
+              onPress={handleOpenNowToggle}
+            >
+              <View style={styles.openNowLeft}>
+                <MaterialIcons name="access-time" size={24} color={theme.colors.primary} />
+                <View style={styles.openNowTextContainer}>
+                  <Text style={[styles.openNowTitle, { color: theme.colors.text }]}>Sadece Açık Mekanlar</Text>
+                  <Text style={[styles.openNowSubtitle, { color: theme.colors.textSecondary }]}>Şu anda açık olan mekanları göster</Text>
+                </View>
+              </View>
+              <View style={[
+                styles.toggleSwitch,
+                { backgroundColor: filters.openNow ? theme.colors.primary : theme.colors.border }
+              ]}>
+                <View style={[
+                  styles.toggleCircle,
+                  { transform: [{ translateX: filters.openNow ? 20 : 0 }] }
+                ]} />
+              </View>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 

@@ -155,4 +155,42 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
+  openNowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+  },
+  openNowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  openNowTextContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  openNowTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  openNowSubtitle: {
+    fontSize: 12,
+  },
+  toggleSwitch: {
+    width: 48,
+    height: 28,
+    borderRadius: 14,
+    padding: 2,
+    justifyContent: 'center',
+  },
+  toggleCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+  },
 });

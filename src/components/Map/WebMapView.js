@@ -6,17 +6,26 @@ import {
 } from 'react-native';
 import { FontAwesome, FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getRestaurantIconForHTML } from '../../utils/restaurantIcons';
+import { useTheme } from '../../context/ThemeContext';
 
 export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, styles }) => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const { theme } = useTheme();
 
   // OpenStreetMap kullanarak web haritası
   useEffect(() => {
     if (!mapLoaded && mapRef.current) {
       initializeMap();
     }
-  }, [mapLoaded, userLocation, restaurants]);
+  }, [mapLoaded]);
+
+  // Theme değiştiğinde haritayı güncelle
+  useEffect(() => {
+    if (mapLoaded && window.map) {
+      updateMapTheme();
+    }
+  }, [theme.isDarkMode]);
 
   // Restaurants verisi degistiginde marker'ları güncelle
   useEffect(() => {
@@ -33,38 +42,102 @@ export const WebMapView = ({ restaurants, onMarkerPress, userLocation, region, s
     const mapElement = mapRef.current;
     if (!mapElement) return;
 
-    // Leaflet CSS ve JS yükleme
-    const leafletCSS = document.createElement('link');
-    leafletCSS.rel = 'stylesheet';
-    leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(leafletCSS);
+    // Leaflet zaten yüklü mü kontrol et
+    if (window.L) {
+      createMap();
+      return;
+    }
+
+    // Leaflet CSS ve JS yükleme (sadece bir kere)
+    if (!document.querySelector('link[href*="leaflet.css"]')) {
+      const leafletCSS = document.createElement('link');
+      leafletCSS.rel = 'stylesheet';
+      leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(leafletCSS);
+    }
 
     // FontAwesome CSS yükleme
-    const fontAwesomeCSS = document.createElement('link');
-    fontAwesomeCSS.rel = 'stylesheet';
-    fontAwesomeCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
-    document.head.appendChild(fontAwesomeCSS);
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+      const fontAwesomeCSS = document.createElement('link');
+      fontAwesomeCSS.rel = 'stylesheet';
+      fontAwesomeCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+      document.head.appendChild(fontAwesomeCSS);
+    }
 
-    const leafletJS = document.createElement('script');
-    leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    leafletJS.onload = () => {
-      createMap();
-    };
-    document.head.appendChild(leafletJS);
+    if (!document.querySelector('script[src*="leaflet.js"]')) {
+      const leafletJS = document.createElement('script');
+      leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      leafletJS.onload = () => {
+        createMap();
+      };
+      document.head.appendChild(leafletJS);
+    }
+  };
+
+  const updateMapTheme = () => {
+    console.log('updateMapTheme called, theme.isDarkMode:', theme.isDarkMode);
+    if (!window.map || !window.L) {
+      console.log('Map or Leaflet not available');
+      return;
+    }
+
+    // Harita container'ı al ve CSS class ekle/kaldır
+    const mapContainer = window.map.getContainer();
+    if (theme.isDarkMode) {
+      mapContainer.classList.add('apple-dark-map');
+    } else {
+      mapContainer.classList.remove('apple-dark-map');
+    }
   };
 
   const createMap = () => {
     const centerLat = userLocation?.latitude;
     const centerLng = userLocation?.longitude;
 
+    console.log('createMap called, theme.isDarkMode:', theme.isDarkMode);
+
+    // Apple Maps tarzı koyu tema için CSS ekle
+    if (!document.querySelector('#apple-dark-map-styles')) {
+      const style = document.createElement('style');
+      style.id = 'apple-dark-map-styles';
+      style.textContent = `
+        .apple-dark-map {
+          background-color: #0a1929 !important;
+        }
+        .apple-dark-map .leaflet-tile-pane {
+          filter: 
+            brightness(0.6) 
+            invert(1) 
+            contrast(1.2) 
+            hue-rotate(185deg) 
+            saturate(0.5);
+        }
+        .apple-dark-map .leaflet-control-attribution {
+          background-color: rgba(10, 25, 41, 0.8) !important;
+          color: #8b9dc3 !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     // Harita oluştur
     const map = window.L.map(mapRef.current).setView([centerLat, centerLng], 16);
 
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+    // Her zaman normal OSM kullan, CSS filter uygula
+    const tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const attribution = '© OpenStreetMap contributors';
+
+    console.log('Initial tile layer:', tileLayerUrl);
+    window.L.tileLayer(tileLayerUrl, {
+      attribution: attribution,
       maxZoom: 19,
       minZoom: 10
     }).addTo(map);
+
+    // Koyu tema ise CSS class ekle
+    if (theme.isDarkMode) {
+      map.getContainer().classList.add('apple-dark-map');
+    }
 
     // Konum Markerı
     if (userLocation) {
