@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -42,6 +42,17 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  
+  const scrollViewRef = useRef(null);
+  const menuRef = useRef(null);
+  const reviewsRef = useRef(null);
+  const infoRef = useRef(null);
+  const [menuLayout, setMenuLayout] = useState(0);
+  const [reviewsLayout, setReviewsLayout] = useState(0);
+  const [infoLayout, setInfoLayout] = useState(0);
+  const [showStickyTabs, setShowStickyTabs] = useState(false);
+  const [tabBarY, setTabBarY] = useState(0);
+  const tabBarRef = useRef(null);
 
   const restaurantData = restaurant || {
     id: 1,
@@ -129,6 +140,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
       const fetchedReviews = await reviewService.getPlaceReviews(restaurantData.id);
       setReviews(fetchedReviews || []);
     } catch (error) {
+      console.log('Error loading reviews:', error.message);
       setReviews([]);
     } finally {
       setLoadingReviews(false);
@@ -211,16 +223,36 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   };
 
   //MEKAN DETAY SAYFASINDAKİ TAB SEKMELERİ
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'menu':
-        return <MenuTab restaurant={finalRestaurantData} styles={styles} />;
-      case 'reviews':
-        return <ReviewsTab restaurant={finalRestaurantData} styles={styles} />;
-      case 'info':
-        return <InfoTab restaurant={finalRestaurantData} styles={styles} />;
-      default:
-        return <MenuTab restaurant={finalRestaurantData} styles={styles} />;
+  const scrollToSection = (section) => {
+    setActiveTab(section);
+    
+    if (scrollViewRef.current) {
+      if (section === 'info') {
+        // Bilgiler section'ı için sayfanın en altına git
+        scrollViewRef.current.scrollToEnd({ animated: true });
+      } else {
+        let targetY = 0;
+        
+        if (section === 'menu' && menuLayout > 0) {
+          targetY = menuLayout - 70; 
+        } else if (section === 'reviews' && reviewsLayout > 0) {
+          targetY = reviewsLayout - 70;
+        }
+        
+        if (targetY >= 0) {
+          scrollViewRef.current.scrollTo({ y: targetY, animated: true });
+        }
+      }
+    }
+  };
+
+  const handleScroll = (event) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+
+    if (tabBarY > 0 && scrollY >= tabBarY - 10) {
+      if (!showStickyTabs) setShowStickyTabs(true);
+    } else {
+      if (showStickyTabs) setShowStickyTabs(false);
     }
   };
 
@@ -259,8 +291,67 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         </View>
       </SafeAreaView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      {/* Sticky Tab Bar - Scroll yaparken üstte göster */}
+      {showStickyTabs && (
+        <View style={[styles.stickyTabContainerFixed, { backgroundColor: theme.colors.background }]}>
+          <TouchableOpacity
+            style={[
+              styles.stickyTab,
+              activeTab === 'menu' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+            ]}
+            onPress={() => scrollToSection('menu')}
+          >
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'menu' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Menü
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[
+              styles.stickyTab,
+              activeTab === 'reviews' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+            ]}
+            onPress={() => scrollToSection('reviews')}
+          >
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'reviews' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Yorumlar
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[
+              styles.stickyTab,
+              activeTab === 'info' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+            ]}
+            onPress={() => scrollToSection('info')}
+          >
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'info' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Bilgiler
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
+        <View>
         <View style={styles.imageContainer}>
           {finalRestaurantData.image ? (
             <Image
@@ -327,54 +418,94 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
         </TouchableOpacity>
-        
-        <View style={[styles.tabContainer, { backgroundColor: theme.colors.background, marginTop: 10 }]}>
+        </View>
+
+        {/* Tab Bar */}
+        <View 
+          ref={tabBarRef}
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setTabBarY(layout.y);
+          }}
+          style={[styles.stickyTabContainer, { backgroundColor: theme.colors.background }]}
+        >
           <TouchableOpacity
             style={[
-              styles.tab,
-              { backgroundColor: theme.colors.card, marginRight: 8 },
-              activeTab === 'menu'
-                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
-                : { borderColor: theme.colors.border }
+              styles.stickyTab,
+              activeTab === 'menu' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
             ]}
-            onPress={() => setActiveTab('menu')}
+            onPress={() => scrollToSection('menu')}
           >
-            <Text style={[styles.tabText, { color: activeTab === 'menu' ? '#FFFFFF' : theme.colors.text }]}>
-              <FontAwesome5 name="utensils" size={12} color={activeTab === 'menu' ? '#FFFFFF' : theme.colors.text} /> Menü
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'menu' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Menü
             </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity
             style={[
-              styles.tab,
-              { backgroundColor: theme.colors.card, marginRight: 8 },
-              activeTab === 'reviews'
-                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
-                : { borderColor: theme.colors.border }
+              styles.stickyTab,
+              activeTab === 'reviews' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
             ]}
-            onPress={() => setActiveTab('reviews')}
+            onPress={() => scrollToSection('reviews')}
           >
-            <Text style={[styles.tabText, { color: activeTab === 'reviews' ? '#FFFFFF' : theme.colors.text }]}>
-              <FontAwesome name="comments-o" color={activeTab === 'reviews' ? '#FFFFFF' : theme.colors.text} size={12} /> Yorumlar
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'reviews' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Yorumlar
             </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity
             style={[
-              styles.tab,
-              { backgroundColor: theme.colors.card },
-              activeTab === 'info'
-                ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary, borderWidth: 3 }
-                : { borderColor: theme.colors.border }
+              styles.stickyTab,
+              activeTab === 'info' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
             ]}
-            onPress={() => setActiveTab('info')}
+            onPress={() => scrollToSection('info')}
           >
-            <Text style={[styles.tabText, { color: activeTab === 'info' ? '#FFFFFF' : theme.colors.text }]}>
-              <FontAwesome name="info" color={activeTab === 'info' ? '#FFFFFF' : theme.colors.text} size={14} style={{ marginTop: 2, marginRight: 2 }} /> Bilgiler
+            <Text style={[
+              styles.stickyTabText, 
+              { color: theme.colors.text },
+              activeTab === 'info' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+            ]}>
+              Bilgiler
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={[styles.tabContentContainer, { backgroundColor: theme.colors.background }]}>
-          {renderTabContent()}
+        <View 
+          ref={menuRef}
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setMenuLayout(layout.y);
+          }}
+        >
+          <MenuTab restaurant={finalRestaurantData} styles={styles} />
+        </View>
+
+        <View 
+          ref={reviewsRef}
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setReviewsLayout(layout.y);
+          }}
+        >
+          <ReviewsTab restaurant={finalRestaurantData} styles={styles} />
+        </View>
+
+        <View 
+          ref={infoRef}
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setInfoLayout(layout.y);
+          }}
+        >
+          <InfoTab restaurant={finalRestaurantData} styles={styles} />
         </View>
       </ScrollView>
 

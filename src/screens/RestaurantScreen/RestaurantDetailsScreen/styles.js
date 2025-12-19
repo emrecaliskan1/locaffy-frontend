@@ -384,12 +384,6 @@ export const styles = StyleSheet.create({
   reviewUser: {
     flex: 1,
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
   reviewUserName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -752,5 +746,64 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#7F8C8D',
     textAlign: 'center',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  // Yeni Sticky Tab Bar Stilleri (Quandoo tarzı)
+  stickyTabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  stickyTabContainerFixed: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    zIndex: 1000,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  stickyTab: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+  },
+  stickyTabActive: {
+    borderBottomWidth: 3,
+  },
+  stickyTabText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#7F8C8D',
+  },
+  stickyTabTextActive: {
+    fontWeight: '700',
   },
 });
