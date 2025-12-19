@@ -479,8 +479,8 @@ export default function ReservationScreen({ route, navigation }) {
         disabled={!isWorkingDay}
       >
         <Text style={[
-          styles.dateFullDayLabel, 
-          isSelected && { color: '#FFFFFF' },
+          styles.dateFullDayLabel,
+          { color: theme.colors.textSecondary },
           !isWorkingDay && styles.dateDayClosed
         ]}>
           {date.dayName}
@@ -490,7 +490,8 @@ export default function ReservationScreen({ route, navigation }) {
           isSelected && styles.selectedDateCircle
         ]}>
           <Text style={[
-            styles.dateDayNumber, 
+            styles.dateDayNumber,
+            { color: theme.colors.textSecondary },
             isSelected && styles.selectedDateNumberText,
             !isWorkingDay && styles.dateDayClosed
           ]}>
@@ -498,7 +499,7 @@ export default function ReservationScreen({ route, navigation }) {
           </Text>
         </View>
         {!isWorkingDay && (
-          <Text style={styles.dateClosedText}>
+          <Text style={[styles.dateClosedText, { color: theme.colors.textSecondary }]}>
             Kapalı
           </Text>
         )}
@@ -560,14 +561,15 @@ export default function ReservationScreen({ route, navigation }) {
         disabled={isDisabled}
       >
         <Text style={[
-          styles.timeText, 
+          styles.timeText,
+          { color: theme.colors.textSecondary },
           isSelected && styles.selectedTimeText,
-          isDisabled && { color: '#888888' }
+          isDisabled && { color: theme.colors.textTertiary, opacity: 0.5 }
         ]}>
           {time}
         </Text>
         {isDisabled && disableReason && (
-          <Text style={styles.timeSlotReason}>
+          <Text style={[styles.timeSlotReason, { color: theme.colors.textSecondary }]}>
             {disableReason}
           </Text>
         )}
@@ -598,7 +600,8 @@ export default function ReservationScreen({ route, navigation }) {
         </View>
         <Text style={[
           styles.peopleNumberText,
-          isSelected && styles.selectedPeopleText
+          { color: theme.colors.text },
+          isSelected && { color: theme.colors.primary, fontWeight: 'bold' }
         ]}>
           {people}
         </Text>
@@ -721,13 +724,13 @@ export default function ReservationScreen({ route, navigation }) {
             <Text style={[styles.summaryValue, { color: theme.colors.text }]}>{selectedPeople}</Text>
           </View>
           <View style={styles.summaryActions}>
-            <TouchableOpacity style={[styles.clearButton, { backgroundColor: theme.colors.background }]} onPress={() => {
+            <TouchableOpacity style={[styles.clearButton, { backgroundColor: theme.colors.primary }]} onPress={() => {
               setSelectedDate(null);
               setSelectedTime(null);
               setSelectedPeople(2);
               setNote('');
             }}>
-              <Text style={[styles.clearButtonText, { color: theme.colors.text }]}>Temizle</Text>
+              <Text style={[styles.clearButtonText, { color: '#FFFFFF' }]}>Temizle</Text>
             </TouchableOpacity>
           </View>
         </View>

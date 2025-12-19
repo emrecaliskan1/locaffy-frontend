@@ -141,11 +141,17 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
       onPress={() => onPress(item)}>
 
       <View style={styles.cardImageContainer}>
-        <Image 
-          source={item.mainImageUrl ? { uri: item.mainImageUrl } : require('../../../assets/icon.png')} 
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        {item.mainImageUrl ? (
+          <Image 
+            source={{ uri: item.mainImageUrl }} 
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.cardImage, { backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
+            <Text style={{ color: theme.colors.textSecondary, fontSize: 14 }}>Resim Yok</Text>
+          </View>
+        )}
         <TouchableOpacity 
           style={styles.favoriteButton}
           onPress={handleFavoriteToggle}

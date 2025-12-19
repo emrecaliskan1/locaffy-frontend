@@ -97,7 +97,6 @@ export const styles = StyleSheet.create({
   dateFullDayLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#AAAAAA',
     marginBottom: 6,
     textTransform: 'uppercase',
   },
@@ -115,7 +114,6 @@ export const styles = StyleSheet.create({
   dateDayNumber: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#AAAAAA',
   },
   selectedDateNumberText: {
     color: '#FFFFFF',
@@ -124,12 +122,12 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   dateDayClosed: {
-    color: '#BBBBBB',
+    opacity: 0.5,
   },
   dateClosedText: {
     fontSize: 9,
-    color: '#BBBBBB',
     marginTop: 3,
+    opacity: 0.5,
   },
   peopleScrollContainer: {
     marginHorizontal: -5,
@@ -162,10 +160,8 @@ export const styles = StyleSheet.create({
   peopleNumberText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#FFFFFF',
   },
   selectedPeopleText: {
-    color: '#FFFFFF',
     fontWeight: 'bold',
   },
   timesContainer: {
@@ -190,16 +186,15 @@ export const styles = StyleSheet.create({
   timeText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#CCCCCC',
   },
   selectedTimeText: {
     color: '#FFFFFF',
   },
   timeSlotReason: {
     fontSize: 9,
-    color: '#AAAAAA',
     marginTop: 2,
     textAlign: 'center',
+    opacity: 0.6,
   },
   disabledTimeSlot: {
     backgroundColor: 'transparent',
@@ -270,10 +265,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 10,
-    backgroundColor: '#E1E8ED',
   },
   clearButtonText: {
-    color: '#2C3E50',
     fontWeight: '600',
   },
   noteInput: {
