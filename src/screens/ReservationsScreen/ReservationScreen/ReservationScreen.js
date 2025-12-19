@@ -441,10 +441,14 @@ export default function ReservationScreen({ route, navigation }) {
     const date = formatDate(dateString);
     const isSelected = selectedDate === dateString;
     const today = new Date();
-    const isToday = (new Date(dateString).toDateString() === today.toDateString());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const selectedDateObj = new Date(dateString);
+    const isToday = selectedDateObj.toDateString() === today.toDateString();
+    const isTomorrow = selectedDateObj.toDateString() === tomorrow.toDateString();
     
     // Seçilen tarihin çalışma günü olup olmadığını kontrol et
-    const selectedDateObj = new Date(dateString);
     const dayOfWeek = selectedDateObj.getDay();
     const isWorkingDay = workingDays.includes(dayOfWeek);
 
@@ -453,27 +457,30 @@ export default function ReservationScreen({ route, navigation }) {
         key={dateString}
         style={[
           styles.dateItem, 
-          isSelected && styles.selectedDateItem, 
-          isToday && styles.todayDateItem,
-          !isWorkingDay && { backgroundColor: '#F5F5F5', opacity: 0.6 }
+          !isWorkingDay && { opacity: 0.4 }
         ]}
         onPress={() => isWorkingDay && handleDateSelect(dateString)}
         disabled={!isWorkingDay}
       >
         <Text style={[
-          styles.dateDay, 
-          isSelected && styles.selectedDateText,
+          styles.dateFullDayLabel, 
+          isSelected && { color: '#FFFFFF' },
           !isWorkingDay && styles.dateDayClosed
         ]}>
-          {date.day}
+          {date.dayName}
         </Text>
-        <Text style={[
-          styles.dateMonth, 
-          isSelected && styles.selectedDateText,
-          !isWorkingDay && styles.dateMonthClosed
+        <View style={[
+          styles.dateDayCircle,
+          isSelected && styles.selectedDateCircle
         ]}>
-          {date.dayName} · {date.month}
-        </Text>
+          <Text style={[
+            styles.dateDayNumber, 
+            isSelected && styles.selectedDateNumberText,
+            !isWorkingDay && styles.dateDayClosed
+          ]}>
+            {date.day}
+          </Text>
+        </View>
         {!isWorkingDay && (
           <Text style={styles.dateClosedText}>
             Kapalı
@@ -528,14 +535,18 @@ export default function ReservationScreen({ route, navigation }) {
     return (
       <TouchableOpacity
         key={time}
-        style={[styles.timeSlot, isSelected && styles.selectedTimeSlot, isDisabled && styles.disabledTimeSlot]}
+        style={[
+          styles.timeSlot, 
+          isSelected && styles.selectedTimeSlot, 
+          isDisabled && styles.disabledTimeSlot
+        ]}
         onPress={() => !isDisabled && handleTimeSelect(time)}
         disabled={isDisabled}
       >
         <Text style={[
           styles.timeText, 
           isSelected && styles.selectedTimeText,
-          isDisabled && { color: '#666666' }
+          isDisabled && { color: '#777777' }
         ]}>
           {time}
         </Text>
@@ -554,9 +565,25 @@ export default function ReservationScreen({ route, navigation }) {
     return (
       <TouchableOpacity
         key={people}
-        style={[styles.peopleOption, isSelected && styles.selectedPeopleOption]}
+        style={[
+          styles.peopleOption,
+          isSelected && styles.selectedPeopleOption
+        ]}
         onPress={() => handlePeopleSelect(people)}>
-        <Text style={[styles.peopleText, isSelected && styles.selectedPeopleText]}>
+        <View style={[
+          styles.peopleIconContainer,
+          isSelected && styles.selectedPeopleIconContainer
+        ]}>
+          <FontAwesome 
+            name="user" 
+            size={20} 
+            color={isSelected ? '#FFFFFF' : theme.colors.primary}
+          />
+        </View>
+        <Text style={[
+          styles.peopleNumberText,
+          isSelected && styles.selectedPeopleText
+        ]}>
           {people}
         </Text>
       </TouchableOpacity>
@@ -587,17 +614,38 @@ export default function ReservationScreen({ route, navigation }) {
           </View>
         )}
         {/* Restoran Bilgileri */}
-        <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.card }]}>
+        <View style={styles.restaurantInfo}>
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
-          <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>{restaurant.type}</Text>
+          <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>
+            {restaurant.type}
+          </Text>
+          {restaurant.address && (
+            <Text 
+              style={[styles.restaurantAddress, { color: theme.colors.textSecondary }]} 
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {restaurant.address}
+            </Text>
+          )}
+        </View>
+
+        {/* Kişi Sayısı Seçimi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitleLarge, { color: theme.colors.text }]}>Kaç kişi için?</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.peopleScrollContainer}
+            contentContainerStyle={styles.peopleContainer}
+          >
+            {Array.from({ length: reservationData.maxPeople }, (_, i) => i + 1).map(renderPeopleOption)}
+          </ScrollView>
         </View>
 
         {/* Tarih Seçimi */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
-            <FontAwesome name="calendar" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
-            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Tarih Seçin</Text>
-          </View>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitleLarge, { color: theme.colors.text }]}>Hangi tarihte?</Text>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -608,23 +656,9 @@ export default function ReservationScreen({ route, navigation }) {
           </ScrollView>
         </View>
 
-        {/* Kişi Sayısı Seçimi */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
-            <FontAwesome name="users" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
-            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Kişi Sayısı</Text>
-          </View>
-          <View style={styles.peopleContainer}>
-            {Array.from({ length: reservationData.maxPeople }, (_, i) => i + 1).map(renderPeopleOption)}
-          </View>
-        </View>
-
         {/* Saat Seçimi */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
-            <FontAwesome name="clock-o" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
-            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Saat Seçin</Text>
-          </View>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitleLarge, { color: theme.colors.text }]}>Saat kaçta?</Text>
           <ScrollView 
             ref={timeScrollViewRef}
             horizontal 
@@ -637,7 +671,7 @@ export default function ReservationScreen({ route, navigation }) {
         </View>
 
         {/* Not Bölümü */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+        <View style={styles.section}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
             <FontAwesome name="sticky-note" size={20} color={theme.colors.primary} style={{ marginRight: 8 }} />
             <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0 }]}>Notunuz (İsteğe Bağlı)</Text>
@@ -656,7 +690,7 @@ export default function ReservationScreen({ route, navigation }) {
         </View>
 
         {/* Seçim özeti + Temizle butonu */}
-        <View style={[styles.section, styles.summarySection, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.section, styles.summarySection]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Rezervasyon Bilgileri</Text>
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>Tarih:</Text>
