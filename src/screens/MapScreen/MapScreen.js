@@ -14,6 +14,7 @@ import * as Location from 'expo-location';
 import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { placeService } from '../../services/placeService';
+import { calculateDistance } from '../../utils/distance';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
 import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
@@ -150,19 +151,6 @@ export default function MapScreen({ navigation }) {
       const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
 
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-
-      const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        return distance;
-      };
 
       // Her mekan için mesafe hesapla
       const placesWithDistance = availablePlaces.map(place => {

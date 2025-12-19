@@ -15,6 +15,7 @@ import { RestaurantCard, SearchHeader } from '../../components/Home';
 import { placeService, userService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
+import { calculateDistance } from '../../utils/distance';
 import { styles } from './styles';
 
 export default function HomeScreen({ navigation }) {
@@ -97,19 +98,6 @@ export default function HomeScreen({ navigation }) {
       }
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
 
-      // Mesafe hesaplama fonksiyonu (Haversine formülü)
-      const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; // Dünya'nın yarıçapı (km)
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c; // km cinsinden mesafe
-        return distance;
-      };
       const placesWithDistance = availablePlaces.map(place => {
         let distance;
         if (place.distance !== undefined && place.distance !== null) {
@@ -194,6 +182,7 @@ export default function HomeScreen({ navigation }) {
             favoritesList={favoritesList}
             onFavoriteChange={loadFavorites}
             onShowToast={showToast}
+            userLocation={currentLocation}
             styles={styles} />
         )}
         ListHeaderComponent={

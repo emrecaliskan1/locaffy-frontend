@@ -184,7 +184,9 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardFooter: {
-    flexDirection: 'column',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
     gap: 4,
   },
   infoItem: {
@@ -199,5 +201,15 @@ export const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: '#7F8C8D',
+  },
+  distanceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+  },
+  distanceText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#95A5A6',
   },
 });
