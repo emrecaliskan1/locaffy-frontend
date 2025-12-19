@@ -69,13 +69,6 @@ export const AuthProvider = ({ children }) => {
         setUser(userInfo);
         setIsLoggedIn(true);
         
-        // Konum kontrolü için global event tetikle
-        if (global.triggerLocationCheck) {
-          setTimeout(() => {
-            global.triggerLocationCheck();
-          }, 100);
-        }
-        
         return { success: true, data: response };
       }
       return { success: false, message: 'Giriş başarısız' };
@@ -126,13 +119,6 @@ export const AuthProvider = ({ children }) => {
         setUser(userInfo);
         setIsLoggedIn(true);
         
-        // Konum kontrolü için global event tetikle
-        if (global.triggerLocationCheck) {
-          setTimeout(() => {
-            global.triggerLocationCheck();
-          }, 100);
-        }
-        
         return { success: true, data: response };
       }
       
@@ -157,11 +143,9 @@ export const AuthProvider = ({ children }) => {
         await authService.clearToken();
       }
       
-      try {
-        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-        await AsyncStorage.multiRemove(['selectedCity', 'currentLocation']);
-      } catch (storageError) {
-        console.log('Konum bilgileri temizlenirken hata:', storageError);
+      // LocationContext'i sıfırla
+      if (global.resetLocationState) {
+        await global.resetLocationState();
       }
       
       setUser(null);

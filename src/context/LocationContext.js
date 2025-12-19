@@ -25,15 +25,34 @@ export const LocationProvider = ({ children }) => {
   const [toastType, setToastType] = useState('warning');
   const [onCitySelectedCallback, setOnCitySelectedCallback] = useState(null);
 
+  // Logout sonrası state'i sıfırlama fonksiyonu
+  const resetLocationState = async () => {
+    try {
+      await AsyncStorage.multiRemove(['selectedCity', 'currentLocation']);
+      setCurrentLocation(null);
+      setSelectedCity(null);
+      setNeedsCitySelection(true); // Yeni kullanıcı şehir seçmeli
+      setHasLocationPermission(null);
+      setIsLoading(true); // Yeni kullanıcı için tekrar yükleniyor
+      // initializeLocation tekrar çalıştır
+      await initializeLocation();
+    } catch (error) {
+      console.log('LocationContext sıfırlama hatası:', error);
+      setIsLoading(false);
+    }
+  };
+
   // Uygulama başlangıcında lokasyon durumunu kontrol et
   useEffect(() => {
     initializeLocation();
     
     // Global tetikleme sistemi kuruluyor
     global.triggerLocationCheck = checkLocationAfterLogin;
+    global.resetLocationState = resetLocationState;
     
     return () => {
       global.triggerLocationCheck = null;
+      global.resetLocationState = null;
     };
   }, []);
 
@@ -207,21 +226,26 @@ export const LocationProvider = ({ children }) => {
 
   const requestLocationPermission = async () => {
     try {
+      setIsLoading(true); // İzin isteği sırasında loading göster
+      
       const { status } = await Location.requestForegroundPermissionsAsync();
       setHasLocationPermission(status === 'granted');
       
       if (status === 'granted') {
         await getCurrentLocation();
         setNeedsCitySelection(false);
+        setIsLoading(false);
         return true;
       } else {
         setNeedsCitySelection(true);
+        setIsLoading(false);
         return false;
       }
     } catch (error) {
       console.log('Lokasyon izni hatası:', error);
       setHasLocationPermission(false);
       setNeedsCitySelection(true);
+      setIsLoading(false);
       return false;
     }
   };
@@ -265,6 +289,8 @@ export const LocationProvider = ({ children }) => {
 
   const selectCity = async (city) => {
     try {
+      setIsLoading(true); // Şehir seçimi sırasında loading göster
+      
       const locationData = {
         latitude: city.coordinates.lat,
         longitude: city.coordinates.lng,
@@ -287,9 +313,11 @@ export const LocationProvider = ({ children }) => {
         }, 1500);
       }
       
+      setIsLoading(false); // Loading'i kapat
       return true;
     } catch (error) {
       console.log('Şehir seçimi hatası:', error);
+      setIsLoading(false);
       return false;
     }
   };

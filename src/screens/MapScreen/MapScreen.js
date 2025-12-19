@@ -297,6 +297,13 @@ export default function MapScreen({ navigation }) {
             {loading ? 'Konum alınıyor...' : 'Mekanlar yüklenyor...'}
           </Text>
         </View>
+      ) : !region || !userLocation ? (
+        <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+            Harita hazırlanıyor...
+          </Text>
+        </View>
       ) : (
         <>
 
