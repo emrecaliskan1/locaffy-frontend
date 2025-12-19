@@ -806,4 +806,24 @@ export const styles = StyleSheet.create({
   stickyTabTextActive: {
     fontWeight: '700',
   },
+  scrollToTopButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#667eea',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    zIndex: 1000,
+  },
 });

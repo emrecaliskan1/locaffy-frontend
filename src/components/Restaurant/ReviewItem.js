@@ -54,9 +54,15 @@ export const ReviewItem = ({ item, index, styles }) => {
   };
 
   return (
-    <View key={item.id || index} style={[styles.reviewItem, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
-      <View style={[styles.reviewHeader, { backgroundColor: theme.colors.card }]}>
-        <View style={[styles.reviewUser, { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.card }]}>
+    <View key={item.id || index} style={[
+      styles.reviewItem, 
+      { 
+        backgroundColor: theme.isDarkMode ? theme.colors.background : theme.colors.card, 
+        borderColor: theme.colors.border 
+      }
+    ]}>
+      <View style={[styles.reviewHeader, { backgroundColor: theme.isDarkMode ? theme.colors.background : theme.colors.card }]}>
+        <View style={[styles.reviewUser, { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.isDarkMode ? theme.colors.background : theme.colors.card }]}>
           {!imageError && item.userProfileImageUrl ? (
             <Image
               source={{ uri: item.userProfileImageUrl }}

@@ -42,6 +42,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   
   const scrollViewRef = useRef(null);
   const menuRef = useRef(null);
@@ -249,10 +250,23 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const handleScroll = (event) => {
     const scrollY = event.nativeEvent.contentOffset.y;
 
+    // Scroll to top butonunu göster/gizle
+    if (scrollY > 300) {
+      if (!showScrollToTop) setShowScrollToTop(true);
+    } else {
+      if (showScrollToTop) setShowScrollToTop(false);
+    }
+
     if (tabBarY > 0 && scrollY >= tabBarY - 10) {
       if (!showStickyTabs) setShowStickyTabs(true);
     } else {
       if (showStickyTabs) setShowStickyTabs(false);
+    }
+  };
+
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
   };
 
@@ -448,6 +462,20 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <InfoTab restaurant={finalRestaurantData} styles={styles} />
         </View>
       </ScrollView>
+
+      {/* Scroll to Top Button */}
+      {showScrollToTop && (
+        <TouchableOpacity
+          style={[
+            styles.scrollToTopButton,
+            { backgroundColor: '#E0E0E0' }
+          ]}
+          onPress={scrollToTop}
+          activeOpacity={0.8}
+        >
+          <FontAwesome name="chevron-up" size={18} color="#666666" />
+        </TouchableOpacity>
+      )}
 
       <Toast
         visible={toast.visible}
