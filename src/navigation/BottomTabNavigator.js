@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   tabLabel: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '1000',
     marginTop: 3,
   },

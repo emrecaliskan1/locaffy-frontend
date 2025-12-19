@@ -59,16 +59,16 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
-        <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
-          </TouchableOpacity>
+        <View style={[styles.header, { backgroundColor: theme.colors.background, justifyContent: 'center' }]}>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Favori Mekanlar</Text>
-          <View style={{ width: 40 }} />
         </View>
       </SafeAreaView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -96,8 +96,6 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
                 />
               ))
             )}
-
-            <View style={{ height: 40 }} />
           </>
         )}
       </ScrollView>

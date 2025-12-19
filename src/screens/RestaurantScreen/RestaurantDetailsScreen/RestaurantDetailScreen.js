@@ -291,59 +291,6 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         </View>
       </SafeAreaView>
 
-      {/* Sticky Tab Bar - Scroll yaparken üstte göster */}
-      {showStickyTabs && (
-        <View style={[styles.stickyTabContainerFixed, { backgroundColor: theme.colors.background }]}>
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'menu' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('menu')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'menu' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Menü
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'reviews' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('reviews')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'reviews' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Yorumlar
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'info' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('info')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'info' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Bilgiler
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       <ScrollView 
         ref={scrollViewRef}
         style={styles.content} 
@@ -418,17 +365,9 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
           <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
         </TouchableOpacity>
-        </View>
 
-        {/* Tab Bar */}
-        <View 
-          ref={tabBarRef}
-          onLayout={(event) => {
-            const layout = event.nativeEvent.layout;
-            setTabBarY(layout.y);
-          }}
-          style={[styles.stickyTabContainer, { backgroundColor: theme.colors.background }]}
-        >
+        {/* Tab Bar - Rezervasyon butonundan sonra */}
+        <View style={[styles.stickyTabContainer, { backgroundColor: theme.colors.background, marginTop: 20 }]}>
           <TouchableOpacity
             style={[
               styles.stickyTab,
@@ -476,6 +415,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
               Bilgiler
             </Text>
           </TouchableOpacity>
+        </View>
         </View>
 
         <View 

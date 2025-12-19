@@ -870,7 +870,6 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 135, 
     right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 10,
     padding: 12,
     minWidth: 180,
@@ -888,7 +887,6 @@ export const styles = StyleSheet.create({
   infoCardTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
   },
   infoCardCloseButton: {
     width: 20,
@@ -921,12 +919,10 @@ export const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 1,
   },
   categoryDescription: {
     fontSize: 10,
-    color: '#666',
     lineHeight: 14,
   },
   infoToggleButton: {

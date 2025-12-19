@@ -390,7 +390,7 @@ export default function ReservationScreen({ route, navigation }) {
         setSelectedTime(null);
         setSelectedPeople(2);
         setNote('');
-        navigation.navigate('Reservations', { fromRestaurant: true });
+        navigation.navigate('Main', { screen: 'Reservations' });
       }, 2500);
     } catch (error) {
       setShowSuccessModal(false);

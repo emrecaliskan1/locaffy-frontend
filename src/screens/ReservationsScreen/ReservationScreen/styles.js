@@ -110,6 +110,7 @@ export const styles = StyleSheet.create({
   },
   selectedDateCircle: {
     backgroundColor: '#667eea',
+    borderRadius: 19,
   },
   dateDayNumber: {
     fontSize: 16,
@@ -156,6 +157,7 @@ export const styles = StyleSheet.create({
   },
   selectedPeopleIconContainer: {
     backgroundColor: '#667eea',
+    borderRadius: 24,
   },
   peopleNumberText: {
     fontSize: 16,
