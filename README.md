@@ -96,8 +96,6 @@ npx expo start
 
 ---
 
----
-
 ## 📜 Lisans
 
 Bu proje **MIT Lisansı** ile korunmaktadır.
