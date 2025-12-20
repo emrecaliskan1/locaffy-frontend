@@ -235,15 +235,8 @@ export default function ReservationsScreen({ navigation, route }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
-        <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
-          <TouchableOpacity 
-            onPress={handleBackPress}
-            style={styles.backButton}
-          >
-            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
-          </TouchableOpacity>
+        <View style={[styles.header, { backgroundColor: theme.colors.background, justifyContent: 'center' }]}>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Rezervasyonlarım</Text>
-          <View style={styles.placeholder} />
         </View>
       </SafeAreaView>
 
@@ -263,7 +256,7 @@ export default function ReservationsScreen({ navigation, route }) {
           data={activeReservations}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderActiveReservation}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (
             <EmptyState activeTab={activeTab} styles={styles} />
@@ -274,7 +267,7 @@ export default function ReservationsScreen({ navigation, route }) {
           data={pastReservations}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderPastReservation}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (
             <EmptyState activeTab={activeTab} styles={styles} />

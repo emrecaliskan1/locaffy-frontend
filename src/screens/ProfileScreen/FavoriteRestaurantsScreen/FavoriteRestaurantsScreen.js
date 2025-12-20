@@ -6,6 +6,7 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { userService } from '../../../services';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
+import { useLocation } from '../../../context/LocationContext';
 import Toast from '../../../components/Toast';
 import { RestaurantCard } from '../../../components/Home/RestaurantCard';
 import { styles } from './styles';
@@ -13,6 +14,7 @@ import { styles as homeStyles } from '../../HomeScreen/styles';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
   const { theme } = useTheme();
+  const { currentLocation } = useLocation();
   const [favoriteRestaurants, setFavoriteRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -57,16 +59,16 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
-        <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
-          </TouchableOpacity>
+        <View style={[styles.header, { backgroundColor: theme.colors.background, justifyContent: 'center' }]}>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Favori Mekanlar</Text>
-          <View style={{ width: 40 }} />
         </View>
       </SafeAreaView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -89,12 +91,11 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
                   favoritesList={favoriteRestaurants}
                   onFavoriteChange={handleFavoriteChange}
                   onShowToast={showToast}
+                  userLocation={currentLocation}
                   styles={homeStyles}
                 />
               ))
             )}
-
-            <View style={{ height: 40 }} />
           </>
         )}
       </ScrollView>

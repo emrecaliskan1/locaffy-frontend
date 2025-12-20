@@ -141,15 +141,27 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
               borderRadius: 10,
               overflow: 'hidden'
             }}>
-              <Image 
-                source={getImageUrl() ? { uri: getImageUrl() } : require('../../../assets/icon.png')} 
-                style={{ 
+              {getImageUrl() ? (
+                <Image 
+                  source={{ uri: getImageUrl() }} 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    borderRadius: 10 
+                  }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={{ 
                   width: '100%', 
                   height: '100%', 
-                  borderRadius: 10 
-                }}
-                resizeMode="cover"
-              />
+                  backgroundColor: theme.colors.surface, 
+                  justifyContent: 'center', 
+                  alignItems: 'center' 
+                }}>
+                  <Text style={{ color: theme.colors.textSecondary, fontSize: 14 }}>Resim Yok</Text>
+                </View>
+              )}
             </View>
             
             {/* Restoran Bilgileri */}

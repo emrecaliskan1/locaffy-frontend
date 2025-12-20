@@ -9,6 +9,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { userService } from '../../services';
+import { calculateDistance } from '../../utils/distance';
 
 const getPlaceTypeLabel = (type) => {
   const typeMap = {
@@ -22,11 +23,27 @@ const getPlaceTypeLabel = (type) => {
   return typeMap[type] || type;
 };
 
-export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, styles }) => {
+export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, userLocation, styles }) => {
   const { theme } = useTheme();
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   
   const isFavorite = favoritesList.some(fav => fav.id === item.id);
+
+  const getDistance = () => {
+    if (item.distance !== undefined && item.distance !== null) {
+      return typeof item.distance === 'number' ? item.distance / 1000 : item.distance;
+    }
+
+    if (userLocation && item.latitude && item.longitude) {
+      return calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        item.latitude,
+        item.longitude
+      );
+    }
+    return null;
+  };
 
   // Mekanın şu an açık/kapalı olup olmadığını kontrol et
   const getRestaurantStatus = () => {
@@ -124,11 +141,17 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
       onPress={() => onPress(item)}>
 
       <View style={styles.cardImageContainer}>
-        <Image 
-          source={item.mainImageUrl ? { uri: item.mainImageUrl } : require('../../../assets/icon.png')} 
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        {item.mainImageUrl ? (
+          <Image 
+            source={{ uri: item.mainImageUrl }} 
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.cardImage, { backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
+            <Text style={{ color: theme.colors.textSecondary, fontSize: 14 }}>Resim Yok</Text>
+          </View>
+        )}
         <TouchableOpacity 
           style={styles.favoriteButton}
           onPress={handleFavoriteToggle}
@@ -167,20 +190,30 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
         <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>{getPlaceTypeLabel(item.placeType)}</Text>
         
         <View style={styles.cardFooter}>
-          <View style={styles.infoItem}>
-            <FontAwesome name="map-marker" size={12} color="#95A5A6" style={styles.infoIcon} />
-            <Text 
-              style={[styles.infoText, { color: theme.colors.textTertiary, flex: 1 }]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {item.address}
-            </Text>
+          <View style={{ flex: 1 }}>
+            <View style={styles.infoItem}>
+              <FontAwesome name="map-marker" size={12} color="#95A5A6" style={styles.infoIcon} />
+              <Text 
+                style={[styles.infoText, { color: theme.colors.textTertiary, flex: 1 }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.address}
+              </Text>
+            </View>
+            <View style={styles.infoItem}>
+              <FontAwesome name="clock-o" size={12} color="#95A5A6" style={styles.infoIcon} />
+              <Text style={[styles.infoText, { color: theme.colors.textTertiary }]}>{item.openingHours}</Text>
+            </View>
           </View>
-          <View style={styles.infoItem}>
-            <FontAwesome name="clock-o" size={12} color="#95A5A6" style={styles.infoIcon} />
-            <Text style={[styles.infoText, { color: theme.colors.textTertiary }]}>{item.openingHours}</Text>
-          </View>
+          {getDistance() !== null && (
+            <View style={styles.distanceContainer}>
+              <FontAwesome name="map-marker" size={10} color="#95A5A6" style={{ marginRight: 3 }} />
+              <Text style={[styles.distanceText, { color: theme.colors.textSecondary }]}>
+                {getDistance().toFixed(1)} km
+              </Text>
+            </View>
+          )}
         </View>
         
       </View>

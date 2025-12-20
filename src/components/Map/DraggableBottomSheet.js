@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
+import { calculateDistance } from '../../utils/distance';
 import { useTheme } from '../../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -31,20 +32,6 @@ export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onTog
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(BOTTOM_SHEET_MIN_HEIGHT)).current;
   const { theme } = useTheme();
-
-  // Mesafe hesaplama fonksiyonu (Haversine formülü)
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Dünya'nın yarıçapı (km)
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // km cinsinden mesafe
-    return distance;
-  };
 
   const getDistance = (restaurant) => {
     if (restaurant.distance !== undefined && restaurant.distance !== null) {

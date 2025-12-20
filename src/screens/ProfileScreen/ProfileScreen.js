@@ -121,7 +121,7 @@ export default function ProfileScreen({ navigation }) {
       subtitle: 'Beğendiğiniz restoranlar',
       icon: 'heart',
       iconColor: '#E74C3C', 
-      onPress: () => navigation.navigate('FavoriteRestaurants'),
+      onPress: () => navigation.navigate('Favorites'),
     },
     {
       id: 3,
@@ -184,7 +184,17 @@ export default function ProfileScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Kullanıcı Kartı */}
-        <View style={[styles.userCard, { backgroundColor: theme.colors.card }]}>
+        <View
+          style={[
+            styles.userCard,
+            { backgroundColor: theme.colors.background },
+            isDarkMode && {
+              elevation: 0,
+              shadowColor: 'transparent',
+              borderWidth: 0,
+            },
+          ]}
+        >
           <View style={styles.avatarContainer}>
             {userInfo.avatar ? (
               <Image source={{ uri: userInfo.avatar }} style={styles.avatar} />
@@ -196,7 +206,6 @@ export default function ProfileScreen({ navigation }) {
               </View>
             )}
           </View>
-          
           {/* Kullanıcı Bilgileri */}
           <View style={styles.userInfo}>
             <Text style={[styles.userName, { color: theme.colors.text }]}>{userInfo.username}</Text>
@@ -205,7 +214,17 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         {/* Kullanıcı İstatistikleri */}
-        <View style={[styles.statsContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+        <View
+          style={[
+            styles.statsContainer,
+            { backgroundColor: theme.colors.background, borderColor: theme.colors.border },
+            isDarkMode && {
+              elevation: 0,
+              shadowColor: 'transparent',
+              borderWidth: 0,
+            },
+          ]}
+        >
           <View style={styles.statItem}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#667eea" />
@@ -226,7 +245,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         {/* Menü Seçenekleri */}
-        <View style={[styles.menuContainer, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.menuContainer, { backgroundColor: theme.colors.background }]}>
           {menuItems.map((item, index) => (
             <TouchableOpacity
               key={item.id}

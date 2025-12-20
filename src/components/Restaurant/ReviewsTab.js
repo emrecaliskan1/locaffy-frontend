@@ -11,10 +11,10 @@ export const ReviewsTab = ({ restaurant, styles }) => {
   const { theme } = useTheme();
   
   return (
-    <View style={[styles.tabContent, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.tabContent, { backgroundColor: theme.colors.background, paddingTop: 20 }]}>
       <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Müşteri Yorumları ({restaurant.reviews?.length || 0})
+        <Text style={[styles.sectionTitle, { color: theme.colors.text, paddingHorizontal: 12, fontSize: 22 }]}>
+          Yorumlar ({restaurant.reviews?.length || 0})
         </Text>
         {restaurant.loadingReviews ? (
           <View style={[styles.noReviewsContainer, { paddingVertical: 40, backgroundColor: theme.colors.background }]}>

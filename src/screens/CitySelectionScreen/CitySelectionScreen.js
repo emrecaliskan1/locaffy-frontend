@@ -39,9 +39,8 @@ export default function CitySelectionScreen({ navigation, route }) {
       if (success) {
         if (isModal) {
           navigation.goBack();
-        } else {
-          navigation.replace('Main');
         }
+        // isModal değilse navigation otomatik gerçekleşir (conditional rendering)
       }
     } catch (error) {
       console.log('Şehir seçimi hatası:', error);
@@ -57,9 +56,8 @@ export default function CitySelectionScreen({ navigation, route }) {
       if (granted) {
         if (isModal) {
           navigation.goBack();
-        } else {
-          navigation.replace('Main');
         }
+        // isModal değilse navigation otomatik gerçekleşir (conditional rendering)
       }
     } catch (error) {
       console.log('Konum izni hatası:', error);

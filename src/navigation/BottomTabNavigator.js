@@ -7,6 +7,8 @@ import { useTheme } from '../context/ThemeContext';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
 import MapScreen from '../screens/MapScreen/MapScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
+import ReservationsScreen from '../screens/ReservationsScreen';
+import FavoriteRestaurantsScreen from '../screens/ProfileScreen/FavoriteRestaurantsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,6 +41,12 @@ const TabIcon = ({ name, focused }) => {
       break;
     case 'Home':
       iconName = 'map-marker';
+      break;
+    case 'Reservations':
+      iconName = 'calendar';
+      break;
+    case 'Favorites':
+      iconName = 'heart';
       break;
     case 'Profile':
       iconName = 'user';
@@ -92,6 +100,9 @@ export default function BottomTabNavigator() {
         tabBarShowLabel: true,
         tabBarHideOnKeyboard: true,
         tabBarBackground: () => null,
+        tabBarItemStyle: {
+          paddingHorizontal: 0,
+        },
       }}
     >
       <Tab.Screen
@@ -108,6 +119,22 @@ export default function BottomTabNavigator() {
         options={{
           tabBarLabel: ({ focused }) => <TabLabel label="Mekanlar" focused={focused} />,
           tabBarIcon: ({ focused }) => <TabIcon name="Home" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Reservations"
+        component={ReservationsScreen}
+        options={{
+          tabBarLabel: ({ focused }) => <TabLabel label="Rezervasyonlar" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="Reservations" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Favorites"
+        component={FavoriteRestaurantsScreen}
+        options={{
+          tabBarLabel: ({ focused }) => <TabLabel label="Favoriler" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="Favorites" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -132,14 +159,14 @@ const styles = StyleSheet.create({
     height: Platform.OS === 'ios' ? 90 : 80,
     paddingBottom: Platform.OS === 'ios' ? 25 : 12.5,
     paddingTop: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 0,
     borderTopWidth: 1,
     ...createShadowStyle(10),
   },
   tabIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 45,
+    width: 40,
     height: 25,
     borderRadius: 20,
     position: 'relative',
@@ -152,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   tabLabel: {
-    fontSize: 12.5,
+    fontSize: 9,
     fontWeight: '1000',
     marginTop: 3,
   },

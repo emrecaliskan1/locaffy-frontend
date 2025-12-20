@@ -1,13 +1,10 @@
-#  Locaffy Mobile App
+# Locaffy Mobile App
 
 <p align="center">
 <img src="assets/locaffy.png" alt="Locaffy Logo" width="200"/>
 
-
-
-
-
 <b>Şehrin lezzetlerini keşfet, masanı saniyeler içinde ayırt. Tüm deneyimlerini diğer kullanıcılarla paylaş.</b>
+
 </p>
 
 <p align="center">
@@ -27,14 +24,14 @@
 
 ## ✨ Öne Çıkan Özellikler
 
-| Özellik | Açıklama |
-| --- | --- |
-| 🔍 **Akıllı Keşif** | Harita veya liste üzerinden çevrendeki en iyi mekanları bul. |
+| Özellik                     | Açıklama                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| 🔍 **Akıllı Keşif**         | Harita veya liste üzerinden çevrendeki en iyi mekanları bul.                         |
 | ⭐ **Puanlama ve Yorumlar** | Deneyimlerini paylaş, mekanlara puan ver ve diğer kullanıcıların yorumlarını incele. |
-| 📅 **Hızlı Rezervasyon** | Kişi sayısı, tarih ve saat seçerek anında yerini ayırt. |
-| 🗺️ **Harita Entegrasyonu** | **OpenStreetMap** altyapısı ile restoranları lokasyon bazlı görüntüle. |
-| 🌗 **Tema Desteği** | Karanlık (Dark) ve Aydınlık (Light) mod seçenekleri. |
-| 🔔 **Hatırlatıcılar** | Takvim entegrasyonu ile rezervasyon bildirimleri al. |
+| 📅 **Hızlı Rezervasyon**    | Kişi sayısı, tarih ve saat seçerek anında yerini ayırt.                              |
+| 🗺️ **Harita Entegrasyonu**  | **OpenStreetMap** altyapısı ile restoranları lokasyon bazlı görüntüle.               |
+| 🌗 **Tema Desteği**         | Karanlık (Dark) ve Aydınlık (Light) mod seçenekleri.                                 |
+| 🔔 **Hatırlatıcılar**       | Takvim entegrasyonu ile rezervasyon bildirimleri al.                                 |
 
 ---
 
@@ -42,11 +39,11 @@
 
 Locaffy, modern ve performanslı bir deneyim için şu teknolojileri kullanır:
 
-* **Framework:** [React Native](https://reactnative.dev/) & [Expo](https://expo.dev/)
-* **Harita Servisi:** [OpenStreetMap](https://www.openstreetmap.org/) (Lokasyon verileri ve harita katmanları)
-* **Navigasyon:** React Navigation (Stack & Bottom Tabs)
-* **Veri Yönetimi:** Axios (API) & Async Storage (Yerel Saklama)
-* **Native Servisler:** Expo Location, Calendar, Image Picker
+- **Framework:** [React Native](https://reactnative.dev/) & [Expo](https://expo.dev/)
+- **Harita Servisi:** [OpenStreetMap](https://www.openstreetmap.org/) (Lokasyon verileri ve harita katmanları)
+- **Navigasyon:** React Navigation (Stack & Bottom Tabs)
+- **Veri Yönetimi:** Axios (API) & Async Storage (Yerel Saklama)
+- **Native Servisler:** Expo Location, Calendar, Image Picker
 
 ---
 
@@ -73,33 +70,31 @@ locaffy-frontend/
 ## 🚀 Kurulum ve Başlatma
 
 1. **Depoyu Klonlayın:**
+
 ```bash
 git clone https://github.com/kullaniciadi/locaffy-frontend.git
 cd locaffy-frontend
 
 ```
 
-
 2. **Bağımlılıkları Yükleyin:**
+
 ```bash
 npm install
 
 ```
 
-
 3. **Uygulamayı Çalıştırın:**
+
 ```bash
 npx expo start
 
 ```
 
-
-
 > [!IMPORTANT]
 > Uygulamayı fiziksel bir cihazda test etmek için **Expo Go** uygulamasını kullanabilir veya bir Android emülatörü üzerinde çalıştırabilirsiniz.
 
 ---
-
 
 ---
 

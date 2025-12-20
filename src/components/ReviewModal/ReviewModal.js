@@ -12,6 +12,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { reviewService } from '../../services';
+import { useTheme } from '../../context/ThemeContext';
 import Toast from '../Toast/Toast';
 import styles from './styles';
 
@@ -21,6 +22,7 @@ const ReviewModal = ({
   reservation, 
   onReviewSubmitted 
 }) => {
+  const { theme } = useTheme();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -121,47 +123,51 @@ const ReviewModal = ({
       transparent={false}
       onRequestClose={onClose}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <View style={styles.header}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
+        <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeText}>İptal</Text>
+            <Text style={[styles.closeText, { color: theme.colors.primary }]}>İptal</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Değerlendirme</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>Değerlendirme</Text>
           <View style={styles.placeholder} />
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Rezervasyon Bilgisi */}
-          <View style={styles.reservationSection}>
-            <Text style={styles.reservationNumber}>
+          <View style={[styles.reservationSection, { borderBottomColor: theme.colors.border }]}>
+            <Text style={[styles.reservationNumber, { color: theme.colors.primary }]}>
               Rezervasyon: {reservation?.reservationNumber || `#${reservation?.id}`}
             </Text>
-            <Text style={styles.restaurantName}>
+            <Text style={[styles.restaurantName, { color: theme.colors.text }]}>
               {reservation?.place?.name || reservation?.restaurantName || reservation?.placeName}
             </Text>
-            <Text style={styles.restaurantAddress}>
+            <Text style={[styles.restaurantAddress, { color: theme.colors.textSecondary }]}>
               {reservation?.place?.address || reservation?.placeAddress || reservation?.address || 'Adres bilgisi yok'}
             </Text>
           </View>
 
           {/* Yıldız verme */}
-          <View style={styles.ratingSection}>
-            <Text style={styles.sectionTitle}>Puanınız</Text>
+          <View style={[styles.ratingSection, { borderBottomColor: theme.colors.border }]}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Puanınız</Text>
             {renderStars()}
-            <Text style={styles.ratingText}>{getRatingText()}</Text>
+            <Text style={[styles.ratingText, { color: theme.colors.primary }]}>{getRatingText()}</Text>
           </View>
 
           {/* Yorum bölümü */}
           <View style={styles.commentSection}>
-            <Text style={styles.sectionTitle}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
               Yorumunuz 
-              <Text style={styles.optional}> (İsteğe bağlı)</Text>
+              <Text style={[styles.optional, { color: theme.colors.textSecondary }]}> (İsteğe bağlı)</Text>
             </Text>
             <TextInput
-              style={styles.commentInput}
+              style={[styles.commentInput, { 
+                backgroundColor: theme.colors.surface, 
+                borderColor: theme.colors.border,
+                color: theme.colors.text 
+              }]}
               placeholder="Deneyiminizi paylaşın..."
-              placeholderTextColor="#95A5A6"
+              placeholderTextColor={theme.colors.textTertiary}
               value={comment}
               onChangeText={setComment}
               multiline
@@ -169,16 +175,17 @@ const ReviewModal = ({
               maxLength={500}
               textAlignVertical="top"
             />
-            <Text style={styles.charCount}>{comment.length}/500</Text>
+            <Text style={[styles.charCount, { color: theme.colors.textTertiary }]}>{comment.length}/500</Text>
           </View>
         </ScrollView>
 
         {/* Gönder Butonu */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { borderTopColor: theme.colors.border }]}>
           <TouchableOpacity
             style={[
               styles.submitButton,
-              (rating === 0 || submitting) && styles.disabledButton
+              { backgroundColor: theme.colors.primary },
+              (rating === 0 || submitting) && [styles.disabledButton, { backgroundColor: theme.colors.border }]
             ]}
             onPress={handleSubmitReview}
             disabled={rating === 0 || submitting}

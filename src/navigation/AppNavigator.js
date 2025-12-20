@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
@@ -24,7 +25,11 @@ export default function AppNavigator() {
   const { needsCitySelection, isLoading: locationLoading } = useLocation();
   
   if (isLoading || locationLoading) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A' }}>
+        <ActivityIndicator size="large" color="#667eea" />
+      </View>
+    );
   }
 
   return (

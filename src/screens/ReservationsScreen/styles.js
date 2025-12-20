@@ -100,13 +100,12 @@ export const styles = StyleSheet.create({
   restaurantName: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A202C',
+
     marginBottom: 6,
     letterSpacing: 0.3,
   },
   reservationNumber: {
     fontSize: 13,
-    color: '#9CA3AF',
     fontWeight: '500',
   },
   statusBadge: {
@@ -134,13 +133,13 @@ export const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 15,
-    color: '#6B7280',
+
     width: 90,
     fontWeight: '500',
   },
   detailValue: {
     fontSize: 15,
-    color: '#1F2937',
+
     fontWeight: '600',
     flex: 1,
   },

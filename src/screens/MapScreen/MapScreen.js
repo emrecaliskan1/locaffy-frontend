@@ -14,6 +14,7 @@ import * as Location from 'expo-location';
 import { FontAwesome, FontAwesome5, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { placeService } from '../../services/placeService';
+import { calculateDistance } from '../../utils/distance';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
 import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
@@ -150,19 +151,6 @@ export default function MapScreen({ navigation }) {
       const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
 
       const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-
-      const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        return distance;
-      };
 
       // Her mekan için mesafe hesapla
       const placesWithDistance = availablePlaces.map(place => {
@@ -309,6 +297,13 @@ export default function MapScreen({ navigation }) {
             {loading ? 'Konum alınıyor...' : 'Mekanlar yüklenyor...'}
           </Text>
         </View>
+      ) : !region || !userLocation ? (
+        <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+            Harita hazırlanıyor...
+          </Text>
+        </View>
       ) : (
         <>
 
@@ -325,6 +320,7 @@ export default function MapScreen({ navigation }) {
             <Animated.View
               style={[
                 styles.infoCard,
+                { backgroundColor: theme.isDarkMode ? '#333333' : '#FFFFFF' },
                 {
                   opacity: infoCardAnimation,
                   transform: [{
@@ -338,12 +334,12 @@ export default function MapScreen({ navigation }) {
             >
               {/* Bilgilendirme Kartı */}
               <View style={styles.infoCardHeader}>
-                <Text style={styles.infoCardTitle}>Marker Kategorileri</Text>
+                <Text style={[styles.infoCardTitle, { color: theme.colors.text }]}>Marker Kategorileri</Text>
                 <TouchableOpacity
                   style={styles.infoCardCloseButton}
                   onPress={toggleInfoCard}
                 >
-                  <FontAwesome name="times" size={12} color="#666" />
+                  <FontAwesome name="times" size={12} color={theme.colors.textSecondary} />
                 </TouchableOpacity>
               </View>
 
@@ -351,7 +347,7 @@ export default function MapScreen({ navigation }) {
               <View style={styles.infoCardContent}>
                 {categoryInfo.map((category, index) => (
                   <View key={index} style={styles.categoryRow}>
-                    <View style={[styles.categoryIcon, { backgroundColor: theme.colors.primary }]}>
+                    <View style={[styles.categoryIcon, { backgroundColor: '#EA4335' }]}>
                       {category.iconFamily === 'FontAwesome5' ? (
                         <FontAwesome5 name={category.icon} size={14} color="#fff" />
                       ) : (
@@ -359,8 +355,8 @@ export default function MapScreen({ navigation }) {
                       )}
                     </View>
                     <View style={styles.categoryText}>
-                      <Text style={styles.categoryLabel}>{category.label}</Text>
-                      <Text style={styles.categoryDescription}>{category.description}</Text>
+                      <Text style={[styles.categoryLabel, { color: theme.colors.text }]}>{category.label}</Text>
+                      <Text style={[styles.categoryDescription, { color: theme.colors.textSecondary }]}>{category.description}</Text>
                     </View>
                   </View>
                 ))}
