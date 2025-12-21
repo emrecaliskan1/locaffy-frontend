@@ -56,26 +56,6 @@ export const useReservations = () => {
     }
   }, [activeReservations, pastReservations]);
 
-  // Yeni rezervasyon oluştur
-  const createReservation = useCallback(async (reservationData) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const result = await reservationService.createReservation(reservationData);
-      
-      // Başarılı ise listeyi güncelle
-      await loadReservations();
-
-      return { success: true, data: result, message: 'Rezervasyon başarıyla oluşturuldu' };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message || 'Rezervasyon oluşturulamadı' };
-    } finally {
-      setLoading(false);
-    }
-  }, [loadReservations]);
-
   // Rezervasyon iptal et
   const cancelReservation = useCallback(async (reservationId, reason) => {
     try {
@@ -100,28 +80,14 @@ export const useReservations = () => {
     return reservationService.canCancelReservation(reservation);
   }, []);
 
-  // İlk müsait tarihi al
-  const getFirstAvailableDate = useCallback(async (placeId) => {
-    try {
-      return await reservationService.getFirstAvailableDate(placeId);
-    } catch (err) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      return tomorrow.toISOString();
-    }
-  }, []);
-
   return {
     activeReservations,
     pastReservations,
     loading,
     error,
     loadReservations,
-    createReservation,
     cancelReservation,
-    canCancelReservation,
-    getFirstAvailableDate
+    canCancelReservation
   };
 };
 
@@ -134,19 +100,6 @@ const parseReservationTime = (timeString) => {
     return new Date(year, month - 1, day, hour, minute);
   }
   return new Date(timeString);
-};
-
-// Rezervasyon durumu label ve rengi
-export const getReservationStatusInfo = (status) => {
-  const statusMap = {
-    PENDING: { label: 'Beklemede', color: '#F39C12', icon: 'clock-o' },
-    APPROVED: { label: 'Onaylandı', color: '#27AE60', icon: 'check-circle' },
-    REJECTED: { label: 'Reddedildi', color: '#E74C3C', icon: 'times-circle' },
-    CANCELLED: { label: 'İptal Edildi', color: '#95A5A6', icon: 'ban' },
-    COMPLETED: { label: 'Tamamlandı', color: '#3498DB', icon: 'check' },
-    NO_SHOW: { label: 'Gelmedi', color: '#E74C3C', icon: 'user-times' }
-  };
-  return statusMap[status] || { label: status, color: '#95A5A6', icon: 'question' };
 };
 
 export default useReservations;

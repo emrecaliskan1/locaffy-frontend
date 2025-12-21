@@ -16,7 +16,7 @@ export { usePlaces, isPlaceOpen, getPlaceTypeLabel } from './usePlaces';
 export { useDebounce } from './useDebounce';
 
 // Rezervasyon işlemleri
-export { useReservations, getReservationStatusInfo } from './useReservations';
+export { useReservations } from './useReservations';
 
 // Animasyonlar
 export { useFadeSlideAnimation } from './useAnimations';

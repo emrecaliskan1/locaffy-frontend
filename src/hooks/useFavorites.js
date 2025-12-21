@@ -71,43 +71,6 @@ export const useFavorites = (placeId = null) => {
     }
   }, [placeId, favorites, loading]);
 
-  // Favorilere ekle
-  const addToFavorites = useCallback(async (id) => {
-    if (!id || loading) return { success: false };
-
-    try {
-      setLoading(true);
-      await userService.addToFavorites(id);
-      const updatedFavorites = await userService.getFavorites();
-      setFavorites(updatedFavorites || []);
-      if (id === placeId) setIsFavorite(true);
-      return { success: true, message: 'Mekan favorilere eklendi' };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
-    } finally {
-      setLoading(false);
-    }
-  }, [placeId, loading]);
-
-  // Favorilerden çıkar
-  const removeFromFavorites = useCallback(async (id) => {
-    if (!id || loading) return { success: false };
-
-    try {
-      setLoading(true);
-      await userService.removeFromFavorites(id);
-      setFavorites(prev => prev.filter(fav => fav.id !== id));
-      if (id === placeId) setIsFavorite(false);
-      return { success: true, message: 'Mekan favorilerden çıkarıldı' };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
-    } finally {
-      setLoading(false);
-    }
-  }, [placeId, loading]);
-
   // placeId değiştiğinde favori durumunu kontrol et
   useEffect(() => {
     if (placeId) {
@@ -122,8 +85,6 @@ export const useFavorites = (placeId = null) => {
     error,
     loadFavorites,
     toggleFavorite,
-    addToFavorites,
-    removeFromFavorites,
     checkFavoriteStatus
   };
 };

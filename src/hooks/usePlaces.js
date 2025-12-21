@@ -66,67 +66,11 @@ export const usePlaces = (currentLocation = null) => {
     }
   }, [currentLocation]);
 
-  // Mekan detayı getir
-  const getPlaceDetails = useCallback(async (placeId) => {
-    try {
-      setLoading(true);
-      const result = await placeService.getPlaceDetails(placeId);
-      return result;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Mekanları filtrele (client-side)
-  const filterPlaces = useCallback((filters, searchText = '') => {
-    return places.filter(place => {
-      if (place.isAvailable === false) return false;
-
-      // Arama filtresi
-      const matchesSearch = !searchText || 
-        place.name?.toLowerCase().includes(searchText.toLowerCase());
-
-      // Kategori filtresi
-      const matchesCategory = filters.category === 'all' ||
-        place.placeType?.toLowerCase() === filters.category.toLowerCase() ||
-        place.placeType === filters.category.toUpperCase();
-
-      // Rating filtresi
-      const matchesRating = filters.rating === 'all' ||
-        (place.averageRating && place.averageRating >= parseFloat(filters.rating));
-
-      // Uzaklık filtresi
-      const matchesDistance = filters.distance === 'all' || (() => {
-        if (!currentLocation?.latitude || !currentLocation?.longitude || 
-            !place.latitude || !place.longitude) {
-          return true;
-        }
-        const distance = place.calculatedDistance || calculateDistance(
-          currentLocation.latitude,
-          currentLocation.longitude,
-          place.latitude,
-          place.longitude
-        );
-        return distance <= parseInt(filters.distance) / 1000;
-      })();
-
-      // Açık mekanlar filtresi
-      const matchesOpenNow = !filters.openNow || isPlaceOpen(place);
-
-      return matchesSearch && matchesCategory && matchesRating && matchesDistance && matchesOpenNow;
-    });
-  }, [places, currentLocation]);
-
   return {
     places,
     loading,
     error,
     loadPlaces,
-    getPlaceDetails,
-    filterPlaces,
     setPlaces
   };
 };
