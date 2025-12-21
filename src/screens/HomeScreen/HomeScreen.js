@@ -17,17 +17,22 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
 import { calculateDistance } from '../../utils/distance';
 import { styles } from './styles';
+import { useToast, useDebounce, useFavorites, isPlaceOpen } from '../../hooks';
 
 export default function HomeScreen({ navigation }) {
   const { theme } = useTheme();
   const { currentLocation, hasLocationPermission, getLocationText } = useLocation();
+  
+  const { toast, showToast, hideToast } = useToast();
+  const { favorites: favoritesList, loadFavorites } = useFavorites();
+  
   const [searchText, setSearchText] = useState('');
+  const debouncedSearchText = useDebounce(searchText, 300); 
+  
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [places, setPlaces] = useState([]);
-  const [favoritesList, setFavoritesList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [appliedFilters, setAppliedFilters] = useState({
     category: 'all',
     rating: 'all',
@@ -35,14 +40,6 @@ export default function HomeScreen({ navigation }) {
     openNow: false,
     features: {}
   });
-
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
 
   // Mekanları arama metni ve filtrelere göre filtrele
   const filteredRestaurants = places.filter(place => {
@@ -70,24 +67,7 @@ export default function HomeScreen({ navigation }) {
     })();
 
     // Açık mekanlar filtresi
-    const matchesOpenNow = !appliedFilters.openNow || (() => {
-      if (!place.workingHours) return true;
-      const now = new Date();
-      const currentDay = now.getDay(); 
-      const currentTime = now.getHours() * 60 + now.getMinutes();
-      
-      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      const todaySchedule = place.workingHours[dayNames[currentDay]];
-      
-      if (!todaySchedule || todaySchedule.isClosed) return false;
-      
-      const [openHour, openMin] = todaySchedule.open.split(':').map(Number);
-      const [closeHour, closeMin] = todaySchedule.close.split(':').map(Number);
-      const openTime = openHour * 60 + openMin;
-      const closeTime = closeHour * 60 + closeMin;
-      
-      return currentTime >= openTime && currentTime <= closeTime;
-    })();
+    const matchesOpenNow = !appliedFilters.openNow || isPlaceOpen(place);
 
     return matchesSearch && matchesCategory && matchesRating && matchesDistance && matchesOpenNow;
   });
@@ -143,24 +123,7 @@ export default function HomeScreen({ navigation }) {
           })();
           
           // Açık mekanlar filtresi
-          const openNowMatch = !appliedFilters.openNow || (() => {
-            if (!place.workingHours) return true;
-            const now = new Date();
-            const currentDay = now.getDay();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-            
-            const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-            const todaySchedule = place.workingHours[dayNames[currentDay]];
-            
-            if (!todaySchedule || todaySchedule.isClosed) return false;
-            
-            const [openHour, openMin] = todaySchedule.open.split(':').map(Number);
-            const [closeHour, closeMin] = todaySchedule.close.split(':').map(Number);
-            const openTime = openHour * 60 + openMin;
-            const closeTime = closeHour * 60 + closeMin;
-          
-            return currentTime >= openTime && currentTime <= closeTime;
-          })();
+          const openNowMatch = !appliedFilters.openNow || isPlaceOpen(place);
           
           return categoryMatch && ratingMatch && distanceMatch && openNowMatch;
         });
@@ -197,15 +160,6 @@ export default function HomeScreen({ navigation }) {
       setPlaces([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadFavorites = async () => {
-    try {
-      const favorites = await userService.getFavorites();
-      setFavoritesList(favorites || []);
-    } catch (error) {
-      setFavoritesList([]);
     }
   };
 

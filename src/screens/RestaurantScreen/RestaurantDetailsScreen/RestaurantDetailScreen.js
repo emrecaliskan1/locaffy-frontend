@@ -10,38 +10,25 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
 import { styles } from './styles';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { FontAwesome } from '@expo/vector-icons';
 import { MenuTab, ReviewsTab, InfoTab } from '../../../components/Restaurant';
-import { reviewService, userService, menuService } from '../../../services';
+import { reviewService, menuService } from '../../../services';
 import { useTheme } from '../../../context/ThemeContext';
 import Toast from '../../../components/Toast';
-
-const getPlaceTypeLabel = (type) => {
-  const typeMap = {
-    'CAFE': 'Kafe',
-    'RESTAURANT': 'Restoran',
-    'BAR': 'Bar',
-    'BISTRO': 'Bistro',
-    'DESSERT': 'Tatlıcı',
-    'FASTFOOD': 'Fast Food',
-  };
-  return typeMap[type] || type;
-};
+import { useToast, useFavorites, getPlaceTypeLabel } from '../../../hooks';
 
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { restaurant } = route.params || {};
   const { theme } = useTheme();
+  const { toast, showToast, hideToast } = useToast();
+  const { isFavorite, toggleFavorite, loading: favoriteLoading, checkFavoriteStatus } = useFavorites(restaurant?.id);
   const [activeTab, setActiveTab] = useState('menu');
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [menu, setMenu] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   
   const scrollViewRef = useRef(null);
@@ -124,14 +111,6 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     return { isOpen: true, text: 'Açık', canReserve: true };
   };
 
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
-
   //MEKAN YORUMLARINI YÜKLE
   const loadReviews = async () => {
     if (!restaurantData.id) return;
@@ -164,39 +143,13 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     }
   };
 
-  //FAVORİ DURUMUNU KONTROL ET
-  const checkFavoriteStatus = async () => {
-    if (!restaurantData.id) return;
-
-    try {
-      const favorites = await userService.getFavorites();
-      const isRestaurantFavorite = favorites.some(fav => fav.id === restaurantData.id);
-      setIsFavorite(isRestaurantFavorite);
-    } catch (error) {
-      console.log('Error checking favorite status:', error);
-      setIsFavorite(false);
-    }
-  };
-
   //FAVORİ TOGGLE
   const handleFavoriteToggle = async () => {
-    if (!restaurantData.id || favoriteLoading) return;
-
-    try {
-      setFavoriteLoading(true);
-      if (isFavorite) {
-        await userService.removeFromFavorites(restaurantData.id);
-        setIsFavorite(false);
-        showToast('Mekan favorilerden çıkarıldı', 'success');
-      } else {
-        await userService.addToFavorites(restaurantData.id);
-        setIsFavorite(true);
-        showToast('Mekan favorilere eklendi', 'success');
-      }
-    } catch (error) {
-      showToast(error.message || 'Favori işlemi gerçekleştirilemedi', 'error');
-    } finally {
-      setFavoriteLoading(false);
+    const result = await toggleFavorite();
+    if (result.success) {
+      showToast(result.message, 'success');
+    } else {
+      showToast(result.message || 'Favori işlemi gerçekleştirilemedi', 'error');
     }
   };
 
@@ -204,12 +157,6 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     loadReviews();
     loadMenu();
   }, [restaurantData.id]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      checkFavoriteStatus();
-    }, [restaurantData.id])
-  );
 
   //BACKEND'DEN GELEN MEKAN DATASI
   const finalRestaurantData = {

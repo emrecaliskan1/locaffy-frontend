@@ -18,14 +18,23 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
 import Toast from '../../components/Toast';
 import { userService, reservationService, imageService } from '../../services';
+import { useToast, useFavorites, useReservations } from '../../hooks';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const { isDarkMode, theme, toggleTheme } = useTheme();
   const { setOnCitySelectedCallback } = useLocation();
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-  const [userStats, setUserStats] = useState({ totalReservations: 0, favoriteRestaurants: 0 });
+  
+  const { toast, showToast, hideToast } = useToast();
+  const { favorites } = useFavorites();
+  const { activeReservations, pastReservations, loadReservations } = useReservations();
+  
   const [isLoading, setIsLoading] = useState(true);
+  
+  const userStats = {
+    totalReservations: activeReservations.length + pastReservations.length,
+    favoriteRestaurants: favorites.length
+  };
   
   const userInfo = {
     username: user?.username || '',
@@ -35,45 +44,13 @@ export default function ProfileScreen({ navigation }) {
     ...userStats
   };
 
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
-
   //Avatar altındaki istatistikler
   const loadUserStats = async () => {
     try {
       setIsLoading(true);
-      
-      // Rezervasyon sayısını al
-      try {
-        const reservations = await reservationService.getUserReservations();
-        const reservationCount = reservations ? (Array.isArray(reservations) ? reservations.length : 0) : 0;
-        
-        // Favori sayısını al
-        const favorites = await userService.getFavorites();
-        const favoriteCount = favorites ? (Array.isArray(favorites) ? favorites.length : 0) : 0;
-        
-        setUserStats({
-          totalReservations: reservationCount,
-          favoriteRestaurants: favoriteCount
-        });
-      } catch (statsError) {
-        console.log('Kullanıcı istatistikleri yüklenirken hata:', statsError);
-        setUserStats({
-          totalReservations: 0,
-          favoriteRestaurants: 0
-        });
-      }
+      await loadReservations();
     } catch (error) {
       console.log('Genel yükleme hatası:', error);
-      setUserStats({
-        totalReservations: 0,
-        favoriteRestaurants: 0
-      });
     } finally {
       setIsLoading(false);
     }

@@ -15,6 +15,7 @@ import { reviewService } from '../../services';
 import { useTheme } from '../../context/ThemeContext';
 import Toast from '../Toast/Toast';
 import styles from './styles';
+import { useToast } from '../../hooks';
 
 const ReviewModal = ({ 
   visible, 
@@ -23,18 +24,11 @@ const ReviewModal = ({
   onReviewSubmitted 
 }) => {
   const { theme } = useTheme();
+  const { toast, showToast, hideToast } = useToast();
+  
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-
-  const showToast = (message, type = 'error') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
 
   const handleStarPress = (selectedRating) => {
     setRating(selectedRating);
@@ -54,11 +48,7 @@ const ReviewModal = ({
       };
       const newReview = await reviewService.createReview(reviewData);
       
-      setToast({
-        visible: true,
-        message: 'Değerlendirmeniz başarıyla gönderildi!',
-        type: 'success'
-      });
+      showToast('Değerlendirmeniz başarıyla gönderildi!', 'success');
 
       if (onReviewSubmitted) {
         onReviewSubmitted();
@@ -67,19 +57,11 @@ const ReviewModal = ({
       setTimeout(() => {
         setRating(0);
         setComment('');
-        setToast({ visible: false, message: '', type: 'success' });
+        hideToast();
         onClose();
       }, 2000);
     } catch (error) {
-      setToast({
-        visible: true,
-        message: error.message || 'Değerlendirme eklenirken bir hata oluştu.',
-        type: 'error'
-      });
-
-      setTimeout(() => {
-        setToast({ visible: false, message: '', type: 'success' });
-      }, 3000);
+      showToast(error.message || 'Değerlendirme eklenirken bir hata oluştu.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -204,7 +186,7 @@ const ReviewModal = ({
         visible={toast.visible}
         message={toast.message}
         type={toast.type}
-        onHide={() => setToast({ ...toast, visible: false })}
+        onHide={hideToast}
       />
     </Modal>
   );

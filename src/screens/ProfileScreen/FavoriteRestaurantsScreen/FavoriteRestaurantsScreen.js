@@ -1,48 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, StatusBar, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { userService } from '../../../services';
-import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLocation } from '../../../context/LocationContext';
 import Toast from '../../../components/Toast';
 import { RestaurantCard } from '../../../components/Home/RestaurantCard';
 import { styles } from './styles';
 import { styles as homeStyles } from '../../HomeScreen/styles';
+import { useToast, useFavorites } from '../../../hooks';
 
 export default function FavoriteRestaurantsScreen({ navigation }) {
   const { theme } = useTheme();
   const { currentLocation } = useLocation();
-  const [favoriteRestaurants, setFavoriteRestaurants] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
-
-  const loadFavorites = async () => {
-    try {
-      setLoading(true);
-      const favorites = await userService.getFavorites();
-      setFavoriteRestaurants(favorites || []);
-    } catch (error) {
-      setFavoriteRestaurants([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { toast, showToast, hideToast } = useToast();
+  const { favorites: favoriteRestaurants, loading, loadFavorites } = useFavorites();
 
   useFocusEffect(
     React.useCallback(() => {
       loadFavorites();
-    }, [])
+    }, [loadFavorites])
   );
 
   const handleRestaurantPress = (restaurant) => {

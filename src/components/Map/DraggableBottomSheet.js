@@ -11,22 +11,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import { getRestaurantIconComponent } from '../../utils/restaurantIcons';
 import { calculateDistance } from '../../utils/distance';
 import { useTheme } from '../../context/ThemeContext';
+import { getPlaceTypeLabel } from '../../hooks';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BOTTOM_SHEET_MAX_HEIGHT = 250;
 const BOTTOM_SHEET_MIN_HEIGHT = 50;
-
-const getPlaceTypeLabel = (type) => {
-  const typeMap = {
-    'CAFE': 'Kafe',
-    'RESTAURANT': 'Restoran',
-    'BAR': 'Bar',
-    'BISTRO': 'Bistro',
-    'DESSERT': 'Tatlıcı',
-    'FASTFOOD': 'Fast Food',
-  };
-  return typeMap[type] || type;
-};
 
 export const DraggableBottomSheet = ({ restaurants, onMarkerPress, styles, onToggle, userLocation }) => {
   const [isExpanded, setIsExpanded] = useState(false);

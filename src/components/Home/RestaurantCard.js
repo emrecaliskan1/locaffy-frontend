@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -8,24 +8,12 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
-import { userService } from '../../services';
 import { calculateDistance } from '../../utils/distance';
-
-const getPlaceTypeLabel = (type) => {
-  const typeMap = {
-    'CAFE': 'Kafe',
-    'RESTAURANT': 'Restoran',
-    'BAR': 'Bar',
-    'BISTRO': 'Bistro',
-    'DESSERT': 'Tatlıcı',
-    'FASTFOOD': 'Fast Food',
-  };
-  return typeMap[type] || type;
-};
+import { useFavorites, getPlaceTypeLabel } from '../../hooks';
 
 export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, userLocation, styles }) => {
   const { theme } = useTheme();
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const { toggleFavorite, loading: favoriteLoading } = useFavorites(item.id);
   
   const isFavorite = favoritesList.some(fav => fav.id === item.id);
 
@@ -102,36 +90,24 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
 
   const restaurantStatus = getRestaurantStatus();
 
-  // Favori toggle fonksiyonu
+  // Favori toggle fonksiyonu (useFavorites hook'u)
   const handleFavoriteToggle = async (e) => {
     e.stopPropagation(); 
     if (favoriteLoading) return;
   
-    try {
-      setFavoriteLoading(true);
-      
-      if (isFavorite) {
-        await userService.removeFromFavorites(item.id);
-        if (onShowToast) {
-          onShowToast('Mekan favorilerden çıkarıldı', 'success');
-        }
-      } else {
-        await userService.addToFavorites(item.id);
-        if (onShowToast) {
-          onShowToast('Mekan favorilere eklendi', 'success');
-        }
+    const result = await toggleFavorite(item.id);
+    
+    if (result.success) {
+      if (onShowToast) {
+        onShowToast(result.message, 'success');
       }
-      
       if (onFavoriteChange) {
         onFavoriteChange();
       }
-    } catch (error) {
-      console.log('Error toggling favorite:', error);
+    } else {
       if (onShowToast) {
-        onShowToast(error.message || 'Favori işlemi gerçekleştirilemedi', 'error');
+        onShowToast(result.message || 'Favori işlemi gerçekleştirilemedi', 'error');
       }
-    } finally {
-      setFavoriteLoading(false);
     }
   };
   

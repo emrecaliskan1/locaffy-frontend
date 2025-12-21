@@ -14,12 +14,13 @@ import {
   Switch
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
+import { useToast, useForm, useFadeSlideAnimation } from '../../hooks';
 
 export default function AuthScreen({ navigation }) {
   const { login, register, loading } = useAuth();
@@ -27,17 +28,15 @@ export default function AuthScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-  const [formData, setFormData] = useState({
+  const { toast, showToast, hideToast } = useToast();
+  const { fadeAnim, slideAnim, animateIn } = useFadeSlideAnimation(0, 50, 600);
+  const { values: formData, handleChange: handleInputChange } = useForm({
     email: '',
     password: '',
     username: '',
     phoneNumber: '',
     passwordConfirm: ''
   });
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
     if (loading) {
@@ -51,35 +50,8 @@ export default function AuthScreen({ navigation }) {
 
   // Animasyonları başlat
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    animateIn();
   }, []);
-
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
 
   // Giriş işlemini gerçekleştir
   const handleLogin = async () => {

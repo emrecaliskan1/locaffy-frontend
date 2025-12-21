@@ -17,6 +17,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { styles } from './styles';
+import { useToast, getPlaceTypeLabel } from '../../../hooks';
 
 const dayNames = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
 const monthNames = [
@@ -30,6 +31,7 @@ export default function ReservationScreen({ route, navigation }) {
   const { restaurant } = route.params;
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { toast, showToast, hideToast } = useToast();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedPeople, setSelectedPeople] = useState(2);
@@ -42,16 +44,7 @@ export default function ReservationScreen({ route, navigation }) {
     maxPeople: maxPeople
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', duration: 3000 });
   const timeScrollViewRef = useRef(null);
-
-  const showToast = (message, type = 'error', duration = 3000) => {
-    setToast({ visible: true, message, type, duration });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success', duration: 3000 });
-  };
 
   // Mekanın çalışma günlerini kontrol et
   const getWorkingDays = () => {
@@ -636,7 +629,7 @@ export default function ReservationScreen({ route, navigation }) {
         <View style={styles.restaurantInfo}>
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{restaurant.name}</Text>
           <Text style={[styles.restaurantType, { color: theme.colors.textSecondary }]}>
-            {restaurant.type}
+            {getPlaceTypeLabel(restaurant.placeType)}
           </Text>
           {restaurant.address && (
             <Text 

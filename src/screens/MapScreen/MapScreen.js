@@ -18,30 +18,27 @@ import { calculateDistance } from '../../utils/distance';
 import { RestaurantModal, ModernMapView } from '../../components/Map';
 import { useTheme } from '../../context/ThemeContext';
 import { useLocation } from '../../context/LocationContext';
+import { useToast, usePlaces } from '../../hooks';
 
 export default function MapScreen({ navigation }) {
   const { theme } = useTheme();
   const { currentLocation, hasLocationPermission, getLocationText, needsCitySelection } = useLocation();
+  
+  const { toast, showToast, hideToast } = useToast();
+  const { 
+    places, 
+    loading: placesLoading, 
+    loadPlaces: loadPlacesFromHook 
+  } = usePlaces(currentLocation);
+  
   const [region, setRegion] = useState(null);
-
   const [userLocation, setUserLocation] = useState(null);
-  const [places, setPlaces] = useState([]);
-  const [placesLoading, setPlacesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [infoCardVisible, setInfoCardVisible] = useState(false);
   const [infoCardAnimation] = useState(new Animated.Value(1));
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-
-  const showToast = (message, type = 'error') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
 
   useEffect(() => {
     initializeMap();
@@ -56,7 +53,6 @@ export default function MapScreen({ navigation }) {
 
   const initializeMap = async () => {
     setLoading(true);
-    setPlaces([]);
 
     try {
       if (currentLocation) {
@@ -136,67 +132,14 @@ export default function MapScreen({ navigation }) {
     }
   };
 
-  const loadPlaces = async () => {
-    setPlacesLoading(true);
-    setPlaces([]);
-    try {
-      // Şehir seçimi yapılmamışsa mekan yükleme
-      if (!userLocation || !currentLocation) {
-        return;
-      }
-
-      const lat = userLocation.latitude;
-      const lng = userLocation.longitude;
-      const result = await placeService.getNearbyPlaces(lat, lng, 10000, true);
-      const places = Array.isArray(result) ? result : (result?.data ? (Array.isArray(result.data) ? result.data : []) : []);
-
-      const availablePlaces = places.filter(place => place && place.isAvailable !== false);
-
-      // Her mekan için mesafe hesapla
-      const placesWithDistance = availablePlaces.map(place => {
-        let distance;
-        if (place.distance !== undefined && place.distance !== null) {
-          // API'den gelen distance metre cinsindeyse km'ye çevir
-          distance = typeof place.distance === 'number' ? place.distance / 1000 : place.distance;
-        } else if (place.latitude && place.longitude) {
-          // Mesafeyi hesapla
-          distance = calculateDistance(
-            lat,
-            lng,
-            place.latitude,
-            place.longitude
-          );
-        } else {
-          // Konum bilgisi yoksa çok uzak olarak işaretle
-          distance = Infinity;
-        }
-        return { ...place, calculatedDistance: distance };
-      });
-
-      const sortedPlaces = placesWithDistance.sort((a, b) => {
-        const distanceA = a.calculatedDistance || Infinity;
-        const distanceB = b.calculatedDistance || Infinity;
-        return distanceA - distanceB;
-      });
-
-      setPlaces(sortedPlaces);
-    } catch (error) {
-      setPlaces([]);
-    } finally {
-      setPlacesLoading(false);
-    }
-  };
-
-  // userLocation ve currentLocation değişikliklerini useEffect ile yönet
+  // usePlaces hook'unu kullanarak mekanları yükle
   useEffect(() => {
     if (userLocation && currentLocation) {
       const timer = setTimeout(() => {
-        loadPlaces();
+        loadPlacesFromHook(userLocation);
       }, 150);
 
       return () => clearTimeout(timer);
-    } else {
-      setPlaces([]);
     }
   }, [userLocation, currentLocation?.latitude, currentLocation?.longitude]);
 

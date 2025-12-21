@@ -8,56 +8,42 @@ import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import Toast from '../../../components/Toast';
 import { styles } from './styles';
+import { useToast, useForm } from '../../../hooks';
 
 export default function AccountInfoScreen({ navigation, route }) {
   const { user, updateProfileImage } = useAuth();
   const { theme } = useTheme();
-  const [userInfo, setUserInfo] = useState({
+  const { toast, showToast, hideToast } = useToast();
+  const { values: userInfo, handleChange: handleInputChange, setFieldValue } = useForm({
     name: '',
     email: '',
     username: '',
     phone: '',
   });
+  
   const [passwordExpanded, setPasswordExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState(null);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-
-  const showToast = (message, type = 'success') => {
-    setToast({ visible: true, message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success' });
-  };
-
-  const handleInputChange = (field, value) => {
-    setUserInfo(prev => ({ ...prev, [field]: value }));
-  };
 
   const loadUserProfile = async () => {
     try {
       setLoading(true);
       const profile = await userService.getProfile();
-      setUserInfo({
-        name: profile?.username || user?.username || '',
-        email: profile?.email || user?.email || '',
-        username: profile?.username || user?.username || '',
-        phone: profile?.phoneNumber || '',
-      });
+      setFieldValue('name', profile?.username || user?.username || '');
+      setFieldValue('email', profile?.email || user?.email || '');
+      setFieldValue('username', profile?.username || user?.username || '');
+      setFieldValue('phone', profile?.phoneNumber || '');
       if (profile?.profileImageUrl) {
         setProfileImageUrl(profile.profileImageUrl);
       }
     } catch (error) {
       console.log('Profile load error:', error);
-      setUserInfo({
-        name: user?.username || '',
-        email: user?.email || '',
-        username: user?.username || '',
-        phone: '',
-      });
+      setFieldValue('name', user?.username || '');
+      setFieldValue('email', user?.email || '');
+      setFieldValue('username', user?.username || '');
+      setFieldValue('phone', '');
     } finally {
       setLoading(false);
     }

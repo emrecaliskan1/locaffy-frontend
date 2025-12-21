@@ -13,10 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { useTheme } from '../../context/ThemeContext';
-
 import { ReservationCard, TabButtons, EmptyState } from '../../components/Reservations-Profile';
 import Toast from '../../components/Toast';
 import { reservationService, calendarReminderService } from '../../services';
+import { useToast, useReservations } from '../../hooks';
 
 
 export default function ReservationsScreen({ navigation, route }) {
@@ -24,93 +24,21 @@ export default function ReservationsScreen({ navigation, route }) {
   const { fromProfile, fromRestaurant } = route.params || {};
   const { theme } = useTheme();
 
-  const [activeReservations, setActiveReservations] = useState([]);
-  const [pastReservations, setPastReservations] = useState([]);
-  const [previousReservations, setPreviousReservations] = useState([]); // Durum değişikliği için
-  const [loading, setLoading] = useState(true);
+  // Custom Hooks
+  const { toast, showToast, hideToast } = useToast();
+  const { 
+    activeReservations, 
+    pastReservations, 
+    loading, 
+    loadReservations,
+    cancelReservation: cancelReservationHook,
+    canCancelReservation 
+  } = useReservations();
+
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', duration: 3000 });
-
-  const showToast = (message, type = 'error', duration = 3000) => {
-    setToast({ visible: true, message, type, duration });
-  };
-
-  const hideToast = () => {
-    setToast({ visible: false, message: '', type: 'success', duration: 3000 });
-  };
-
-  const loadReservations = async () => {
-    try {
-      setLoading(true);
-      const reservations = await reservationService.getUserReservations();
-      
-      // Durum değişikliklerini kontrol et (Calendar Reminder için)
-      const allCurrentReservations = [...activeReservations, ...pastReservations];
-      if (allCurrentReservations.length > 0) {
-        await calendarReminderService.watchStatusChanges(
-          allCurrentReservations,
-          reservations
-        );
-      } else if (reservations.length > 0) {
-        // İlk yükleme - APPROVED olanlar için hatırlatıcı oluştur
-        await calendarReminderService.watchStatusChanges(
-          [],
-          reservations
-        );
-      }
-      
-      // Rezervasyonları tarih ve durumuna göre ayır
-      const now = new Date();
-      const active = reservations.filter(res => {
-        let resTime;
-        
-        if (res.reservationTime.includes('T')) {
-          const [datePart, timePart] = res.reservationTime.split('T');
-          const [year, month, day] = datePart.split('-');
-          const [hour, minute] = timePart.split(':');
-          
-          resTime = new Date(year, month - 1, day, hour, minute);
-        } else {
-          resTime = new Date(res.reservationTime);
-        }
-        
-        return resTime >= now && (res.status === 'APPROVED' || res.status === 'PENDING');
-      });
-      
-      const past = reservations.filter(res => {
-        let resTime;
-        
-        if (res.reservationTime.includes('T')) {
-          const [datePart, timePart] = res.reservationTime.split('T');
-          const [year, month, day] = datePart.split('-');
-          const [hour, minute] = timePart.split(':');
-          resTime = new Date(year, month - 1, day, hour, minute);
-        } else {
-          resTime = new Date(res.reservationTime);
-        }
-        
-        return resTime < now || res.status === 'REJECTED' || res.status === 'CANCELLED' || res.status === 'NO_SHOW' || res.status === 'COMPLETED';
-      });
-      
-      // Son eklenenler en üstte olacak şekilde sırala (DESC)
-      const sortByCreatedDate = (a, b) => {
-        const dateA = new Date(a.createdAt || a.reservationTime);
-        const dateB = new Date(b.createdAt || b.reservationTime);
-        return dateB - dateA; 
-      };
-      
-      setActiveReservations(active.sort(sortByCreatedDate));
-      setPastReservations(past.sort(sortByCreatedDate));
-      setPreviousReservations(reservations); // Bir sonraki karşılaştırma için kaydet
-    } catch (error) {
-      showToast('Rezervasyonlar yüklenirken bir hata oluştu', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Değerlendirme sonrası güncelleme için listener
   useEffect(() => {
@@ -133,7 +61,8 @@ export default function ReservationsScreen({ navigation, route }) {
   };
 
   const handleCancelReservation = (reservation) => {
-    if (!reservationService.canCancelReservation(reservation)) {
+    // Hook'tan gelen canCancelReservation fonksiyonunu kullan
+    if (!canCancelReservation(reservation)) {
       let errorMessage = '';
       
       if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
@@ -178,26 +107,20 @@ export default function ReservationsScreen({ navigation, route }) {
     
     try {
       setCancelling(true);
-      const updatedReservation = await reservationService.cancelReservation(
-        selectedReservation.id,
-        cancelReason.trim()
-      );
+      
+      const result = await cancelReservationHook(selectedReservation.id, cancelReason.trim());
       
       // Takvim hatırlatıcısını sil
       await calendarReminderService.deleteReminder(selectedReservation.id);
       
-      setActiveReservations(prev => prev.filter(r => r.id !== selectedReservation.id));
-      setPastReservations(prev => [
-        {
-          ...updatedReservation,
-          status: 'CANCELLED',
-        },
-        ...prev
-      ]);
-      setSelectedReservation(null);
-      setCancelReason('');
-      setShowCancelModal(false);
-      showToast('Rezervasyonunuz başarıyla iptal edildi', 'success', 3000);
+      if (result.success) {
+        setSelectedReservation(null);
+        setCancelReason('');
+        setShowCancelModal(false);
+        showToast('Rezervasyonunuz başarıyla iptal edildi', 'success', 3000);
+      } else {
+        showToast(result.message || 'Rezervasyon iptal edilemedi', 'error', 5000);
+      }
     } catch (error) {
       const errorMessage = error.message || 'Rezervasyon iptal edilemedi';
       showToast(errorMessage, 'error', 5000);
