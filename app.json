@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "locaffy-mobile-app",
+    "name": "Locaffy",
     "slug": "locaffy-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#1C1C1E"
       },
       "edgeToEdgeEnabled": true,
