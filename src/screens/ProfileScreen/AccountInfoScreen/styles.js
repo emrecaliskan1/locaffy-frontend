@@ -104,7 +104,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E8E8E8',
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 6,
   },
   inputIcon: {
     marginRight: 12,

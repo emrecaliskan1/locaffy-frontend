@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 // TOASTIFY BİLDİRİM COMPONENTİ
 
 const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) => {
+  const { theme, isDarkMode } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
 
@@ -54,37 +56,41 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
   if (!visible) return null;
 
   const getToastStyle = () => {
+    const bgColor = isDarkMode ? theme.colors.card : '#fff';
+    const conflictBg = isDarkMode ? '#3D1F1F' : '#FFF5F5';
+    const conflictBorder = isDarkMode ? '#7F1D1D' : '#FEE2E2';
+    
     switch (type) {
       case 'success':
         return {
-          backgroundColor: '#fff',
+          backgroundColor: bgColor,
           borderLeftColor: '#4CAF50',
         };
       case 'error':
         return {
-          backgroundColor: '#fff',
+          backgroundColor: bgColor,
           borderLeftColor: '#f44336',
         };
       case 'warning':
         return {
-          backgroundColor: '#fff',
+          backgroundColor: bgColor,
           borderLeftColor: '#FF9800',
         };
       case 'info':
         return {
-          backgroundColor: '#fff',
+          backgroundColor: bgColor,
           borderLeftColor: '#2196F3',
         };
       case 'conflict':
         return {
-          backgroundColor: '#FFF5F5',
+          backgroundColor: conflictBg,
           borderLeftColor: '#EF4444',
           borderWidth: 1,
-          borderColor: '#FEE2E2',
+          borderColor: conflictBorder,
         };
       default:
         return {
-          backgroundColor: '#fff',
+          backgroundColor: bgColor,
           borderLeftColor: '#2196F3',
         };
     }
@@ -128,7 +134,7 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
           <FontAwesome name={iconConfig.name} size={22} color={iconConfig.color} />
         </View>
         <Text 
-          style={[styles.message, { color: type === 'conflict' ? '#991B1B' : iconConfig.color }]}
+          style={[styles.message, { color: type === 'conflict' ? (isDarkMode ? '#FCA5A5' : '#991B1B') : iconConfig.color }]}
           numberOfLines={0}
         >
           {message}
@@ -139,7 +145,7 @@ const Toast = ({ visible, message, type = 'success', duration = 1000, onHide }) 
             style={styles.closeButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <FontAwesome name="times" size={16} color={type === 'conflict' ? '#991B1B' : '#666'} />
+            <FontAwesome name="times" size={16} color={type === 'conflict' ? (isDarkMode ? '#FCA5A5' : '#991B1B') : (isDarkMode ? '#999' : '#666')} />
           </TouchableOpacity>
         )}
       </View>
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 10,
     borderRadius: 12,
     borderLeftWidth: 4,
     zIndex: 99999,

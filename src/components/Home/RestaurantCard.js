@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { calculateDistance } from '../../utils/distance';
-import { useFavorites, getPlaceTypeLabel } from '../../hooks';
+import { getPlaceTypeLabel } from '../../hooks';
+import { userService } from '../../services';
 
 export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteChange, onShowToast, userLocation, styles }) => {
   const { theme } = useTheme();
-  const { toggleFavorite, loading: favoriteLoading } = useFavorites(item.id);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   
   const isFavorite = favoritesList.some(fav => fav.id === item.id);
 
@@ -90,24 +91,38 @@ export const RestaurantCard = ({ item, onPress, favoritesList = [], onFavoriteCh
 
   const restaurantStatus = getRestaurantStatus();
 
-  // Favori toggle fonksiyonu (useFavorites hook'u)
+  // Favori toggle fonksiyonu - isFavorite prop'una göre ekle/çıkar
   const handleFavoriteToggle = async (e) => {
     e.stopPropagation(); 
     if (favoriteLoading) return;
   
-    const result = await toggleFavorite(item.id);
-    
-    if (result.success) {
-      if (onShowToast) {
-        onShowToast(result.message, 'success');
+    try {
+      setFavoriteLoading(true);
+      
+      if (isFavorite) {
+        // Favorilerden çıkar
+        await userService.removeFromFavorites(item.id);
+        if (onShowToast) {
+          onShowToast('Mekan favorilerden çıkarıldı', 'success');
+        }
+      } else {
+        // Favorilere ekle
+        await userService.addToFavorites(item.id);
+        if (onShowToast) {
+          onShowToast('Mekan favorilere eklendi', 'success');
+        }
       }
+      
+      // Favori listesini güncelle
       if (onFavoriteChange) {
         onFavoriteChange();
       }
-    } else {
+    } catch (err) {
       if (onShowToast) {
-        onShowToast(result.message || 'Favori işlemi gerçekleştirilemedi', 'error');
+        onShowToast(err.message || 'Favori işlemi gerçekleştirilemedi', 'error');
       }
+    } finally {
+      setFavoriteLoading(false);
     }
   };
   

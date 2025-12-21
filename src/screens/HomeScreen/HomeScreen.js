@@ -247,6 +247,7 @@ export default function HomeScreen({ navigation }) {
         onApplyFilters={(filters) => {
           setAppliedFilters(filters);
           setShowFilterModal(false);
+          showToast('Filtre başarıyla uygulandı', 'success');
         }}
       />
 
