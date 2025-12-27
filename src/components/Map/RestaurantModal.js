@@ -305,7 +305,7 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
             <TouchableOpacity 
               style={{
                 backgroundColor: theme.colors.primary,
-                paddingVertical: 15,
+                paddingVertical: 12,
                 borderRadius: 10,
                 alignItems: 'center'
               }}
@@ -316,7 +316,7 @@ export const RestaurantModal = ({ visible, restaurant, onClose, onViewDetails, s
             >
               <Text style={{
                 color: '#fff',
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: '600'
               }}>Detay Gör</Text>
             </TouchableOpacity>

@@ -72,8 +72,8 @@ export default function HelpSupportScreen({ navigation }) {
     {
       icon: 'phone',
       title: 'Telefon Desteği',
-      description: '+90 (555) 123 45 67',
-      action: () => Linking.openURL('tel:+905551234567'),
+      description: '+90 539 709 88 33',
+      action: () => Linking.openURL('tel:+905397098833'),
     },
     {
       icon: 'comments',

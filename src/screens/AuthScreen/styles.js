@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 8,
+    overflow: 'hidden',
   },
   screenTitle: {
     fontSize: 32,

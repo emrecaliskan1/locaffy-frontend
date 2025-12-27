@@ -261,18 +261,18 @@ export const reservationService = {
   //Geçmiş rezervasyonlar için status color
   getPastReservationStatusColor: (status, reservationTime) => {
     if (status === 'NO_SHOW') {
-      return '#9c0a0aff';
+      return 'rgba(156, 10, 10, 0.7)';
     }
     if (status === 'COMPLETED') {
-      return '#0288d1'; 
+      return 'rgba(2, 136, 209, 0.7)'; 
     }
     
     if (reservationService.isReservationPast(reservationTime)) {
       if (status === 'PENDING') {
-        return '#9E9E9E'; 
+        return 'rgba(158, 158, 158, 0.7)'; 
       }
       if (status === 'APPROVED') {
-        return '#4CAF50'; 
+        return 'rgba(76, 175, 80, 0.7)'; 
       }
     }
     return reservationService.getReservationStatusColor(status);
@@ -280,14 +280,14 @@ export const reservationService = {
 
   getReservationStatusColor: (status) => {
     const colorMap = {
-      PENDING: '#FFA500',
-      APPROVED: '#36a83cff', 
-      COMPLETED: '#0288d1',
-      NO_SHOW: '#9c0a0aff', 
-      REJECTED: '#F44336', 
-      CANCELLED: '#9E9E9E'
+      PENDING: 'rgba(255, 165, 0, 0.7)',
+      APPROVED: 'rgba(54, 168, 60, 0.7)', 
+      COMPLETED: 'rgba(2, 136, 209, 0.7)',
+      NO_SHOW: 'rgba(156, 10, 10, 0.7)', 
+      REJECTED: 'rgba(244, 67, 54, 0.7)', 
+      CANCELLED: 'rgba(158, 158, 158, 0.7)'
     };
-    return colorMap[status] || '#9E9E9E';
+    return colorMap[status] || 'rgba(158, 158, 158, 0.7)';
   }
 };
 

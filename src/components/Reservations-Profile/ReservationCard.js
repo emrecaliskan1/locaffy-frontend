@@ -103,7 +103,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
           <Text style={[styles.reservationNumber, { color: theme.colors.textSecondary }]}>#{item.id}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}> 
-          <Text style={[styles.statusText, { fontSize: item.status === 'APPROVED' ? 12 : 14 }]}>
+          <Text style={styles.statusText}>
             {getStatusText(item.status)}
           </Text>
         </View>
@@ -181,7 +181,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
-              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: theme.colors.warning }]}
+              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: '#DC2626' }]}
               onPress={() => setShowRejectModal(true)}
             > 
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>
@@ -200,7 +200,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
-              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: theme.colors.warning }]}
+              style={[styles.rejectReasonButton, { flex: 1, backgroundColor: '#DC2626' }]}
               onPress={() => setShowRejectModal(true)}
             > 
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>
@@ -223,7 +223,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
           alignItems: 'center' 
         }}>
           <View style={{ 
-            backgroundColor: '#fff', 
+            backgroundColor: theme.colors.card, 
             borderRadius: 16, 
             padding: 24, 
             width: 320, 
@@ -245,17 +245,17 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
             </Text>
             <Text style={{ 
               fontSize: 14, 
-              color: '#666', 
+              color: theme.colors.textSecondary, 
               marginBottom: 4 
             }}>
               Red Sebebi:
             </Text>
             <Text style={{ 
               fontSize: 16, 
-              color: '#2C3E50', 
+              color: theme.colors.text, 
               lineHeight: 24,
               marginBottom: 20,
-              backgroundColor: '#f8f9fa',
+              backgroundColor: theme.colors.background,
               padding: 12,
               borderRadius: 8,
               borderLeftWidth: 4,

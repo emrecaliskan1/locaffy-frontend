@@ -24,6 +24,11 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#1C1C1E"
       },
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#1C1C1E"
+      },
       "edgeToEdgeEnabled": true,
       "package": "com.zenvero.locaffymobileapp",
       "permissions": [
