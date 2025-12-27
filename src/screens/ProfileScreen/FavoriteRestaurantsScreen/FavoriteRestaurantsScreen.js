@@ -59,6 +59,14 @@ export default function FavoriteRestaurantsScreen({ navigation }) {
                 <FontAwesome name="heart-o" size={50} color={theme.colors.textSecondary} />
                 <Text style={[styles.emptyStateText, { color: theme.colors.text }]}>Henüz favori restoranınız yok</Text>
                 <Text style={[styles.emptyStateSubtext, { color: theme.colors.textSecondary }]}>Beğendiğiniz restoranları favorilerinize ekleyin</Text>
+                <TouchableOpacity
+                  style={[styles.exploreButton, { backgroundColor: theme.colors.primary }]}
+                  onPress={() => navigation.navigate('Home')}
+                  activeOpacity={0.8}
+                >
+                  <FontAwesome name="map-marker" size={18} color="#FFFFFF" style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Mekanları Keşfet</Text>
+                </TouchableOpacity>
               </View>
             ) : (
               favoriteRestaurants.map((restaurant) => (

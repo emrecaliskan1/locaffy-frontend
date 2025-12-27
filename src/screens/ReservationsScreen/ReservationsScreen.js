@@ -142,6 +142,7 @@ export default function ReservationsScreen({ navigation, route }) {
       onCancel={handleCancelReservation}
       isPast={false}
       navigation={navigation}
+      onShowToast={showToast}
     />
   );
 
@@ -151,6 +152,7 @@ export default function ReservationsScreen({ navigation, route }) {
       styles={styles}
       isPast={true}
       navigation={navigation}
+      onShowToast={showToast}
     />
   );
 
@@ -182,7 +184,7 @@ export default function ReservationsScreen({ navigation, route }) {
           contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (
-            <EmptyState activeTab={activeTab} styles={styles} />
+            <EmptyState activeTab={activeTab} styles={styles} navigation={navigation} />
           )}
         />
       ) : (
@@ -193,7 +195,7 @@ export default function ReservationsScreen({ navigation, route }) {
           contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (
-            <EmptyState activeTab={activeTab} styles={styles} />
+            <EmptyState activeTab={activeTab} styles={styles} navigation={navigation} />
           )}
         />
       )}

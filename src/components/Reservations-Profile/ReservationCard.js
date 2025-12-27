@@ -6,17 +6,23 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
-const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
+const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToast }) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showUserReviewModal, setShowUserReviewModal] = useState(false);
   const [isReviewed, setIsReviewed] = useState(true);
+  const [userReview, setUserReview] = useState(null);
   const [placeDetails, setPlaceDetails] = useState(null);
 
   const handleReviewSubmitted = () => {
     setIsReviewed(true);
     setShowReviewModal(false);
+    // Toast bildirimi göster
+    if (onShowToast) {
+      onShowToast('Değerlendirmeniz başarıyla yapılmıştır', 'success', 3000);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -61,20 +67,29 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
     const checkUserReview = async () => {
       if (!isPast || item.status !== 'COMPLETED' || !item.placeId || !user?.userId) {
         setIsReviewed(false);
+        setUserReview(null);
         return;
       }
       try {
         const reviews = await reviewService.getPlaceReviews(item.placeId); 
         if (reviews && reviews.length > 0) {
-          const hasUserReview = reviews.some(review => {
+          const foundReview = reviews.find(review => {
             return (review.user?.id === user.userId) || (review.userId === user.userId);
           });
-          setIsReviewed(hasUserReview);
+          if (foundReview) {
+            setIsReviewed(true);
+            setUserReview(foundReview);
+          } else {
+            setIsReviewed(false);
+            setUserReview(null);
+          }
         } else {
           setIsReviewed(false);
+          setUserReview(null);
         }
       } catch (error) {
         setIsReviewed(false);
+        setUserReview(null);
       }
     };
     checkUserReview();
@@ -151,16 +166,18 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
             </TouchableOpacity>
           )}
           {(isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && isReviewed) && (
-            <View 
+            <TouchableOpacity 
               style={[
                 styles.rateButton, 
-                { flex: 1, backgroundColor: '#95A5A6', opacity: 0.8 }
+                { flex: 1, backgroundColor: theme.colors.primary }
               ]}
+              onPress={() => setShowUserReviewModal(true)}
+              activeOpacity={0.8}
             > 
               <Text style={[styles.rateButtonText, { color: '#FFFFFF' }]}>
-                Değerlendirme Yapıldı
+                Değerlendirmeni Gör
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
           {showRejectReasonButton && (
             <TouchableOpacity 
@@ -255,6 +272,176 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation }) => {
                 alignSelf: 'center'
               }}
               onPress={() => setShowRejectModal(false)}
+            >
+              <Text style={{ 
+                color: '#fff', 
+                fontWeight: 'bold', 
+                fontSize: 16 
+              }}>
+                Tamam
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Kullanıcının Değerlendirmesini Gösteren Modal */}
+      <Modal
+        visible={showUserReviewModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUserReviewModal(false)}
+      >
+        <View style={{ 
+          flex: 1, 
+          backgroundColor: 'rgba(0,0,0,0.5)', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <View style={{ 
+            backgroundColor: theme.colors.card, 
+            borderRadius: 20, 
+            padding: 24, 
+            width: '100%',
+            maxWidth: 360, 
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 8
+          }}>
+            {/* Header */}
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <View style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: theme.colors.primary + '15',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 12
+              }}>
+                <FontAwesome name="star" size={28} color={theme.colors.primary} />
+              </View>
+              <Text style={{ 
+                fontSize: 20, 
+                fontWeight: 'bold', 
+                color: theme.colors.text, 
+                textAlign: 'center',
+                marginBottom: 4
+              }}>
+                Değerlendirmen
+              </Text>
+              <Text style={{ 
+                fontSize: 14, 
+                color: theme.colors.textSecondary, 
+                textAlign: 'center'
+              }}>
+                {item.placeName}
+              </Text>
+            </View>
+
+            {/* Yıldızlar */}
+            <View style={{ 
+              flexDirection: 'row', 
+              justifyContent: 'center', 
+              marginBottom: 16,
+              gap: 4
+            }}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FontAwesome
+                  key={star}
+                  name={star <= (userReview?.rating || 0) ? 'star' : 'star-o'}
+                  size={28}
+                  color={star <= (userReview?.rating || 0) ? '#F1C40F' : '#E1E8ED'}
+                />
+              ))}
+            </View>
+
+            {/* Puan */}
+            <Text style={{ 
+              fontSize: 16, 
+              fontWeight: '600',
+              color: theme.colors.primary, 
+              textAlign: 'center',
+              marginBottom: 16
+            }}>
+              {userReview?.rating || 0} / 5 Puan
+            </Text>
+
+            {/* Yorum */}
+            {userReview?.comment ? (
+              <View style={{ 
+                backgroundColor: theme.colors.background,
+                padding: 16,
+                borderRadius: 12,
+                marginBottom: 20,
+                borderLeftWidth: 4,
+                borderLeftColor: theme.colors.primary
+              }}>
+                <Text style={{ 
+                  fontSize: 12, 
+                  color: theme.colors.textSecondary,
+                  marginBottom: 6,
+                  fontWeight: '600'
+                }}>
+                  Yorumun:
+                </Text>
+                <Text style={{ 
+                  fontSize: 15, 
+                  color: theme.colors.text, 
+                  lineHeight: 22,
+                  fontStyle: 'italic'
+                }}>
+                  "{userReview.comment}"
+                </Text>
+              </View>
+            ) : (
+              <View style={{ 
+                backgroundColor: theme.colors.background,
+                padding: 16,
+                borderRadius: 12,
+                marginBottom: 20,
+                alignItems: 'center'
+              }}>
+                <Text style={{ 
+                  fontSize: 14, 
+                  color: theme.colors.textSecondary,
+                  fontStyle: 'italic'
+                }}>
+                  Yorum eklenmemiş
+                </Text>
+              </View>
+            )}
+
+            {/* Tarih */}
+            {userReview?.createdAt && (
+              <Text style={{ 
+                fontSize: 12, 
+                color: theme.colors.textTertiary, 
+                textAlign: 'center',
+                marginBottom: 16
+              }}>
+                {new Date(userReview.createdAt).toLocaleDateString('tr-TR', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })} tarihinde değerlendirildi
+              </Text>
+            )}
+
+            {/* Kapat Butonu */}
+            <TouchableOpacity
+              style={{ 
+                backgroundColor: theme.colors.primary, 
+                paddingHorizontal: 24, 
+                paddingVertical: 14, 
+                borderRadius: 12,
+                alignItems: 'center'
+              }}
+              onPress={() => setShowUserReviewModal(false)}
+              activeOpacity={0.8}
             >
               <Text style={{ 
                 color: '#fff', 

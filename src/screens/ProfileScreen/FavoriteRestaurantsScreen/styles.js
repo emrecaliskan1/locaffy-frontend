@@ -61,4 +61,30 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 40,
   },
+  exploreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 14,
+    marginTop: 24,
+    shadowColor: '#6366F1',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonIcon: {
+    marginRight: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
 });
