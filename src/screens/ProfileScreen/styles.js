@@ -30,7 +30,6 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    overflow: 'hidden',
   },
   avatarContainer: {
     alignItems: 'center',
@@ -56,7 +55,6 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.4,
     shadowRadius: 12,
-    overflow: 'hidden',
   },
   avatarText: {
     fontSize: 42,
@@ -92,7 +90,6 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    overflow: 'hidden',
   },
   statItem: {
     flex: 1,

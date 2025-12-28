@@ -42,7 +42,7 @@ export default function NotificationSettingsScreen({ navigation }) {
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Bildirim Türleri */}
-        <View style={[styles.section, { backgroundColor: '#2c2c2c' }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Bildirim Türleri</Text>
           
           <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>
@@ -79,7 +79,7 @@ export default function NotificationSettingsScreen({ navigation }) {
         </View>
 
         {/* Bildirim Kanalları */}
-        <View style={[styles.section, { backgroundColor: '#2c2c2c' }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Bildirim Kanalları</Text>
           
           <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>

@@ -26,7 +26,7 @@ export default function ProfileScreen({ navigation }) {
   const { setOnCitySelectedCallback } = useLocation();
   
   const { toast, showToast, hideToast } = useToast();
-  const { favorites } = useFavorites();
+  const { favorites, loadFavorites } = useFavorites();
   const { activeReservations, pastReservations, loadReservations } = useReservations();
   
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +48,7 @@ export default function ProfileScreen({ navigation }) {
   const loadUserStats = async () => {
     try {
       setIsLoading(true);
-      await loadReservations();
+      await Promise.all([loadReservations(), loadFavorites()]);
     } catch (error) {
       console.log('Genel yükleme hatası:', error);
     } finally {
@@ -164,8 +164,8 @@ export default function ProfileScreen({ navigation }) {
         <View
           style={[
             styles.userCard,
-            { backgroundColor: theme.colors.background },
             isDarkMode && {
+              backgroundColor: theme.colors.background,
               elevation: 0,
               shadowColor: 'transparent',
               borderWidth: 0,
@@ -194,8 +194,9 @@ export default function ProfileScreen({ navigation }) {
         <View
           style={[
             styles.statsContainer,
-            { backgroundColor: theme.colors.background, borderColor: theme.colors.border },
             isDarkMode && {
+              backgroundColor: theme.colors.background,
+              borderColor: theme.colors.border,
               elevation: 0,
               shadowColor: 'transparent',
               borderWidth: 0,
@@ -222,7 +223,10 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         {/* Menü Seçenekleri */}
-        <View style={[styles.menuContainer, { backgroundColor: theme.colors.background }]}>
+        <View style={[
+          styles.menuContainer,
+          isDarkMode && { backgroundColor: theme.colors.background }
+        ]}>
           {menuItems.map((item, index) => (
             <TouchableOpacity
               key={item.id}
