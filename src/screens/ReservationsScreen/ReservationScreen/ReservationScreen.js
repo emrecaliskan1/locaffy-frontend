@@ -337,11 +337,12 @@ export default function ReservationScreen({ route, navigation }) {
       return;
     }
     
-    // Geçmiş tarih kontrolü
+    // Rezervasyon tarih-saat string'ini oluştur
     const reservationDateTimeString = `${selectedDate}T${selectedTime}:00`;
     const reservationDateTime = new Date(reservationDateTimeString);
     const now = new Date();
     
+    // Geçmiş tarih kontrolü
     if (reservationDateTime <= now) {
       showToast(`Geçmiş bir tarih için rezervasyon yapılamaz: ${reservationDateTimeString}`, 'error');
       return;
@@ -361,6 +362,29 @@ export default function ReservationScreen({ route, navigation }) {
     if (!isTimeWithinWorkingHours(selectedTime, selectedDate)) {
       const openingHoursText = restaurant.openingHours || `${workingHours.startHour}:${String(workingHours.startMinute).padStart(2, '0')}-${workingHours.endHour}:${String(workingHours.endMinute).padStart(2, '0')}`;
       showToast(`Rezervasyon zamanı mekanın çalışma saatleri dışındadır. Çalışma saatleri: ${openingHoursText}, Rezervasyon zamanı: ${selectedTime}`, 'error');
+      return;
+    }
+
+    // Aynı mekana bekleyen veya onaylanmış rezervasyon kontrolü
+    const hasPendingReservation = await reservationService.checkPendingReservation(restaurant.id);
+    if (hasPendingReservation) {
+      showToast('Bu mekana zaten bekleyen veya onaylanmış bir rezervasyonunuz var. Lütfen önce mevcut rezervasyonunuzun durumunu bekleyin.', 'error', 5000);
+      return;
+    }
+
+    // Zaman çakışması kontrolü - tüm rezervasyonlar için
+    const conflictCheck = await reservationService.checkTimeConflict(reservationDateTimeString);
+    if (conflictCheck.hasConflict) {
+      const conflictingTime = reservationService.formatReservationTime(conflictCheck.conflictingReservation.reservationTime);
+      const timeDiffHours = Math.floor(conflictCheck.timeDifference / 60);
+      const timeDiffMinutes = Math.round(conflictCheck.timeDifference % 60);
+      let timeDiffText = '';
+      if (timeDiffHours > 0) {
+        timeDiffText = `${timeDiffHours} saat ${timeDiffMinutes} dakika`;
+      } else {
+        timeDiffText = `${timeDiffMinutes} dakika`;
+      }
+      showToast(`${conflictingTime} tarihinde başka bir rezervasyonunuz var. İki rezervasyon arasında en az 2 saat olmalıdır. (Şu an ${timeDiffText} fark var)`, 'error', 6000);
       return;
     }
     

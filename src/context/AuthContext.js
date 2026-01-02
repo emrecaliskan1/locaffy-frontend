@@ -193,16 +193,21 @@ export const AuthProvider = ({ children }) => {
 
 
 const getErrorMessage = (error) => {
-  if (error.message) {
+  if (error.message && error.message !== 'Network Error') {
     return error.message;
   }
   
+  // Backend'den gelen mesaj
   if (error.response?.data?.message) {
     return error.response.data.message;
   }
   
-  if (error.response?.status === 401 || error.response?.status === 403) {
-    return 'E-posta veya şifre yanlış';
+  if (error.response?.status === 401) {
+    return 'E-posta adresi veya şifre hatalı';
+  }
+  
+  if (error.response?.status === 403) {
+    return 'Bu işlem için yetkiniz bulunmuyor';
   }
   
   if (error.response?.status === 409) {
@@ -216,8 +221,17 @@ const getErrorMessage = (error) => {
   if (error.response?.status === 404) {
     return 'Kullanıcı bulunamadı';
   }
+  
+  if (error.response?.status >= 500) {
+    return 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+  }
+  
+  // Network hatası
+  if (error.message === 'Network Error' || !error.response) {
+    return 'İnternet bağlantınızı kontrol edin';
+  }
 
-  return 'Bir hata oluştu. Lütfen tekrar deneyin.';
+  return 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.';
 };
 
 const validateEmail = (email) => {

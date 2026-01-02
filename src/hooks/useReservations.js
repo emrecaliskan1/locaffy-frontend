@@ -80,6 +80,15 @@ export const useReservations = () => {
     return reservationService.canCancelReservation(reservation);
   }, []);
 
+  // Belirli bir mekana bekleyen rezervasyon olup olmadığını kontrol et
+  const hasPendingReservationForPlace = useCallback((placeId) => {
+    const allReservations = [...activeReservations, ...pastReservations];
+    return allReservations.some(reservation => {
+      return reservation.placeId === placeId && 
+             (reservation.status === 'PENDING' || reservation.status === 'APPROVED');
+    });
+  }, [activeReservations, pastReservations]);
+
   return {
     activeReservations,
     pastReservations,
@@ -87,7 +96,8 @@ export const useReservations = () => {
     error,
     loadReservations,
     cancelReservation,
-    canCancelReservation
+    canCancelReservation,
+    hasPendingReservationForPlace
   };
 };
 

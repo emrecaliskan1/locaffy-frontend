@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { styles } from './styles';
-import { useTheme } from '../../context/ThemeContext';
+
+const onboardingTheme = {
+  colors: {
+    background: '#1A1A1A',
+    surface: '#2D2D2D',
+    text: '#FFFFFF',
+    textSecondary: '#B3B3B3',
+    primary: '#667eea',
+    borderLight: '#4A4A4A',
+    statusBar: 'light-content',
+  },
+};
 
 export default function OnboardingScreen({ navigation }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const { theme } = useTheme();
+  const theme = onboardingTheme;
 
   const pages = [
     {

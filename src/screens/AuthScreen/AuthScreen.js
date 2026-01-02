@@ -18,13 +18,26 @@ import { useState, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import Toast from '../../components/Toast';
 import { useToast, useForm, useFadeSlideAnimation } from '../../hooks';
 
+const authTheme = {
+  colors: {
+    background: '#1A1A1A',
+    surface: '#2D2D2D',
+    text: '#FFFFFF',
+    textSecondary: '#B3B3B3',
+    textTertiary: '#8A8A8A',
+    primary: '#667eea',
+    borderLight: '#4A4A4A',
+    statusBar: 'light-content',
+  },
+  isDarkMode: true,
+};
+
 export default function AuthScreen({ navigation }) {
   const { login, register, loading } = useAuth();
-  const { theme } = useTheme();
+  const theme = authTheme;
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -116,7 +129,7 @@ export default function AuthScreen({ navigation }) {
                   <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Giriş Yap</Text>
                   <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>Devam etmek için giriş yapın.</Text>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="envelope" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -129,7 +142,7 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="lock" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -179,7 +192,7 @@ export default function AuthScreen({ navigation }) {
                   <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Kayıt Ol</Text>
                   <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>Giriş yapmak için kayıt olun.</Text>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="user" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -190,7 +203,7 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="envelope" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -203,7 +216,7 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="phone" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -215,7 +228,7 @@ export default function AuthScreen({ navigation }) {
                     />
                   </View>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="lock" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}
@@ -230,7 +243,7 @@ export default function AuthScreen({ navigation }) {
                     </TouchableOpacity>
                   </View>
 
-                  <View style={[styles.inputContainer, { backgroundColor: theme.isDarkMode ? theme.colors.surface : '#F5F5F5' }]}>
+                  <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface }]}>
                     <FontAwesome name="lock" size={18} color={theme.colors.textTertiary} style={styles.inputIcon} />
                     <TextInput
                       style={[styles.input, { color: theme.colors.text }]}

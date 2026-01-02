@@ -4,7 +4,7 @@
     "slug": "locaffy-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/locaffyicon2.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -14,6 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.zenvero.locaffymobileapp",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Bu uygulama profil fotoğrafı seçmek için fotoğraf galerinize erişim istemektedir.",
         "NSCalendarsUsageDescription": "Bu uygulama rezervasyon hatırlatmaları oluşturmak için takviminize erişim istemektedir."
@@ -21,8 +22,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#1C1C1E"
+        "foregroundImage": "./assets/locaffyicon2.png",
+        "backgroundColor": "#FFFFFF"
       },
       "splash": {
         "image": "./assets/splash-icon.png",

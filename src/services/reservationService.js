@@ -200,6 +200,100 @@ export const reservationService = {
     return dateToCheck < now;
   },
 
+  // Kullanıcının belirli bir mekana bekleyen veya onaylanmış rezervasyonu olup olmadığını kontrol et
+  checkPendingReservation: async (placeId) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BASE_URL}/my-reservations`, { headers });
+      const reservations = response.data;
+      
+      const now = new Date();
+      
+      // Aynı mekana PENDING veya APPROVED durumunda VE gelecekteki rezervasyon var mı kontrol et
+      const hasPendingOrApproved = reservations.some(reservation => {
+
+        const isSamePlace = reservation.placeId === placeId;
+        const isActiveStatus = reservation.status === 'PENDING' || reservation.status === 'APPROVED';
+        
+        if (!isSamePlace || !isActiveStatus) {
+          return false;
+        }
+        
+        // Gelecekte olup olmadığını kontrol et
+        let reservationDateTime;
+        if (reservation.reservationTime && reservation.reservationTime.includes('T')) {
+          reservationDateTime = new Date(reservation.reservationTime);
+        } else {
+          reservationDateTime = new Date(reservation.reservationTime);
+        }
+        const isFuture = reservationDateTime > now;
+        
+        return isFuture;
+      });
+      
+      return hasPendingOrApproved;
+    } catch (error) {
+      return false; 
+    }
+  },
+
+  // Zaman çakışması kontrolü - yeni rezervasyonun mevcut rezervasyonlarla çakışıp çakışmadığını kontrol et
+  checkTimeConflict: async (newReservationTime) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.get(`${BASE_URL}/my-reservations`, { headers });
+      const reservations = response.data;
+      
+      const newDateTime = new Date(newReservationTime);
+      const now = new Date();
+      
+      // Sadece PENDING veya APPROVED durumundaki VE gelecekteki rezervasyonları filtrele
+      // CANCELLED, REJECTED, COMPLETED, NO_SHOW durumundakiler dahil edilmez
+      const activeReservations = reservations.filter(r => {
+  
+        const isActiveStatus = r.status === 'PENDING' || r.status === 'APPROVED';
+        if (!isActiveStatus) {
+          return false;
+        }
+        
+        // Gelecekte olup olmadığını kontrol et
+        let reservationDateTime;
+        if (r.reservationTime.includes('T')) {
+          reservationDateTime = new Date(r.reservationTime);
+        } else {
+          reservationDateTime = new Date(r.reservationTime);
+        }
+        const isFuture = reservationDateTime > now;
+        
+        return isFuture;
+      });
+      
+      for (const reservation of activeReservations) {
+        let existingDateTime;
+        
+        if (reservation.reservationTime.includes('T')) {
+          existingDateTime = new Date(reservation.reservationTime);
+        } else {
+          existingDateTime = new Date(reservation.reservationTime);
+        }
+      
+        const timeDifferenceInMinutes = Math.abs(newDateTime - existingDateTime) / (1000 * 60);
+        
+        if (timeDifferenceInMinutes < 120) {
+          return {
+            hasConflict: true,
+            conflictingReservation: reservation,
+            timeDifference: timeDifferenceInMinutes
+          };
+        }
+      }
+      
+      return { hasConflict: false };
+    } catch (error) {
+      return { hasConflict: false }; 
+    }
+  },
+
 
 
   //DATE FORMATLAMA İŞLERİ

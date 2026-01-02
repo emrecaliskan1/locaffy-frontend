@@ -82,7 +82,18 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Kayıt olurken bir hata oluştu';
+      let errorMessage = 'Kayıt olurken bir hata oluştu';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 409) {
+        errorMessage = 'Bu e-posta adresi veya kullanıcı adı zaten kullanımda';
+      } else if (error.response?.status === 400) {
+        errorMessage = 'Girdiğiniz bilgileri kontrol edin';
+      } else if (!error.response) {
+        errorMessage = 'İnternet bağlantınızı kontrol edin';
+      }
+      
       throw new Error(errorMessage);
     }
   },
@@ -111,7 +122,20 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Giriş yapılırken bir hata oluştu';
+      let errorMessage = 'Giriş yapılırken bir hata oluştu';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 401) {
+        errorMessage = 'E-posta adresi veya şifre hatalı';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Hesabınız engellenmiş. Lütfen destek ekibiyle iletişime geçin.';
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı';
+      } else if (!error.response) {
+        errorMessage = 'İnternet bağlantınızı kontrol edin';
+      }
+      
       throw new Error(errorMessage);
     }
   },
