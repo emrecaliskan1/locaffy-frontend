@@ -49,7 +49,7 @@ const CustomSplashScreen = ({ onFinish }) => {
 
     const backgroundColor = bgColorAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['#1C1C1E', '#6200EE'], // Dark Gray to Purple
+        outputRange: ['#1C1C1E', '#667eea'], // Dark Gray to Primary Purple
     });
 
     return (
