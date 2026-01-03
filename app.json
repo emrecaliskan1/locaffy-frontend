@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/locaffy.png",
       "resizeMode": "contain",
       "backgroundColor": "#1C1C1E"
     },
@@ -26,8 +26,9 @@
         "backgroundColor": "#FFFFFF"
       },
       "splash": {
+        "image": "./assets/locaffy.png",
         "backgroundColor": "#1C1C1E",
-        "resizeMode": "native"
+        "resizeMode": "contain"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.zenvero.locaffymobileapp",
