@@ -174,7 +174,7 @@ export default function ReservationsScreen({ navigation, route }) {
       {loading ? (
         <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Rezervasyonlar yüklenyor...</Text>
+          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Rezervasyonlar yükleniyor...</Text>
         </View>
       ) : activeTab === 'active' ? (
         <FlatList

@@ -15,13 +15,17 @@ export default function AccountInfoScreen({ navigation, route }) {
   const { theme } = useTheme();
   const { toast, showToast, hideToast } = useToast();
   const { values: userInfo, handleChange: handleInputChange, setFieldValue } = useForm({
-    name: '',
-    email: '',
     username: '',
+    email: '',
     phone: '',
   });
   
   const [passwordExpanded, setPasswordExpanded] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -31,18 +35,16 @@ export default function AccountInfoScreen({ navigation, route }) {
     try {
       setLoading(true);
       const profile = await userService.getProfile();
-      setFieldValue('name', profile?.username || user?.username || '');
-      setFieldValue('email', profile?.email || user?.email || '');
       setFieldValue('username', profile?.username || user?.username || '');
+      setFieldValue('email', profile?.email || user?.email || '');
       setFieldValue('phone', profile?.phoneNumber || '');
       if (profile?.profileImageUrl) {
         setProfileImageUrl(profile.profileImageUrl);
       }
     } catch (error) {
       console.log('Profile load error:', error);
-      setFieldValue('name', user?.username || '');
-      setFieldValue('email', user?.email || '');
       setFieldValue('username', user?.username || '');
+      setFieldValue('email', user?.email || '');
       setFieldValue('phone', '');
     } finally {
       setLoading(false);
@@ -56,14 +58,68 @@ export default function AccountInfoScreen({ navigation, route }) {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await userService.updateProfile({
-        username: userInfo.name,
-        phoneNumber: userInfo.phone,
-      });
+      
+      // Validation
+      if (!userInfo.username || userInfo.username.trim() === '') {
+        showToast('Kullanıcı adı boş bırakılamaz', 'error');
+        setSaving(false);
+        return;
+      }
+      
+      // Şifre değiştirme kontrolü
+      if (passwordExpanded && (passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword)) {
+        // Şifre alanlarından en az biri dolduysa hepsinin dolu olması gerekir
+        if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+          showToast('Şifre değiştirmek için tüm şifre alanlarını doldurun', 'error');
+          setSaving(false);
+          return;
+        }
+
+        if (passwordData.newPassword.length < 6) {
+          showToast('Yeni şifre en az 6 karakter olmalıdır', 'error');
+          setSaving(false);
+          return;
+        }
+
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+          showToast('Yeni şifre ve onay şifresi eşleşmiyor', 'error');
+          setSaving(false);
+          return;
+        }
+
+        // Şifre değiştir
+        try {
+          await userService.changePassword(passwordData);
+          // Başarılı olursa şifre alanlarını temizle
+          setPasswordData({
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          });
+          setPasswordExpanded(false);
+        } catch (error) {
+          showToast(error.message || 'Şifre değiştirilirken bir hata oluştu', 'error');
+          setSaving(false);
+          return;
+        }
+      }
+      
+      // Profil bilgilerini güncelle
+      const updateData = {
+        username: userInfo.username.trim(),
+        phoneNumber: userInfo.phone ? userInfo.phone.trim() : '',
+      };
+      
+      const updatedProfile = await userService.updateProfile(updateData);
+      
+      // Güncellenen profil bilgilerini state'e yaz
+      setFieldValue('username', updatedProfile.username);
+      setFieldValue('phone', updatedProfile.phoneNumber || '');
+      
       showToast('Değişiklikler kaydedildi', 'success');
       setTimeout(() => {
         navigation.goBack();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       showToast(error.message || 'Profil güncellenirken bir hata oluştu', 'error');
     } finally {
@@ -101,7 +157,7 @@ export default function AccountInfoScreen({ navigation, route }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
-        <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background, borderBottomColor: theme.colors.border }]}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
@@ -113,7 +169,7 @@ export default function AccountInfoScreen({ navigation, route }) {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* Avatar Bölümü */}
-        <View style={[styles.avatarSection, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.avatarSection, { backgroundColor: theme.colors.background }]}>
           {profileImageUrl || user?.profileImageUrl ? (
             <Image 
               source={{ uri: profileImageUrl || user?.profileImageUrl }} 
@@ -122,8 +178,7 @@ export default function AccountInfoScreen({ navigation, route }) {
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: theme.colors.primary }]}>
               <Text style={styles.avatarText}>
-                {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : 
-                 userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase() : '--'}
+                {userInfo.username ? userInfo.username.slice(0, 2).toUpperCase() : '--'}
               </Text>
             </View>
           )}
@@ -148,44 +203,47 @@ export default function AccountInfoScreen({ navigation, route }) {
         </View>
 
         {/* Kişisel Bilgiler Bölümü */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Kişisel Bilgiler</Text>
           
           <View style={styles.inputContainer}>
-            <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Ad Soyad</Text>
-            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+            <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Kullanıcı Adı</Text>
+            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface }]}>
               <FontAwesome name="user" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
               <TextInput
                 style={[styles.input, { color: theme.colors.text }]}
-                value={userInfo.name}
-                onChangeText={text => handleInputChange('name', text)}
-                placeholder="Ad Soyad"
+                value={userInfo.username}
+                onChangeText={text => handleInputChange('username', text)}
+                placeholder="Kullanıcı Adı"
                 placeholderTextColor={theme.colors.textTertiary}
               />
             </View>
           </View>
           
-          {/* E-posta Bölümü */}
+          {/* E-posta Bölümü - Readonly */}
           <View style={styles.inputContainer}>
             <Text style={[styles.inputLabel, { color: theme.colors.text }]}>E-posta Adresi</Text>
-            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, opacity: 0.7 }]}>
               <FontAwesome name="envelope" size={14} color={theme.colors.textTertiary} style={styles.inputIcon} />
               <TextInput
-                style={[styles.input, { color: theme.colors.text }]}
+                style={[styles.input, { color: theme.colors.textSecondary }]}
                 value={userInfo.email}
-                onChangeText={text => handleInputChange('email', text)}
                 placeholder="E-posta"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholderTextColor={theme.colors.textTertiary}
+                editable={false}
               />
             </View>
+            <Text style={{ color: theme.colors.textTertiary, fontSize: 11, marginTop: 4, marginLeft: 4 }}>
+              E-posta adresi değiştirilemez
+            </Text>
           </View>
 
           {/* Telefon Numarası Bölümü */}
           <View style={styles.inputContainer}>
             <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Telefon Numarası</Text>
-            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+            <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface }]}>
               <FontAwesome name="phone" size={16} color={theme.colors.textTertiary} style={styles.inputIcon} />
               <TextInput
                 style={[styles.input, { color: theme.colors.text }]}
@@ -200,7 +258,7 @@ export default function AccountInfoScreen({ navigation, route }) {
         </View>
 
         {/* Şifre Bölümü */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
           <TouchableOpacity 
             style={styles.passwordHeader}
             onPress={() => setPasswordExpanded(!passwordExpanded)}
@@ -220,39 +278,45 @@ export default function AccountInfoScreen({ navigation, route }) {
             <View style={styles.passwordContent}>
               <View style={styles.inputContainer}>
                 <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Mevcut Şifre</Text>
-                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface }]}>
                   <FontAwesome name="lock" size={14} color={theme.colors.textTertiary} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
                     placeholder="Mevcut şifrenizi girin"
                     secureTextEntry
                     placeholderTextColor={theme.colors.textTertiary}
+                    value={passwordData.currentPassword}
+                    onChangeText={text => setPasswordData({...passwordData, currentPassword: text})}
                   />
                 </View>
               </View>
 
               <View style={styles.inputContainer}>
                 <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Yeni Şifre</Text>
-                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface }]}>
                   <FontAwesome name="lock" size={14} color={theme.colors.textTertiary} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
                     placeholder="Yeni şifrenizi girin"
                     secureTextEntry
                     placeholderTextColor={theme.colors.textTertiary}
+                    value={passwordData.newPassword}
+                    onChangeText={text => setPasswordData({...passwordData, newPassword: text})}
                   />
                 </View>
               </View>
 
               <View style={styles.inputContainer}>
                 <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Yeni Şifre (Tekrar)</Text>
-                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
+                <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface }]}>
                   <FontAwesome name="lock" size={14} color={theme.colors.textTertiary} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
                     placeholder="Yeni şifrenizi tekrar girin"
                     secureTextEntry
                     placeholderTextColor={theme.colors.textTertiary}
+                    value={passwordData.confirmPassword}
+                    onChangeText={text => setPasswordData({...passwordData, confirmPassword: text})}
                   />
                 </View>
               </View>

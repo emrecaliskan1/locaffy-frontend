@@ -18,8 +18,8 @@ export default function AboutScreen({ navigation }) {
     {
       icon: 'envelope',
       title: 'E-posta',
-      value: 'destek@locaffy.com',
-      onPress: () => Linking.openURL('mailto:destek@locaffy.com'),
+      value: 'locaffy2025@gmail.com',
+      onPress: () => Linking.openURL('mailto:locaffy2025@gmail.com'),
     },
     {
       icon: 'globe',
@@ -30,8 +30,8 @@ export default function AboutScreen({ navigation }) {
     {
       icon: 'instagram',
       title: 'Instagram',
-      value: '@locaffy',
-      onPress: () => Linking.openURL(''),
+      value: '@l0caffy',
+      onPress: () => Linking.openURL('https://www.instagram.com/l0caffy/'),
     },
   ];
 

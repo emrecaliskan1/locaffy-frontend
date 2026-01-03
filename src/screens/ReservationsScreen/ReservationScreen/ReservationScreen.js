@@ -365,14 +365,15 @@ export default function ReservationScreen({ route, navigation }) {
       return;
     }
 
-    // Aynı mekana bekleyen veya onaylanmış rezervasyon kontrolü
-    const hasPendingReservation = await reservationService.checkPendingReservation(restaurant.id);
-    if (hasPendingReservation) {
-      showToast('Bu mekana zaten bekleyen veya onaylanmış bir rezervasyonunuz var. Lütfen önce mevcut rezervasyonunuzun durumunu bekleyin.', 'error', 5000);
+    // Aynı gün aynı mekana PENDING rezervasyon kontrolü
+    const sameDayPendingCheck = await reservationService.checkSameDayPendingReservation(restaurant.id, reservationDateTimeString);
+    if (sameDayPendingCheck.hasPending) {
+      const pendingTime = reservationService.formatReservationTime(sameDayPendingCheck.pendingReservation.reservationTime);
+      showToast(`Bu mekana aynı gün içinde (${pendingTime}) bekleyen bir rezervasyonunuz var. Yeni rezervasyon yapabilmek için önce mevcut rezervasyonunuzun mekan yöneticisi tarafından onaylanması veya reddedilmesi gerekiyor.`, 'error', 7000);
       return;
     }
 
-    // Zaman çakışması kontrolü - tüm rezervasyonlar için
+    // Zaman çakışması kontrolü - aynı tarih-saatte başka rezervasyon var mı?
     const conflictCheck = await reservationService.checkTimeConflict(reservationDateTimeString);
     if (conflictCheck.hasConflict) {
       const conflictingTime = reservationService.formatReservationTime(conflictCheck.conflictingReservation.reservationTime);

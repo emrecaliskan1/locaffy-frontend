@@ -277,28 +277,25 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
           <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{getPlaceTypeLabel(finalRestaurantData.placeType) || 'Restoran'}</Text>
-          <View style={[styles.restaurantMeta, { justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
-            <View style={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', maxWidth: '100%', flexWrap: 'wrap' }}>
-                <FontAwesome name="map-marker" size={14} color="#27AE60" style={{ marginTop: 2, marginRight: 5 }} />
-                <Text
-                  style={[styles.metaText, {
-                    color: theme.colors.textSecondary,
-                    textAlign: 'center',
-                    flex: 1,
-                    lineHeight: 20,
-                    flexShrink: 1
-                  }]}
-                >{finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
-              </View>
-            </View>
-            {/* Phone removed as requested - keep phone number out of the area above reservation button */}
-          </View>
-          <View style={[styles.restaurantMeta, { justifyContent: 'center', marginTop: 10 }]}>
+          <View style={[styles.restaurantMeta, { justifyContent: 'center' }]}>
             <View style={styles.metaItem}>
               <FontAwesome name="star" size={14} color="#F1C40F" />
               <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
             </View>
+          </View>
+          <View style={[styles.restaurantMeta, { alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', maxWidth: '100%' }}>
+              <FontAwesome name="map-marker" size={14} color="#27AE60" style={{ marginTop: 3, marginRight: 5, flexShrink: 0 }} />
+              <Text
+                style={[styles.metaText, {
+                  color: theme.colors.textSecondary,
+                  textAlign: 'center',
+                  lineHeight: 20,
+                  flexShrink: 1,
+                }]}
+              >{finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
+            </View>
+            {/* Phone removed as requested - keep phone number out of the area above reservation button */}
           </View>
         </View>
 

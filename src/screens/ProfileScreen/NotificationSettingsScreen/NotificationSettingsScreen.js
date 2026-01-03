@@ -31,7 +31,7 @@ export default function NotificationSettingsScreen({ navigation }) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.colors.background} />
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.colors.background }}>
-        <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+        <View style={[styles.header, { backgroundColor: theme.colors.background, borderBottomColor: theme.colors.border }]}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <FontAwesome name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
@@ -42,7 +42,7 @@ export default function NotificationSettingsScreen({ navigation }) {
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Bildirim Türleri */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Bildirim Türleri</Text>
           
           <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>
@@ -79,7 +79,7 @@ export default function NotificationSettingsScreen({ navigation }) {
         </View>
 
         {/* Bildirim Kanalları */}
-        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.section, { backgroundColor: theme.colors.background }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Bildirim Kanalları</Text>
           
           <View style={[styles.settingItem, { borderBottomColor: theme.colors.border }]}>

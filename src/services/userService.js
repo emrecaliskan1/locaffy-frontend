@@ -76,6 +76,17 @@ export const userService = {
       const errorMessage = error.response?.data?.message || 'Favori mekanlar alınırken bir hata oluştu';
       throw new Error(errorMessage);
     }
+  },
+
+  changePassword: async (passwordData) => {
+    try {
+      const headers = await buildHeaders();
+      const response = await axios.post(`${BASE_URL}/change-password`, passwordData, { headers });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Şifre değiştirilirken bir hata oluştu';
+      throw new Error(errorMessage);
+    }
   }
 };
 

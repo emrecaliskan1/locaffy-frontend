@@ -66,21 +66,21 @@ export default function HelpSupportScreen({ navigation }) {
     {
       icon: 'envelope',
       title: 'E-posta Desteği',
-      description: 'destek@locaffy.com',
-      action: () => Linking.openURL('mailto:destek@locaffy.com'),
+      description: 'locaffy2025@gmail.com',
+      action: () => Linking.openURL('mailto:locaffy2025@gmail.com'),
     },
     {
       icon: 'phone',
       title: 'Telefon Desteği',
-      description: '+90 539 709 88 33',
-      action: () => Linking.openURL('tel:+905397098833'),
+      description: '+90 555 555 5555',
+      action: () => Linking.openURL('tel:+905555555555'),
     },
     {
       icon: 'comments',
       title: 'Canlı Destek',
-      description: 'Hafta içi 09:00 - 18:00',
+      description: 'Hafta içi 12:00 - 18:00',
       action: () => {
-        // Canlı destek özelliği eklenebilir
+
       },
     },
   ];

@@ -37,15 +37,13 @@ export const reservationService = {
       
       return response.data;
     } catch (error) {
-      // Auth hataları
+
       if (error.response?.status === 401 || error.response?.status === 403) {
-        // Token geçersiz, logout yap
         const { authService } = require('./authService');
         await authService.clearToken();
         throw new Error('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.');
       }
       
-      // 400 Bad Request -(yeni backend validasyonları)
       if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || 'Rezervasyon oluşturulurken bir hata oluştu';
         const validationError = new Error(errorMessage);
@@ -131,14 +129,13 @@ export const reservationService = {
       }, { headers });
       return response.data;
     } catch (error) {
-      // Auth hataları
+
       if (error.response?.status === 401 || error.response?.status === 403) {
         const { authService } = require('./authService');
         await authService.clearToken();
         throw new Error('Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.');
       }
       
-      // 400 Bad Request - Validation hataları
       if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || 'Rezervasyon iptal edilemedi';
         const validationError = new Error(errorMessage);
@@ -147,24 +144,21 @@ export const reservationService = {
         throw validationError;
       }
       
-      // 404 Not Found
       if (error.response?.status === 404) {
         const errorMessage = error.response?.data?.message || 'Rezervasyon bulunamadı';
         throw new Error(errorMessage);
       }
       
-      // Diğer hatalar
       const errorMessage = error.response?.data?.message || 'Rezervasyon iptal edilemedi';
       throw new Error(errorMessage);
     }
   },
 
-  // Rezervasyonun iptal edilip edilemeyeceğini kontrol et (client-side)
+  // Rezervasyonun iptal edilip edilemeyeceğini kontrol et 
   canCancelReservation: (reservation) => {
     if (reservation.status !== 'PENDING' && reservation.status !== 'APPROVED') {
       return false;
     }
-    // Zaman kontrolü (60 dakika)
     let reservationTime;
     if (reservation.reservationTime.includes('T')) {
       const [datePart, timePart] = reservation.reservationTime.split('T');
@@ -200,40 +194,52 @@ export const reservationService = {
     return dateToCheck < now;
   },
 
-  // Kullanıcının belirli bir mekana bekleyen veya onaylanmış rezervasyonu olup olmadığını kontrol et
-  checkPendingReservation: async (placeId) => {
+  // Aynı gün aynı mekana PENDING rezervasyon kontrolü
+  checkSameDayPendingReservation: async (placeId, newReservationTime) => {
     try {
       const headers = await buildHeaders();
       const response = await axios.get(`${BASE_URL}/my-reservations`, { headers });
       const reservations = response.data;
       
-      const now = new Date();
+      const newDateTime = new Date(newReservationTime);
+      const newDateOnly = new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate());
       
-      // Aynı mekana PENDING veya APPROVED durumunda VE gelecekteki rezervasyon var mı kontrol et
-      const hasPendingOrApproved = reservations.some(reservation => {
-
-        const isSamePlace = reservation.placeId === placeId;
-        const isActiveStatus = reservation.status === 'PENDING' || reservation.status === 'APPROVED';
-        
-        if (!isSamePlace || !isActiveStatus) {
+      // Aynı mekana, aynı gün içinde PENDING durumunda rezervasyon var mı kontrol et
+      const sameDayPendingReservation = reservations.find(reservation => {
+        if (reservation.placeId !== placeId) {
           return false;
         }
         
-        // Gelecekte olup olmadığını kontrol et
+        if (reservation.status !== 'PENDING') {
+          return false;
+        }
+        
         let reservationDateTime;
-        if (reservation.reservationTime && reservation.reservationTime.includes('T')) {
+        if (reservation.reservationTime.includes('T')) {
           reservationDateTime = new Date(reservation.reservationTime);
         } else {
           reservationDateTime = new Date(reservation.reservationTime);
         }
-        const isFuture = reservationDateTime > now;
         
-        return isFuture;
+        const reservationDateOnly = new Date(
+          reservationDateTime.getFullYear(), 
+          reservationDateTime.getMonth(), 
+          reservationDateTime.getDate()
+        );
+        
+        return reservationDateOnly.getTime() === newDateOnly.getTime();
       });
       
-      return hasPendingOrApproved;
+      if (sameDayPendingReservation) {
+        return {
+          hasPending: true,
+          pendingReservation: sameDayPendingReservation
+        };
+      }
+      
+      return { hasPending: false };
     } catch (error) {
-      return false; 
+      return { hasPending: false };
     }
   },
 

@@ -4,7 +4,6 @@ import COLORS from '../../../constants/colors';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
   },
   header: {
     flexDirection: 'row',
@@ -12,9 +11,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   backButton: {
     padding: 8,
@@ -30,7 +27,6 @@ export const styles = StyleSheet.create({
   avatarSection: {
     alignItems: 'center',
     paddingVertical: 30,
-    backgroundColor: '#FFFFFF',
   },
   avatarPlaceholder: {
     width: 100,
@@ -67,7 +63,6 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    backgroundColor: '#F0F0FF',
   },
   changePhotoText: {
     fontSize: 14,
@@ -76,7 +71,6 @@ export const styles = StyleSheet.create({
     marginLeft: 6,
   },
   section: {
-    backgroundColor: '#FFFFFF',
     marginTop: 16,
     paddingHorizontal: 20,
     paddingVertical: 20,
@@ -99,12 +93,10 @@ export const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 12,
+    borderWidth: 0,
   },
   inputIcon: {
     marginRight: 12,
@@ -112,7 +104,7 @@ export const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#2C3E50',
+    color: '#FFFFFF',
   },
   passwordHeader: {
     flexDirection: 'row',

@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
   },
   restaurantImage: {
     width: '100%',
-    height: 280,
+    height: 210,
     borderRadius: 16,
     marginBottom: 15,
   },
