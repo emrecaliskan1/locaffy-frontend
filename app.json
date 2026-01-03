@@ -4,7 +4,7 @@
     "slug": "locaffy-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/locaffyicon2.png",
+    "icon": "./assets/appicon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -21,8 +21,9 @@
       }
     },
     "android": {
+      "icon": "./assets/appicon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/locaffyicon2.png",
+        "foregroundImage": "./assets/appicon.png",
         "backgroundColor": "#FFFFFF"
       },
       "splash": {
