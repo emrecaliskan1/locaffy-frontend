@@ -137,10 +137,10 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
         {item.status === 'APPROVED' && item.tableName && (
           <View style={styles.detailRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <FontAwesome name="cutlery" size={14} color="#27AE60" style={{ marginRight: 6 }} />
-              <Text style={[styles.detailLabel, { color: '#27AE60', fontWeight: 'bold' }]}>Masa:</Text>
+              <FontAwesome name="cutlery" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>Masa:</Text>
             </View>
-            <Text style={[styles.detailValue, { color: '#27AE60', fontWeight: 'bold' }]}>{item.tableName}</Text>
+            <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.tableName}</Text>
           </View>
         )}
         {item.status === 'CANCELLED' && item.cancellationReason && (
