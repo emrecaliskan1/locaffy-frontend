@@ -30,7 +30,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   const [menu, setMenu] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-  
+
   const scrollViewRef = useRef(null);
   const menuRef = useRef(null);
   const reviewsRef = useRef(null);
@@ -70,12 +70,12 @@ export default function RestaurantDetailScreen({ route, navigation }) {
 
     let workingDayNumbers = [];
     const workingDays = restaurantData.workingDays.trim();
-    
+
     if (workingDays.includes('-')) {
       const [startDay, endDay] = workingDays.split('-').map(day => day.trim());
       const startDayNum = dayMap[startDay];
       const endDayNum = dayMap[endDay];
-      
+
       if (startDayNum !== undefined && endDayNum !== undefined) {
         if (startDayNum <= endDayNum) {
           for (let i = startDayNum; i <= endDayNum; i++) {
@@ -93,9 +93,9 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     } else if (workingDays.includes(',')) {
       const days = workingDays.split(',').map(day => day.trim());
       workingDayNumbers = days.map(day => dayMap[day]).filter(num => num !== undefined);
-    } else if (workingDays === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR' || 
-               workingDays === 'Pazartesi-Pazar' || 
-               workingDays === 'Hergün') {
+    } else if (workingDays === 'PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR' ||
+      workingDays === 'Pazartesi-Pazar' ||
+      workingDays === 'Hergün') {
       workingDayNumbers = [0, 1, 2, 3, 4, 5, 6];
     } else {
       const dayNum = dayMap[workingDays];
@@ -173,20 +173,20 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   //MEKAN DETAY SAYFASINDAKİ TAB SEKMELERİ
   const scrollToSection = (section) => {
     setActiveTab(section);
-    
+
     if (scrollViewRef.current) {
       if (section === 'info') {
         // Bilgiler section'ı için sayfanın en altına git
         scrollViewRef.current.scrollToEnd({ animated: true });
       } else {
         let targetY = 0;
-        
+
         if (section === 'menu' && menuLayout > 0) {
-          targetY = menuLayout - 70; 
+          targetY = menuLayout - 70;
         } else if (section === 'reviews' && reviewsLayout > 0) {
           targetY = reviewsLayout - 70;
         }
-        
+
         if (targetY >= 0) {
           scrollViewRef.current.scrollTo({ y: targetY, animated: true });
         }
@@ -252,131 +252,141 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         </View>
       </SafeAreaView>
 
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
-        style={styles.content} 
+        style={styles.content}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
         <View>
-        <View style={styles.imageContainer}>
-          {finalRestaurantData.image ? (
-            <Image
-              source={{ uri: finalRestaurantData.image }}
-              style={styles.restaurantImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={[styles.restaurantImage, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
-              <Text style={{ color: '#999', fontSize: 16 }}>Resim yok</Text>
+          <View style={styles.imageContainer}>
+            {finalRestaurantData.image ? (
+              <Image
+                source={{ uri: finalRestaurantData.image }}
+                style={styles.restaurantImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.restaurantImage, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={{ color: '#999', fontSize: 16 }}>Resim yok</Text>
+              </View>
+            )}
+          </View>
+
+          <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
+            <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{getPlaceTypeLabel(finalRestaurantData.placeType) || 'Restoran'}</Text>
+            <View style={[styles.restaurantMeta, { justifyContent: 'center' }]}>
+              <View style={styles.metaItem}>
+                <FontAwesome name="star" size={14} color="#F1C40F" />
+                <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
+              </View>
+            </View>
+            <View style={[styles.restaurantMeta, { alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', maxWidth: '100%' }}>
+                <FontAwesome name="map-marker" size={14} color="#27AE60" style={{ marginTop: 3, marginRight: 5, flexShrink: 0 }} />
+                <Text
+                  style={[styles.metaText, {
+                    color: theme.colors.textSecondary,
+                    textAlign: 'center',
+                    lineHeight: 20,
+                    flexShrink: 1,
+                  }]}
+                >{finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
+              </View>
+              {/* Phone removed as requested - keep phone number out of the area above reservation button */}
+            </View>
+          </View>
+
+          {!getRestaurantStatus().canReserve && (
+            <View style={{ alignItems: 'center', marginTop: 10, paddingHorizontal: 20 }}>
+              <Text style={{ fontSize: 12, color: theme.colors.textTertiary, opacity: 0.6, textAlign: 'center' }}>
+                Mekan bugün hizmet vermemektedir
+              </Text>
             </View>
           )}
-        </View>
 
-        <View style={[styles.restaurantInfo, { backgroundColor: theme.colors.background }]}>
-          <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{finalRestaurantData.name}</Text>
-          <Text style={[styles.restaurantType, { color: theme.colors.textTertiary }]}>{getPlaceTypeLabel(finalRestaurantData.placeType) || 'Restoran'}</Text>
-          <View style={[styles.restaurantMeta, { justifyContent: 'center' }]}>
-            <View style={styles.metaItem}>
-              <FontAwesome name="star" size={14} color="#F1C40F" />
-              <Text style={[styles.metaText, { color: theme.colors.textSecondary }]}> {finalRestaurantData.rating.toFixed(1)} ({finalRestaurantData.reviewCount} {finalRestaurantData.reviewCount === 0 ? 'değerlendirme yok' : 'değerlendirme'})</Text>
+          {restaurantData.reservationAvailable === false && (
+            <View style={{ alignItems: 'center', marginTop: 10, paddingHorizontal: 20 }}>
+              <Text style={{ fontSize: 12, color: '#E74C3C', opacity: 0.8, textAlign: 'center' }}>
+                Bu mekan şu anda rezervasyon kabul etmemektedir
+              </Text>
             </View>
-          </View>
-          <View style={[styles.restaurantMeta, { alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-start', maxWidth: '100%' }}>
-              <FontAwesome name="map-marker" size={14} color="#27AE60" style={{ marginTop: 3, marginRight: 5, flexShrink: 0 }} />
-              <Text
-                style={[styles.metaText, {
-                  color: theme.colors.textSecondary,
-                  textAlign: 'center',
-                  lineHeight: 20,
-                  flexShrink: 1,
-                }]}
-              >{finalRestaurantData.address || 'Adres bilgisi yok'}</Text>
-            </View>
-            {/* Phone removed as requested - keep phone number out of the area above reservation button */}
+          )}
+
+          <TouchableOpacity
+            style={[
+              styles.reservationButton,
+              { marginTop: 10 },
+              (!getRestaurantStatus().canReserve || restaurantData.reservationAvailable === false) && { backgroundColor: '#95A5A6', opacity: 0.6 }
+            ]}
+            onPress={() => {
+              if (getRestaurantStatus().canReserve && restaurantData.reservationAvailable !== false) {
+                navigation.navigate('Reservation', { restaurant: finalRestaurantData });
+              }
+            }}
+            disabled={!getRestaurantStatus().canReserve || restaurantData.reservationAvailable === false}
+          >
+            <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
+            <Text style={styles.reservationButtonText}>
+              {restaurantData.reservationAvailable === false ? 'Rezervasyon Kapalı' : 'Rezervasyon Yap'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Tab Bar - Rezervasyon butonundan sonra */}
+          <View style={[styles.stickyTabContainer, { backgroundColor: theme.colors.background, marginTop: 20 }]}>
+            <TouchableOpacity
+              style={[
+                styles.stickyTab,
+                activeTab === 'menu' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+              ]}
+              onPress={() => scrollToSection('menu')}
+            >
+              <Text style={[
+                styles.stickyTabText,
+                { color: theme.colors.text },
+                activeTab === 'menu' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+              ]}>
+                Menü
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.stickyTab,
+                activeTab === 'reviews' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+              ]}
+              onPress={() => scrollToSection('reviews')}
+            >
+              <Text style={[
+                styles.stickyTabText,
+                { color: theme.colors.text },
+                activeTab === 'reviews' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+              ]}>
+                Yorumlar
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.stickyTab,
+                activeTab === 'info' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
+              ]}
+              onPress={() => scrollToSection('info')}
+            >
+              <Text style={[
+                styles.stickyTabText,
+                { color: theme.colors.text },
+                activeTab === 'info' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
+              ]}>
+                Bilgiler
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {!getRestaurantStatus().canReserve && (
-          <View style={{ alignItems: 'center', marginTop: 10, paddingHorizontal: 20 }}>
-            <Text style={{ fontSize: 12, color: theme.colors.textTertiary, opacity: 0.6, textAlign: 'center' }}>
-              Mekan bugün hizmet vermemektedir
-            </Text>
-          </View>
-        )}
-
-        <TouchableOpacity 
-          style={[
-            styles.reservationButton, 
-            { marginTop: 10 },
-            !getRestaurantStatus().canReserve && { backgroundColor: '#95A5A6', opacity: 0.6 }
-          ]}
-          onPress={() => {
-            if (getRestaurantStatus().canReserve) {
-              navigation.navigate('Reservation', { restaurant: finalRestaurantData });
-            }
-          }}
-          disabled={!getRestaurantStatus().canReserve}
-        >
-          <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
-          <Text style={styles.reservationButtonText}>Rezervasyon Yap</Text>
-        </TouchableOpacity>
-
-        {/* Tab Bar - Rezervasyon butonundan sonra */}
-        <View style={[styles.stickyTabContainer, { backgroundColor: theme.colors.background, marginTop: 20 }]}>
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'menu' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('menu')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'menu' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Menü
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'reviews' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('reviews')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'reviews' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Yorumlar
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[
-              styles.stickyTab,
-              activeTab === 'info' && [styles.stickyTabActive, { borderBottomColor: theme.colors.primary }]
-            ]}
-            onPress={() => scrollToSection('info')}
-          >
-            <Text style={[
-              styles.stickyTabText, 
-              { color: theme.colors.text },
-              activeTab === 'info' && [styles.stickyTabTextActive, { color: theme.colors.primary }]
-            ]}>
-              Bilgiler
-            </Text>
-          </TouchableOpacity>
-        </View>
-        </View>
-
-        <View 
+        <View
           ref={menuRef}
           onLayout={(event) => {
             const layout = event.nativeEvent.layout;
@@ -386,7 +396,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <MenuTab restaurant={finalRestaurantData} styles={styles} />
         </View>
 
-        <View 
+        <View
           ref={reviewsRef}
           onLayout={(event) => {
             const layout = event.nativeEvent.layout;
@@ -396,7 +406,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           <ReviewsTab restaurant={finalRestaurantData} styles={styles} />
         </View>
 
-        <View 
+        <View
           ref={infoRef}
           onLayout={(event) => {
             const layout = event.nativeEvent.layout;

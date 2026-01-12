@@ -71,7 +71,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
         return;
       }
       try {
-        const reviews = await reviewService.getPlaceReviews(item.placeId); 
+        const reviews = await reviewService.getPlaceReviews(item.placeId);
         if (reviews && reviews.length > 0) {
           const foundReview = reviews.find(review => {
             return (review.user?.id === user.userId) || (review.userId === user.userId);
@@ -102,7 +102,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
           <Text style={[styles.restaurantName, { color: theme.colors.text }]}>{item.placeName}</Text>
           <Text style={[styles.reservationNumber, { color: theme.colors.textSecondary }]}>#{item.id}</Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}> 
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
           <Text style={styles.statusText}>
             {getStatusText(item.status)}
           </Text>
@@ -134,6 +134,15 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
             <Text style={[styles.detailValue, { color: theme.colors.text }]}>{item.note}</Text>
           </View>
         )}
+        {item.status === 'APPROVED' && item.tableName && (
+          <View style={styles.detailRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <FontAwesome name="cutlery" size={14} color="#27AE60" style={{ marginRight: 6 }} />
+              <Text style={[styles.detailLabel, { color: '#27AE60', fontWeight: 'bold' }]}>Masa:</Text>
+            </View>
+            <Text style={[styles.detailValue, { color: '#27AE60', fontWeight: 'bold' }]}>{item.tableName}</Text>
+          </View>
+        )}
         {item.status === 'CANCELLED' && item.cancellationReason && (
           <View style={styles.detailRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -158,32 +167,32 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
       {isPast ? (
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
           {showReviewButton && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.rateButton, { flex: 1, backgroundColor: theme.colors.primary }]}
               onPress={() => setShowReviewModal(true)}
-            > 
+            >
               <Text style={styles.rateButtonText}>Değerlendir</Text>
             </TouchableOpacity>
           )}
           {(isPast && item.status === 'COMPLETED' && reservationService.isReservationPast(item.reservationTime) && isReviewed) && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
-                styles.rateButton, 
+                styles.rateButton,
                 { flex: 1, backgroundColor: theme.colors.primary }
               ]}
               onPress={() => setShowUserReviewModal(true)}
               activeOpacity={0.8}
-            > 
+            >
               <Text style={[styles.rateButtonText, { color: '#FFFFFF' }]}>
                 Değerlendirmeni Gör
               </Text>
             </TouchableOpacity>
           )}
           {showRejectReasonButton && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.rejectReasonButton, { flex: 1, backgroundColor: '#DC2626' }]}
               onPress={() => setShowRejectModal(true)}
-            > 
+            >
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>
             </TouchableOpacity>
           )}
@@ -191,24 +200,24 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
       ) : (
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
           {showCancelButton && (
-            <TouchableOpacity 
-              style={[styles.cancelButton, { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.error }]} 
+            <TouchableOpacity
+              style={[styles.cancelButton, { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.error }]}
               onPress={() => onCancel && onCancel(item)}
             >
               <Text style={styles.cancelButtonText}>İptal Et</Text>
             </TouchableOpacity>
           )}
           {showRejectReasonButton && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.rejectReasonButton, { flex: 1, backgroundColor: '#DC2626' }]}
               onPress={() => setShowRejectModal(true)}
-            > 
+            >
               <Text style={styles.rejectReasonButtonText}>Red Sebebini Gör</Text>
             </TouchableOpacity>
           )}
         </View>
       )}
-      
+
       {/* Red Sebebi Modal */}
       <Modal
         visible={showRejectModal}
@@ -216,43 +225,43 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
         animationType="fade"
         onRequestClose={() => setShowRejectModal(false)}
       >
-        <View style={{ 
-          flex: 1, 
-          backgroundColor: 'rgba(0,0,0,0.5)', 
-          justifyContent: 'center', 
-          alignItems: 'center' 
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
-          <View style={{ 
-            backgroundColor: theme.colors.card, 
-            borderRadius: 16, 
-            padding: 24, 
-            width: 320, 
-            maxWidth: '90%', 
+          <View style={{
+            backgroundColor: theme.colors.card,
+            borderRadius: 16,
+            padding: 24,
+            width: 320,
+            maxWidth: '90%',
             elevation: 8,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 4
           }}>
-            <Text style={{ 
-              fontSize: 18, 
-              fontWeight: 'bold', 
-              color: '#F44336', 
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: '#F44336',
               marginBottom: 16,
               textAlign: 'center'
             }}>
               Rezervasyon Reddedildi
             </Text>
-            <Text style={{ 
-              fontSize: 14, 
-              color: theme.colors.textSecondary, 
-              marginBottom: 4 
+            <Text style={{
+              fontSize: 14,
+              color: theme.colors.textSecondary,
+              marginBottom: 4
             }}>
               Red Sebebi:
             </Text>
-            <Text style={{ 
-              fontSize: 16, 
-              color: theme.colors.text, 
+            <Text style={{
+              fontSize: 16,
+              color: theme.colors.text,
               lineHeight: 24,
               marginBottom: 20,
               backgroundColor: theme.colors.background,
@@ -264,19 +273,19 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
               {item.rejectionReason}
             </Text>
             <TouchableOpacity
-              style={{ 
-                backgroundColor: '#F44336', 
-                paddingHorizontal: 24, 
-                paddingVertical: 12, 
+              style={{
+                backgroundColor: '#F44336',
+                paddingHorizontal: 24,
+                paddingVertical: 12,
                 borderRadius: 8,
                 alignSelf: 'center'
               }}
               onPress={() => setShowRejectModal(false)}
             >
-              <Text style={{ 
-                color: '#fff', 
-                fontWeight: 'bold', 
-                fontSize: 16 
+              <Text style={{
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: 16
               }}>
                 Tamam
               </Text>
@@ -292,19 +301,19 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
         animationType="fade"
         onRequestClose={() => setShowUserReviewModal(false)}
       >
-        <View style={{ 
-          flex: 1, 
-          backgroundColor: 'rgba(0,0,0,0.5)', 
-          justifyContent: 'center', 
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
           alignItems: 'center',
           padding: 20
         }}>
-          <View style={{ 
-            backgroundColor: theme.colors.card, 
-            borderRadius: 20, 
-            padding: 24, 
+          <View style={{
+            backgroundColor: theme.colors.card,
+            borderRadius: 20,
+            padding: 24,
             width: '100%',
-            maxWidth: 360, 
+            maxWidth: 360,
             elevation: 8,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
@@ -324,18 +333,18 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
               }}>
                 <FontAwesome name="star" size={28} color={theme.colors.primary} />
               </View>
-              <Text style={{ 
-                fontSize: 20, 
-                fontWeight: 'bold', 
-                color: theme.colors.text, 
+              <Text style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: theme.colors.text,
                 textAlign: 'center',
                 marginBottom: 4
               }}>
                 Değerlendirmen
               </Text>
-              <Text style={{ 
-                fontSize: 14, 
-                color: theme.colors.textSecondary, 
+              <Text style={{
+                fontSize: 14,
+                color: theme.colors.textSecondary,
                 textAlign: 'center'
               }}>
                 {item.placeName}
@@ -343,9 +352,9 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
             </View>
 
             {/* Yıldızlar */}
-            <View style={{ 
-              flexDirection: 'row', 
-              justifyContent: 'center', 
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
               marginBottom: 16,
               gap: 4
             }}>
@@ -360,10 +369,10 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
             </View>
 
             {/* Puan */}
-            <Text style={{ 
-              fontSize: 16, 
+            <Text style={{
+              fontSize: 16,
               fontWeight: '600',
-              color: theme.colors.primary, 
+              color: theme.colors.primary,
               textAlign: 'center',
               marginBottom: 16
             }}>
@@ -372,7 +381,7 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
 
             {/* Yorum */}
             {userReview?.comment ? (
-              <View style={{ 
+              <View style={{
                 backgroundColor: theme.colors.background,
                 padding: 16,
                 borderRadius: 12,
@@ -380,17 +389,17 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
                 borderLeftWidth: 4,
                 borderLeftColor: theme.colors.primary
               }}>
-                <Text style={{ 
-                  fontSize: 12, 
+                <Text style={{
+                  fontSize: 12,
                   color: theme.colors.textSecondary,
                   marginBottom: 6,
                   fontWeight: '600'
                 }}>
                   Yorumun:
                 </Text>
-                <Text style={{ 
-                  fontSize: 15, 
-                  color: theme.colors.text, 
+                <Text style={{
+                  fontSize: 15,
+                  color: theme.colors.text,
                   lineHeight: 22,
                   fontStyle: 'italic'
                 }}>
@@ -398,15 +407,15 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
                 </Text>
               </View>
             ) : (
-              <View style={{ 
+              <View style={{
                 backgroundColor: theme.colors.background,
                 padding: 16,
                 borderRadius: 12,
                 marginBottom: 20,
                 alignItems: 'center'
               }}>
-                <Text style={{ 
-                  fontSize: 14, 
+                <Text style={{
+                  fontSize: 14,
                   color: theme.colors.textSecondary,
                   fontStyle: 'italic'
                 }}>
@@ -417,9 +426,9 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
 
             {/* Tarih */}
             {userReview?.createdAt && (
-              <Text style={{ 
-                fontSize: 12, 
-                color: theme.colors.textTertiary, 
+              <Text style={{
+                fontSize: 12,
+                color: theme.colors.textTertiary,
                 textAlign: 'center',
                 marginBottom: 16
               }}>
@@ -433,20 +442,20 @@ const ReservationCard = ({ item, styles, onCancel, isPast, navigation, onShowToa
 
             {/* Kapat Butonu */}
             <TouchableOpacity
-              style={{ 
-                backgroundColor: theme.colors.primary, 
-                paddingHorizontal: 24, 
-                paddingVertical: 14, 
+              style={{
+                backgroundColor: theme.colors.primary,
+                paddingHorizontal: 24,
+                paddingVertical: 14,
                 borderRadius: 12,
                 alignItems: 'center'
               }}
               onPress={() => setShowUserReviewModal(false)}
               activeOpacity={0.8}
             >
-              <Text style={{ 
-                color: '#fff', 
-                fontWeight: 'bold', 
-                fontSize: 16 
+              <Text style={{
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: 16
               }}>
                 Tamam
               </Text>
