@@ -50,6 +50,15 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     totalRatings: 0,
   };
 
+  // Backend'den gelen reservationAvailable kontrolü
+  const checkReservationAvailable = () => {
+    // Backend reservationAvailable veya isReservationAvailable olarak gönderebilir
+    if (restaurantData.reservationAvailable === false || restaurantData.isReservationAvailable === false) {
+      return false;
+    }
+    return restaurantData.reservationAvailable === true || restaurantData.isReservationAvailable === true;
+  };
+
   // Mekanın açık/kapalı kontrolü
   const getRestaurantStatus = () => {
     if (!restaurantData.workingDays || !restaurantData.openingHours) {
@@ -307,7 +316,7 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             </View>
           )}
 
-          {restaurantData.reservationAvailable === false && (
+          {getRestaurantStatus().canReserve && !checkReservationAvailable() && (
             <View style={{ alignItems: 'center', marginTop: 10, paddingHorizontal: 20 }}>
               <Text style={{ fontSize: 12, color: '#E74C3C', opacity: 0.8, textAlign: 'center' }}>
                 Bu mekan şu anda rezervasyon kabul etmemektedir
@@ -319,18 +328,18 @@ export default function RestaurantDetailScreen({ route, navigation }) {
             style={[
               styles.reservationButton,
               { marginTop: 10 },
-              (!getRestaurantStatus().canReserve || restaurantData.reservationAvailable === false) && { backgroundColor: '#95A5A6', opacity: 0.6 }
+              (!checkReservationAvailable() || !getRestaurantStatus().canReserve) && { backgroundColor: '#95A5A6', opacity: 0.6 }
             ]}
             onPress={() => {
-              if (getRestaurantStatus().canReserve && restaurantData.reservationAvailable !== false) {
+              if (checkReservationAvailable() && getRestaurantStatus().canReserve) {
                 navigation.navigate('Reservation', { restaurant: finalRestaurantData });
               }
             }}
-            disabled={!getRestaurantStatus().canReserve || restaurantData.reservationAvailable === false}
+            disabled={!checkReservationAvailable() || !getRestaurantStatus().canReserve}
           >
             <FontAwesome name="calendar" size={16} color="#FFFFFF" style={styles.reservationIcon} />
             <Text style={styles.reservationButtonText}>
-              {restaurantData.reservationAvailable === false ? 'Rezervasyon Kapalı' : 'Rezervasyon Yap'}
+              {!getRestaurantStatus().canReserve ? 'Bugün Kapalı' : (!checkReservationAvailable() ? 'Rezervasyon Kapalı' : 'Rezervasyon Yap')}
             </Text>
           </TouchableOpacity>
 
